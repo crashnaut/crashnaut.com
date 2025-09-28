@@ -1,0 +1,55 @@
+:root {
+	--tweet-size: 1rem;
+}
+
+.tweet-preview {
+	border: 1px solid var(--text-color-subtle);
+	border-radius: 0.3em;
+	padding: 1em 0.8em;
+	font-size: var(--tweet-size);
+}
+
+.tweet-preview p {
+	font-size: var(--tweet-size);
+}
+
+.tweet-preview * {
+	margin-top: 0;
+}
+
+.tweet-preview > .header {
+	display: grid;
+	grid-template-columns: 48px 1fr;
+	align-items: center;
+	gap: 1em;
+}
+
+.tweet-preview > .content {
+	margin-top: 0.5em;
+}
+
+.tweet-preview .author-profile {
+	border-radius: 100%;
+}
+
+.tweet-preview > .footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 0.5em;
+}
+
+.tweet-preview .tweet-url {
+	text-decoration: none;
+	color: #1da1f2;
+	font-weight: bold;
+}
+
+.tweet-preview .tweet-card {
+	text-decoration: none;
+	color: var(--text-color-light);
+}
+
+.tweet-preview video {
+	margin-top: 0.5em;
+}

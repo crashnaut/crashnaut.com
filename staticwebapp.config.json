@@ -1,0 +1,82 @@
+{
+	"routes": [
+		{
+			"route": "/posts",
+			"redirect": "/blog",
+			"statusCode": 301
+		},
+		{
+			"route": "/posts/*",
+			"redirect": "/blog",
+			"statusCode": 301
+		},
+		{
+			"route": "/blog/configuring-angular-oidc-client-with-the-new-functional-apis",
+			"redirect": "/blog/configuring-angular-auth-oidc-client-with-the-new-functional-apis",
+			"statusCode": 301
+		},
+		{
+			"route": "/blog/be-proactive-when-you-join-an-existing-angular-project",
+			"redirect": "/blog/be-proactive-when-you-join-an-angular-project",
+			"statusCode": 301
+		},
+		{
+			"route": "/blog/i-tried-the-angular-standalone-migration-and-here-is-the-results",
+			"redirect": "/blog/i-tried-the-angular-standalone-migration-and-here-is-the-result",
+			"statusCode": 301
+		},
+		{
+			"route": "/bits/http-file",
+			"redirect": "/bits/http-files",
+			"statusCode": 301
+		},
+		{
+			"route": "/newsletter",
+			"redirect": "https://tinyletter.com/crashnaut",
+			"statusCode": 302
+		},
+		{
+			"route": "/twitter",
+			"redirect": "https://twitter.com/intent/follow?screen_name=crashnaut",
+			"statusCode": 302
+		},
+		{
+			"route": "/linkedin",
+			"redirect": "https://www.linkedin.com/in/mike-sell-crashnaut",
+			"statusCode": 302
+		},
+		{
+			"route": "/github",
+			"redirect": "http://github.com/crashnaut",
+			"statusCode": 302
+		},
+		{
+			"route": "/bluesky",
+			"redirect": "https://bsky.app/profile/crashnaut.com",
+			"statusCode": 302
+		},
+		{
+			"route": "/support",
+			"redirect": "https://www.paypal.com/donate?hosted_button_id=59M5TFPQJS8SQ",
+			"statusCode": 302
+		},
+		{
+			"route": "/*.{js,css}",
+			"headers": {
+				"Cache-Control": "public, max-age=300, immutable"
+			}
+		},
+		{
+			"route": "/*.{png,jpg,gif,webp}",
+			"headers": {
+				"Cache-Control": "public, max-age=86400, immutable"
+			}
+		}
+	],
+	"responseOverrides": {
+		"404": {
+			"rewrite": "/404.html",
+			"statusCode": 404
+		}
+	}
+}

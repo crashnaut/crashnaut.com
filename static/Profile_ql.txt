@@ -1,0 +1,4 @@
+Testing Quick Look thumbnails with files:
+	Profile.pdf
+* /Users/mike/Projects/Crashnaut/crashnaut.com/static/Profile.pdf produced one thumbnail
+Done producing thumbnails
