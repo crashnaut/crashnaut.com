@@ -127,7 +127,7 @@
 
 		<nav>
 			<a href="/blog" class:active={segment.startsWith('blog')}>BLOG</a>
-			<a href="/bits" class:active={segment.startsWith('bits')}>BITS</a>
+			<!-- <a href="/bits" class:active={segment.startsWith('bits')}>BITS</a> -->
 			<a href="/contact" class:active={segment.startsWith('contact')}>CONTACT</a>
 			{#if $theme === 'dark'}
 				<button
@@ -277,10 +277,6 @@
 		display: flex;
 		justify-content: end;
 		gap: 0.6em;
-	}
-
-	nav * {
-		margin-top: 0;
 	}
 
 	nav > *:last-child {

@@ -60,19 +60,21 @@
 	</h1>
 
 	<p>
-		I'm a <strong>Senior SDET Contractor</strong> with 10+ years in test automation, 
-		specializing in <strong>Playwright</strong> and <strong>Cypress</strong> frameworks. 
-		I help companies build robust testing strategies and CI/CD pipelines.
+		I help FinTech companies ship reliable software faster through test automation and CI/CD pipeline design.
 	</p>
 
 	<p>
-		I specialize in <strong>test automation</strong> with tools like Playwright and Cypress, 
-		<strong>API testing</strong> and <strong>CI/CD pipeline management</strong> using GitHub Actions. 
-	</p>
+		As a Senior SDET Contractor, I specialize in:
+			<ul>
+				<li><strong>Test Automation Architecture</strong> (Playwright, Cypress, BDD)</li>
+				<!-- <li><strong>AI/ML System Testing</strong> (LLM validation, accuracy metrics)</li> -->
+				<li><strong>CI/CD Pipeline Integration</strong> (GitHub Actions, Docker, AWS)</li>
+				<li><strong>Financial Systems Testing</strong> (payments, compliance, data integrity)</li>
+			</ul>
+	
 	<p>
 		
-		My experience spans diverse industries with proven success in implementing 
-		automated testing solutions that reduce bug detection time and improve software quality.
+		I build automated testing systems that catches bugs before production, accelerating deployment cycles.
 	</p>
 
 	<!-- <p>

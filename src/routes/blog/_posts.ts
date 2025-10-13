@@ -52,14 +52,15 @@ export async function readPosts(): Promise<
 	}
 	console.log('\x1b[35m[posts] generate\x1b[0m');
 
-	const folderContent = [...traverseFolder(blogPath, '.md')];
-	const directories = folderContent.reduce(
-		(dirs, file) => {
-			dirs[file.folder] = [...(dirs[file.folder] || []), { path: file.path, file: file.file }];
-			return dirs;
-		},
-		{} as Record<string, { file: string; path: string }[]>,
-	);
+	try {
+		const folderContent = [...traverseFolder(blogPath, '.md')];
+		const directories = folderContent.reduce(
+			(dirs, file) => {
+				dirs[file.folder] = [...(dirs[file.folder] || []), { path: file.path, file: file.file }];
+				return dirs;
+			},
+			{} as Record<string, { file: string; path: string }[]>,
+		);
 
 	const postsSorted = Object.values(directories)
 		.map((files) => {
@@ -123,6 +124,10 @@ export async function readPosts(): Promise<
 
 	posts.push(...postsSorted);
 	return postsSorted;
+	} catch (error) {
+		console.error('\x1b[31m[posts] ERROR loading posts:\x1b[0m', error);
+		throw error;
+	}
 }
 
 function getLastModifiedDate(slug: string) {
@@ -175,4 +180,6 @@ export const TAG_COLORS = {
 	cypress: 'cypress',
 	javascript: 'javascript',
 	vue: 'vue',
+	nix: 'nix',
+	devops: 'devops',
 };

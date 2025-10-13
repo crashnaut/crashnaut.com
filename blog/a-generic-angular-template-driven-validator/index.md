@@ -108,7 +108,7 @@ This allows me to use other class properties within the validator method.
 ## Revalidating the validator
 
 To make the validator react to another form value, we can use the `registerOnValidatorChange` method to revalidate the control. Each time a new value is set (via the `value` input), the control is revalidated.
-You can read more about this technique in my [Template-Driven Forms guide](/blog/a-practical-guide-to-angular-template-driven-forms#revalidate-custom-validators).
+<!-- You can read more about this technique in my [Template-Driven Forms guide](/blog/a-practical-guide-to-angular-template-driven-forms#revalidate-custom-validators). -->
 
 ```ts{9-10,14,16-25,28-30,35-37}:validator.directive.ts
 import { Directive, Input } from '@angular/core';

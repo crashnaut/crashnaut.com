@@ -7,7 +7,7 @@ date: 2021-02-25
 tags: Angular, Forms, Architecture
 ---
 
-> Update: After writing this blog post I realised that the proposed API was similar to Template Driven Forms, but worse. Since then I'm a huge believer in Template Driven Forms, as you can read in [A practical guide to Angular Template-Driven Forms](../a-practical-guide-to-angular-template-driven-forms/index.md).
+<!-- > Update: After writing this blog post I realised that the proposed API was similar to Template Driven Forms, but worse. Since then I'm a huge believer in Template Driven Forms, as you can read in [A practical guide to Angular Template-Driven Forms](../a-practical-guide-to-angular-template-driven-forms/index.md). -->
 
 Over the past year, our team has created a lot of different forms for a form-heavy application.
 One of the difficulties we experienced was validating fields that are dependent on other fields of the form.

@@ -12,7 +12,7 @@
 			alt="Buy Me a Coffee at ko-fi.com"
 		/></a
 	>
-	<a
+	<!-- <a
 		target="_blank"
 		rel="noreferrer"
 		href="https://www.paypal.com/donate?hosted_button_id=YOUR_BUTTON_ID_HERE"
@@ -24,7 +24,7 @@
 			aria-label="Support the blog"
 			width="300"
 		/>
-	</a>
+	</a> -->
 </div>
 
 <style>

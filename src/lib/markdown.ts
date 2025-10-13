@@ -54,6 +54,8 @@ const highlighter = await shiki.getHighlighter({
 		'angular-html',
 		'angular-ts',
 		'md',
+		'dockerfile',
+		'nix',
 	],
 });
 

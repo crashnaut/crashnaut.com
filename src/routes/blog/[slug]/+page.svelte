@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Support from '$lib/Support.svelte';
 	import { humanDate } from '$lib/formatters';
 	import Head from '$lib/Head.svelte';
 	import Comments from '$lib/Comments.svelte';
@@ -286,8 +285,6 @@
 <Actions editUrl={post.metadata.edit} />
 
 <!-- <Newsletter beehiivId={post.beehiivId} /> -->
-
-<Support />
 
 <Share title="Share this post" text={post.metadata.title} url={post.metadata.canonical} />
 
