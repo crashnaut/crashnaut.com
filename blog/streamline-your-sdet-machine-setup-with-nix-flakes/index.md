@@ -1,7 +1,7 @@
 ---
-title: Streamline Your SDET Machine Setup with Nix Flakes
-slug: streamline-your-sdet-machine-setup-with-nix-flakes
-description: Stop spending hours configuring new machines. Learn how to set up a reproducible development environment for Mac, Linux, or Windows in just 5 minutes using Nix Flakes.
+title: Fast SDET Setup with Nix Flakes
+slug: fast-sdet-setup-with-nix-flakes
+description: Stop spending hours configuring new machines. Use reproducible development environment for Mac, Linux, or Windows in just 5 minutes using Nix Flakes.
 author: Mike Sell
 date: 2025-10-12T00:00:00.000Z
 tags: Nix, DevOps, Testing, Automation
@@ -9,7 +9,7 @@ tags: Nix, DevOps, Testing, Automation
 
 ## The Problem: Machine Setup Shouldn't Take Hours
 
-As an SDET or automation engineer, how many times have you had to set up a new machine? Whether it's a new laptop, a CI runner, or helping a teammate get started, the process is painful:
+As an SDET how many times have you had to set up a new machine? Whether it's a new laptop, a CI runner, or helping a teammate get started, the process is painful:
 
 - Installing dozens of tools individually
 - Tracking down the right versions
@@ -41,7 +41,7 @@ The repository includes platform-specific configurations for:
 
 ### Development Tools
 - Git, GitHub CLI, Vim
-- Docker/Colima
+- Docker/OrbStack
 - Language-specific toolchains (Node, Python, etc.)
 
 ### CLI Utilities
@@ -284,7 +284,7 @@ You can still use `npm`, `pip`, `gem`, etc. alongside Nix. Or you can package it
 
 **Q: Does this work with Docker?**
 
-Absolutely! Docker (or Colima on Mac) is included in the configuration. You can also use Nix to build Docker images with reproducible layers.
+Absolutely! Docker (or OrbStack on Mac) is included in the configuration. You can also use Nix to build Docker images with reproducible layers.
 
 ## Conclusion
 
