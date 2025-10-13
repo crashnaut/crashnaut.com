@@ -12,20 +12,19 @@ cd nix/<your-platform>  # mac, linux, or windows
 # Edit flake.nix with your username/hostname
 ```
 
-**For macOS:**
-```bash
+:::code-group
+```bash[title=macOS]
 nix run nix-darwin -- switch --flake .#your-hostname
 ```
 
-**For Linux:**
-```bash
+```bash[title=Linux]
 nix run home-manager/master -- switch --flake .#your-username@your-hostname
 ```
 
-**For Windows (WSL2):**
-```bash
+```bash[title=Windows (WSL2)]
 nix run home-manager/master -- switch --flake .#your-username@your-hostname
 ```
+:::
 
 ## What You Get
 
@@ -38,13 +37,29 @@ nix run home-manager/master -- switch --flake .#your-username@your-hostname
 ```bash
 # Update everything
 nix flake update
-darwin-rebuild switch --flake .  # macOS
-# or
-home-manager switch --flake .    # Linux/Windows
+```
 
-# Rollback if something breaks
+:::code-group
+```bash[title=macOS]
+darwin-rebuild switch --flake .
+```
+
+```bash[title=Linux/Windows]
+home-manager switch --flake .
+```
+:::
+
+Rollback if something breaks:
+
+:::code-group
+```bash[title=macOS]
 darwin-rebuild switch --rollback
 ```
+
+```bash[title=Linux/Windows]
+home-manager switch --switch-generation <number>
+```
+:::
 
 ## Key Benefits
 

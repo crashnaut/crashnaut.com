@@ -82,20 +82,19 @@ Edit the `flake.nix` file to customize:
 
 ### Step 3: Apply the Configuration (2 minutes)
 
-**For macOS:**
-```bash
+:::code-group
+```bash[title=macOS]
 nix run nix-darwin -- switch --flake .#your-hostname
 ```
 
-**For Linux:**
-```bash
+```bash[title=Linux]
 nix run home-manager/master -- switch --flake .#your-username@your-hostname
 ```
 
-**For Windows (WSL2):**
-```bash
+```bash[title=Windows (WSL2)]
 nix run home-manager/master -- switch --flake .#your-username@your-hostname
 ```
+:::
 
 That's it! All your tools and applications are now installed and configured.
 
@@ -144,10 +143,17 @@ Once set up, managing your environment is straightforward:
 ```bash
 # Update all packages
 nix flake update
+```
 
-# Apply updates (example for macOS)
+:::code-group
+```bash[title=macOS]
 darwin-rebuild switch --flake .
 ```
+
+```bash[title=Linux/Windows]
+home-manager switch --flake .
+```
+:::
 
 ### Adding a New Package
 
@@ -167,16 +173,16 @@ packages = with pkgs; [
 
 Nix keeps track of previous configurations. If an update breaks something:
 
-**macOS:**
-```bash
+:::code-group
+```bash[title=macOS]
 darwin-rebuild switch --rollback
 ```
 
-**Linux/Windows:**
-```bash
+```bash[title=Linux/Windows]
 home-manager generations
 home-manager switch --switch-generation <number>
 ```
+:::
 
 ## Customization Guide
 
