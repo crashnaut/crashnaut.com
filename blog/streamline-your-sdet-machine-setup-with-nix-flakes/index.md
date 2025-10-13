@@ -1,6 +1,6 @@
 ---
 title: Fast SDET Setup with Nix Flakes
-slug: fast-sdet-setup-with-nix-flakes
+slug: streamline-your-sdet-machine-setup-with-nix-flakes
 description: Stop spending hours configuring new machines. Use reproducible development environment for Mac, Linux, or Windows in just 5 minutes using Nix Flakes.
 author: Mike Sell
 date: 2025-10-12T00:00:00.000Z
