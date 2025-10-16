@@ -4,7 +4,7 @@ slug: nix-flakes-for-sdet-setup
 description: A 5-minute guide to set up a reproducible SDET environment using Nix Flakes across Mac, Linux, and Windows.
 author: Mike Sell
 date: 2025-10-12T00:00:00.000Z
-tags: Nix, DevOps, Testing, Automation
+tags: Nix
 ---
 
 ## The Quick Setup
