@@ -6,11 +6,26 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 ```
 
 Clone and configure:
-```bash
+
+:::code-group
+```bash[title=macOS]
 git clone https://github.com/crashnaut/nix.git
-cd nix/<your-platform>  # mac, linux, or windows
+cd nix/mac
 # Edit flake.nix with your username/hostname
 ```
+
+```bash[title=Linux]
+git clone https://github.com/crashnaut/nix.git
+cd nix/linux
+# Edit flake.nix with your username/hostname
+```
+
+```bash[title=Windows (WSL2)]
+git clone https://github.com/crashnaut/nix.git
+cd nix/windows
+# Edit flake.nix with your username/hostname
+```
+:::
 
 Apply:
 
