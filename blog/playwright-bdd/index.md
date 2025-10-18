@@ -4,7 +4,7 @@ slug: playwright-bdd
 description: "A production-ready Playwright BDD boilerplate that solves the maintainability issues of functional test utilities by combining Cucumber/Gherkin with the Page Object Model."
 author: Mike Sell
 date: 2024-10-18T00:00:00.000Z
-tags: ["playwright", "bdd", "cucumber", "testing", "automation", "page-object-model"]
+tags: ["playwright", "bdd"]
 ---
 
 # Playwright BDD: Combining Cucumber with Page Objects
