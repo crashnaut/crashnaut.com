@@ -182,4 +182,7 @@ export const TAG_COLORS = {
 	vue: 'vue',
 	nix: 'nix',
 	devops: 'devops',
+	web3: 'ethereum',
+	blockchain: 'bitcoin',
+	defi: 'solana',
 };
