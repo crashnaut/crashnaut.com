@@ -59,9 +59,10 @@ Done! All your tools are now installed and configured.
 ## What's Included
 
 ### Development Tools
-- Git, GitHub CLI, Vim
-- Docker/OrbStack
-- Language toolchains (Node, Python, etc.)
+- Git, GitHub CLI, Vim, GPG
+- **Node.js 20+ (LTS)** with pnpm package manager
+- **OrbStack** (fast, lightweight Docker alternative - Mac only)
+- Language toolchains ready to add
 
 ### CLI Utilities
 - Modern tools: `ripgrep`, `bat`, `fd`, `eza`
@@ -171,7 +172,7 @@ No. Nix installs to `/nix` separately. Uninstall anytime with `/nix/nix-installe
 ~2GB initially. Use `nix-collect-garbage` to clean old generations.
 
 **Works with Docker?**  
-Yes! Docker/OrbStack is included in the config.
+Yes! OrbStack is included on Mac (faster and lighter than Docker Desktop). Linux uses native Docker.
 
 ---
 
