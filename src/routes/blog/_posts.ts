@@ -167,7 +167,6 @@ export function orderTags(tags: string[]) {
 
 export const TAG_COLORS = {
 	typescript: 'typescript',
-	angular: 'angular',
 	dotnet: 'dotnet',
 	'.net': 'dotnet',
 	ngrx: 'ngrx',
@@ -185,4 +184,8 @@ export const TAG_COLORS = {
 	web3: 'ethereum',
 	blockchain: 'bitcoin',
 	defi: 'solana',
+	bdd: 'bdd',
+	ai: 'ai',
+	ml: 'ai',
+	'machine learning': 'ai',
 };

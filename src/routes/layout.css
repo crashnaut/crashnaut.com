@@ -18,7 +18,6 @@
 
 	/* https://simpleicons.org/ */
 	--typescript: 211, 60%, 48%;
-	--angular: 328, 97%, 59%;
 	--dotnet: 253, 66%, 50%;
 	--ngrx: 291, 66%, 50%;
 	--playwright: 122, 58%, 43%;
@@ -34,6 +33,8 @@
 	--ethereum: 225, 100%, 50%;
 	--bitcoin: 43, 100%, 50%;
 	--solana: 262, 83%, 58%;
+	--bdd: 135, 59%, 49%;
+	--ai: 233, 82%, 69%;
 }
 
 html.light {
@@ -467,9 +468,6 @@ a[data-with-favicon]:hover:after {
 [class~='typescript' i] {
 	--accent-color: var(--typescript);
 }
-[class~='angular' i] {
-	--accent-color: var(--angular);
-}
 [class~='.net' i],
 [class~='dotnet' i] {
 	--accent-color: var(--dotnet);
@@ -482,6 +480,16 @@ a[data-with-favicon]:hover:after {
 }
 [class~='playwright' i] {
 	--accent-color: var(--playwright);
+}
+
+[class~='bdd' i] {
+	--accent-color: var(--bdd);
+}
+
+[class~='ai' i],
+[class~='ml' i],
+[class~='machine learning' i] {
+	--accent-color: var(--ai);
 }
 
 code,
