@@ -186,6 +186,7 @@ export const TAG_COLORS = {
 	defi: 'solana',
 	bdd: 'bdd',
 	ai: 'ai',
+	'ai / ml': 'ai',
 	ml: 'ai',
 	'machine learning': 'ai',
 };
