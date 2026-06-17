@@ -209,33 +209,8 @@
 		<Ad />
 	</div>
 
-	{#if post.metadata.translations}
-		<div>
-			<h4>Read this post in</h4>
-			{#each post.metadata.translations as translation}
-				<a href={translation.url} rel="external">{translation.language}</a>
-			{/each}
-		</div>
-	{/if}
-
 	<Share title="Share this post" text={post.metadata.title} url={post.metadata.canonical} />
 </aside>
-
-{#if post.metadata.translations}
-	<div class="translations">
-		<hr />
-		<p>Thanks to the ❤️ community you can also read this post in:</p>
-		<ul>
-			{#each post.metadata.translations as translation}
-				<li>
-					<a href={translation.url} rel="external" class="mark">{translation.language}</a> thanks to
-					<a href={translation.profile} rel="external" class="mark">{translation.author}</a>
-				</li>
-			{/each}
-		</ul>
-		<hr />
-	</div>
-{/if}
 
 {#if post.tldr}
 	<button class="tldr" onclick={blog.toggleTldr}>
@@ -300,6 +275,7 @@
 		border: none;
 		text-align: center;
 		font-weight: bolder;
+		margin-top: var(--spacing);
 		margin-bottom: var(--spacing);
 	}
 
@@ -468,15 +444,6 @@
 			width: 48px;
 			height: 48px;
 		}
-	}
-
-	.translations {
-		margin-bottom: 2em;
-	}
-
-	.translations ul {
-		list-style: none;
-		margin-top: var(--spacing-small);
 	}
 
 	@media (prefers-reduced-motion: no-preference) {
