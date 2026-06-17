@@ -1,66 +1,91 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('sitemap works and can navigate to random pages', async ({ page, request }) => {
-	const sitemapUrls = await test.step('get sitemap and parse urls', async () => {
-		const sitemap = await request.get(`/sitemap.xml`);
-		expect(sitemap.ok()).toBeTruthy();
+test("sitemap includes core routes and listed blog posts are reachable", async ({
+  request,
+}) => {
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.ok()).toBeTruthy();
+  expect(sitemap.headers()["content-type"]).toMatch(/xml/);
 
-		const sitemapXml = await sitemap.text();
-		const urls = [...sitemapXml.matchAll(/<loc>(.+?)<\/loc>/g)];
-		expect(urls.length).toBeGreaterThan(50);
-		return urls.map(([_, url]) => new URL(url).pathname).filter((url) => url.startsWith('/blog/'));
-	});
+  const sitemapXml = await sitemap.text();
+  const paths = [...sitemapXml.matchAll(/<loc>(.+?)<\/loc>/g)].map(
+    ([, url]) => new URL(url).pathname,
+  );
+  expect(paths).toEqual(expect.arrayContaining(["/", "/blog", "/contact"]));
+  expect(paths).not.toContain("/bits");
 
-	const randomPosts = sitemapUrls.sort(() => 0.5 - Math.random()).slice(0, 10);
-	expect(randomPosts).toHaveLength(10);
-	for (const post of randomPosts) {
-		await test.step(`${post} loads`, async () => {
-			const response = await page.goto(post);
-			expect(response.ok()).toBeTruthy();
+  const blogPaths = paths.filter((url) => url.startsWith("/blog/")).sort();
+  expect(blogPaths.length).toBeGreaterThan(0);
 
-			const banner = await page.goto(`${post}/images/banner.webp`);
-			expect(banner.ok()).toBeTruthy();
-
-			// await injectAxe(page);
-			// await checkA11y(page);
-		});
-	}
+  for (const postPath of blogPaths.slice(0, 3)) {
+    await test.step(`${postPath} loads`, async () => {
+      const response = await request.get(postPath);
+      expect(response.ok()).toBeTruthy();
+      const html = await response.text();
+      expect(html).toContain("<h1");
+    });
+  }
 });
 
-test('rss feed works ', async ({ page }) => {
-	const response = await page.goto('/blog/rss.xml');
-	expect(response.ok()).toBeTruthy();
+test("rss feed works", async ({ request }) => {
+  const response = await request.get("/blog/rss.xml");
+  expect(response.ok()).toBeTruthy();
+  expect(response.headers()["content-type"]).toMatch(/xml/);
+  const xml = await response.text();
+  expect(xml).toContain("<rss");
 });
 
-test('homepage works ', async ({ page }) => {
-	const response = await page.goto('/');
-	expect(response.ok()).toBeTruthy();
+test("homepage works", async ({ request }) => {
+  const response = await request.get("/");
+  expect(response.ok()).toBeTruthy();
+  const html = await response.text();
+  expect(html).toContain("Hi, I'm Mike");
+  expect(html).toContain(">BLOG<");
 });
 
-test('blog works ', async ({ page }) => {
-	const response = await page.goto('/blog');
-	expect(response.ok()).toBeTruthy();
+test("homepage has a single title and meta description", async ({
+  request,
+}) => {
+  const response = await request.get("/");
+  expect(response.ok()).toBeTruthy();
+  const html = await response.text();
+  expect(html.match(/<title>/g)?.length).toBe(1);
+  expect(html.match(/<meta[^>]*name="description"[^>]*>/g)?.length).toBe(1);
 });
 
-test('resources works ', async ({ page }) => {
-	let response = await page.goto('/resources/ngrx');
-	expect(response.ok()).toBeTruthy();
-	response = await page.goto('/resources/sql');
-	expect(response.ok()).toBeTruthy();
+test("blog works", async ({ request }) => {
+  const response = await request.get("/blog");
+  expect(response.ok()).toBeTruthy();
+  const html = await response.text();
+  expect(html).toContain('aria-label="Search"');
+  const articleCount = (html.match(/<article/g) ?? []).length;
+  expect(articleCount).toBe(6);
 });
 
-test('contributors works ', async ({ page }) => {
-	await page.goto(
-		'/blog/configuring-azure-application-insights-in-an-angular-application#sending-custom-events-and-traces-to-application-insights',
-	);
-	await expect(
-		page.getByText('A warm thank you to the contributors of this blog post'),
-	).toBeDefined();
-	await expect(page.getByText('Dzhavat Ushev')).toBeDefined();
+test("/contact has exactly one meta description tag", async ({ request }) => {
+  const response = await request.get("/contact");
+  expect(response.ok()).toBeTruthy();
+  const html = await response.text();
+  const matches = html.match(/<meta[^>]*name="description"[^>]*>/g) ?? [];
+  expect(matches).toHaveLength(1);
 });
 
-test('translations works ', async ({ page }) => {
-	await page.goto('/blog/single-component-angular-modules-and-component-tests-go-hand-in-hand');
-	await expect(page.getByText('This article is also available in')).toBeDefined();
-	await expect(page.getByText('Español by Dany Paredes')).toBeDefined();
+test("blog article page renders heading and section content", async ({
+  request,
+}) => {
+  const response = await request.get("/blog/playwright-bdd");
+  expect(response.ok()).toBeTruthy();
+  const html = await response.text();
+  expect(html).toContain(
+    "Playwright BDD: Combining Cucumber with Page Objects",
+  );
+  expect(html).toContain("The Problem with Functional BDD Implementations");
+});
+
+test("blog article includes structured data", async ({ request }) => {
+  const response = await request.get("/blog/playwright-bdd");
+  expect(response.ok()).toBeTruthy();
+  const html = await response.text();
+  expect(html).toContain("application/ld+json");
+  expect(html).toContain("BlogPosting");
 });

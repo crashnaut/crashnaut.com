@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Head from '$lib/Head.svelte';
+	import Seo from '$lib/Seo.svelte';
+	import { personJsonLd, site, websiteJsonLd } from '$lib/seo';
 	import confetti from 'canvas-confetti';
 	import Socials from '$lib/Socials.svelte';
-	// import Newsletter from '$lib/Newsletter.svelte';
 
 	let lastConfetti = 0;
 	function fireConfetti(evt: MouseEvent | FocusEvent): void {
@@ -52,7 +52,13 @@
 	}
 </script>
 
-<Head title="Mike Sell - Senior SDET Contractor" details={true} />
+<Seo
+	title="Mike Sell - Senior SDET Contractor"
+	description="Mike Sell helps FinTech companies ship reliable software faster through test automation and CI/CD pipeline design."
+	canonical={site.url}
+	keywords="QA, SDET, Test Automation, Playwright, DevOps, CI/CD, Nix, Testing, Mike Sell, Crashnaut"
+	schema={[personJsonLd(), websiteJsonLd()]}
+/>
 
 <section>
 	<h1>
@@ -65,28 +71,16 @@
 
 	<p>
 		As a Senior SDET Contractor, I specialize in:
-			<ul>
-				<li><strong>Test Automation Architecture</strong> (Playwright, Cypress, BDD)</li>
-				<!-- <li><strong>AI/ML System Testing</strong> (LLM validation, accuracy metrics)</li> -->
-				<li><strong>CI/CD Pipeline Integration</strong> (GitHub Actions, Docker, AWS)</li>
-				<li><strong>Financial Systems Testing</strong> (payments, compliance, data integrity)</li>
-			</ul>
-	
+	</p>
+	<ul>
+		<li><strong>Test Automation Architecture</strong> (Playwright, Cypress, BDD)</li>
+		<li><strong>CI/CD Pipeline Integration</strong> (GitHub Actions, Docker, AWS)</li>
+		<li><strong>Financial Systems Testing</strong> (payments, compliance, data integrity)</li>
+	</ul>
+
 	<p>
-		
 		I build automated testing systems that catches bugs before production, accelerating deployment cycles.
 	</p>
-
-	<!-- <p>
-		Also a hobby <strong onmouseover={fireConfetti} onfocus={fireConfetti}>runner</strong>.
-	</p> -->
-
-	<!-- <p>
-		<strong>Kaizen 改善</strong> (kai.zen): Kaizen is an approach to creating continuous improvement
-		based on the idea that small, ongoing positive changes can reap significant improvements.
-	</p> -->
-
-	<!-- <Newsletter /> -->
 
 	<div class="cta-section">
 		<a href="https://calendly.com/mikesell404" class="cta-secondary" rel="external">Schedule a Call</a>
