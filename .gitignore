@@ -109,6 +109,7 @@ build/
 test-results/
 playwright-report/
 playwright/.cache/
+qa-artifacts/
 
 # Firebase
 .firebase/

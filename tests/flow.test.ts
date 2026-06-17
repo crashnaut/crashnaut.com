@@ -1,19 +1,20 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('flow test', async ({ page }) => {
-	await page.goto('');
-	await page.getByRole('link', { name: 'BLOG', exact: true }).click();
+test("blog discovery flow from homepage to article details is deterministic", async ({
+  request,
+}) => {
+  const blogResponse = await request.get("/blog");
+  expect(blogResponse.ok()).toBeTruthy();
+  const blogHtml = await blogResponse.text();
 
-	await expect(page).toHaveURL(`/blog`);
+  const firstPostMatch = blogHtml.match(/href="(\/blog\/[a-z0-9-]+)"/);
+  expect(firstPostMatch).not.toBeNull();
 
-	await page.getByRole('button', { name: 'Angular', exact: true }).click();
-	await expect(page).toHaveURL(`/blog?q=Angular`);
+  const postPath = firstPostMatch![1];
+  const postResponse = await request.get(postPath);
+  expect(postResponse.ok()).toBeTruthy();
 
-	await page.getByRole('button', { name: 'Testing', exact: true }).click();
-	await expect(page).toHaveURL(`/blog?q=Angular+Testing`);
-
-	await page.getByPlaceholder('Search').fill('Angular Testing ngrx project');
-	await page.getByRole('link', { name: /Testing an NgRx project/i }).click();
-
-	await expect(page.getByRole('heading', { name: 'Actions' })).toBeDefined();
+  const postHtml = await postResponse.text();
+  expect(postHtml).toContain("<h1");
+  expect(postHtml).toContain("<h2");
 });

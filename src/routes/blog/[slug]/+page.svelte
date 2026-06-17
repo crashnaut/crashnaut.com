@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { humanDate } from '$lib/formatters';
-	import Head from '$lib/Head.svelte';
+	import Seo from '$lib/Seo.svelte';
+	import { blogPostingJsonLd, breadcrumbJsonLd, site } from '$lib/seo';
 	import Comments from '$lib/Comments.svelte';
 	import { blog } from '$lib/current-blog.svelte';
 	import Share from '$lib/Share.svelte';
@@ -127,31 +128,34 @@
 	}
 </script>
 
-<Head title={post.metadata.title} details={false} />
-
-<svelte:head>
-	<link rel="canonical" href={post.metadata.canonical} />
-
-	<meta name="author" content={post.metadata.author} />
-	<meta name="copyright" content={post.metadata.author} />
-	<meta name="keywords" content={post.metadata.tags.join(',')} />
-	<meta name="title" property="og:title" content={post.metadata.title} />
-	<meta name="description" property="og:description" content={post.metadata.description} />
-	<meta name="image" property="og:image" content={post.metadata.banner} />
-	<meta name="publish_date" property="og:publish_date" content={humanDate(post.metadata.date)} />
-	<meta name="og:type" property="og:type" content="article" />
-	<meta name="og:url" property="og:url" content={post.metadata.canonical} />
-
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:image" content={post.metadata.banner} />
-	<meta name="twitter:image:alt" content={post.metadata.title} />
-	<meta name="twitter:title" content={post.metadata.title} />
-	<meta name="twitter:description" content={post.metadata.description} />
-	<meta name="twitter:label1" content="Written by" />
-	<meta name="twitter:data1" content={post.metadata.author} />
-	<meta name="twitter:label2" content="Published on" />
-	<meta name="twitter:data2" content={humanDate(post.metadata.date)} />
-</svelte:head>
+<Seo
+	title={post.metadata.title}
+	description={post.metadata.description}
+	canonical={post.metadata.canonical}
+	image={post.metadata.banner}
+	type="article"
+	author={post.metadata.author}
+	keywords={post.metadata.tags.join(', ')}
+	publishedTime={post.metadata.publishedAt}
+	modifiedTime={post.metadata.modifiedAt}
+	tags={post.metadata.tags}
+	schema={[
+		blogPostingJsonLd({
+			title: post.metadata.title,
+			description: post.metadata.description,
+			url: post.metadata.canonical,
+			image: post.metadata.banner,
+			publishedAt: post.metadata.publishedAt,
+			modifiedAt: post.metadata.modifiedAt,
+			tags: post.metadata.tags,
+		}),
+		breadcrumbJsonLd([
+			{ name: 'Home', url: site.url },
+			{ name: 'Blog', url: `${site.url}/blog` },
+			{ name: post.metadata.title, url: post.metadata.canonical },
+		]),
+	]}
+/>
 
 <svelte:window bind:scrollY />
 
@@ -161,11 +165,11 @@
 	<div class="details">
 		<div class="published-at">
 			{#if post.metadata.modified !== post.metadata.date}
-				<time datetime={humanDate(post.metadata.modified)}>
+				<time datetime={post.metadata.modifiedAt}>
 					Modified {humanDate(post.metadata.modified)}</time
 				>
 			{:else}
-				<time datetime={humanDate(post.metadata.date)}
+				<time datetime={post.metadata.publishedAt}
 					>Published {humanDate(post.metadata.date)}</time
 				>
 			{/if}
@@ -205,33 +209,8 @@
 		<Ad />
 	</div>
 
-	{#if post.metadata.translations}
-		<div>
-			<h4>Read this post in</h4>
-			{#each post.metadata.translations as translation}
-				<a href={translation.url} rel="external">{translation.language}</a>
-			{/each}
-		</div>
-	{/if}
-
 	<Share title="Share this post" text={post.metadata.title} url={post.metadata.canonical} />
 </aside>
-
-{#if post.metadata.translations}
-	<div class="translations">
-		<hr />
-		<p>Thanks to the ❤️ community you can also read this post in:</p>
-		<ul>
-			{#each post.metadata.translations as translation}
-				<li>
-					<a href={translation.url} rel="external" class="mark">{translation.language}</a> thanks to
-					<a href={translation.profile} rel="external" class="mark">{translation.author}</a>
-				</li>
-			{/each}
-		</ul>
-		<hr />
-	</div>
-{/if}
 
 {#if post.tldr}
 	<button class="tldr" onclick={blog.toggleTldr}>
@@ -296,6 +275,7 @@
 		border: none;
 		text-align: center;
 		font-weight: bolder;
+		margin-top: var(--spacing);
 		margin-bottom: var(--spacing);
 	}
 
@@ -464,15 +444,6 @@
 			width: 48px;
 			height: 48px;
 		}
-	}
-
-	.translations {
-		margin-bottom: 2em;
-	}
-
-	.translations ul {
-		list-style: none;
-		margin-top: var(--spacing-small);
 	}
 
 	@media (prefers-reduced-motion: no-preference) {

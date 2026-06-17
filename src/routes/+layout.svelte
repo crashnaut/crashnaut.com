@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
 	import { afterNavigate, onNavigate } from '$app/navigation';
@@ -19,7 +17,7 @@
 	let scrollY = $state(0);
 
 	onMount(() => {
-		if (typeof kofiWidgetOverlay !== 'undefined') {
+		if (segment.startsWith('blog/') && typeof kofiWidgetOverlay !== 'undefined') {
 			kofiWidgetOverlay.draw('crashnaut', {
 				type: 'floating-chat',
 				'floating-chat.donateButton.text': '',
@@ -36,7 +34,11 @@
 			support = document.querySelector('[id*=kofi-widget-overlay]');
 		}
 
-		if (variables && typeof gtag === 'function') {
+		if (variables.gtag_id) {
+			const script = document.createElement('script');
+			script.async = true;
+			script.src = `https://www.googletagmanager.com/gtag/js?id=${variables.gtag_id}`;
+			document.head.appendChild(script);
 			gtag('config', variables.gtag_id);
 		}
 	});
@@ -52,7 +54,7 @@
 	});
 
 	afterNavigate(({ to }) => {
-		if (variables && typeof gtag === 'function') {
+		if (variables.gtag_id && typeof gtag === 'function') {
 			gtag('event', 'page_view', {
 				page_title: document.title,
 				page_location: location.href,
@@ -61,7 +63,7 @@
 		}
 	});
 
-	run(() => {
+	$effect(() => {
 		if (support) {
 			if (segment.startsWith('blog/') && scrollY > 1000) {
 				support.style.display = 'block';
@@ -72,7 +74,6 @@
 	});
 
 	function toggleTheme(event: MouseEvent, newTheme: string) {
-		// Credits to https://github.com/antfu/antfu.me/blob/main/src/logics/index.ts
 		const isAppearanceTransition =
 			document.startViewTransition &&
 			!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -105,7 +106,7 @@
 		});
 	}
 
-	run(() => {
+	$effect(() => {
 		if (typeof document !== 'undefined') {
 			document.documentElement.className = $theme;
 		}
@@ -114,7 +115,9 @@
 
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-	<script async src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"></script>
+	{#if segment.startsWith('blog/')}
+		<script async src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"></script>
+	{/if}
 </svelte:head>
 
 <svelte:window bind:scrollY />
@@ -127,7 +130,6 @@
 
 		<nav>
 			<a href="/blog" class:active={segment.startsWith('blog')}>BLOG</a>
-			<!-- <a href="/bits" class:active={segment.startsWith('bits')}>BITS</a> -->
 			<a href="/contact" class:active={segment.startsWith('contact')}>CONTACT</a>
 			{#if $theme === 'dark'}
 				<button

@@ -1,9 +1,10 @@
 <script lang="ts">
-	import Head from '$lib/Head.svelte';
+	import Seo from '$lib/Seo.svelte';
 	import { humanDate } from '$lib/formatters';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { site } from '$lib/seo';
 
 	const { data } = $props();
 	const { posts, tags } = data;
@@ -14,11 +15,7 @@
 		to: null,
 	});
 
-	let meta = {
-		canonical: 'https://crashnaut.com/blog',
-		title: "Mike's Blog",
-		description: `${posts.length} notes, mainly about QA, SDET, Test Automation, and Digital Marketing`,
-	};
+	const description = `${posts.length} notes about QA, SDET, test automation, and quality engineering`;
 
 	onMount(() => {
 		filter = {
@@ -91,22 +88,13 @@
 	}
 </script>
 
-<Head title="Blog - Mike Sell" details={false} />
+<Seo
+	title="Blog - Mike Sell"
+	description={description}
+	canonical={`${site.url}/blog`}
+/>
 
-<svelte:head>
-	<link rel="canonical" href={meta.canonical} />
-
-	<meta name="title" content={meta.title} />
-	<meta name="description" content={meta.description} />
-
-	<meta name="twitter:title" content={meta.title} />
-	<meta name="twitter:description" content={meta.description} />
-
-	<meta name="og:url" content={meta.canonical} />
-	<meta name="og:title" content={meta.title} />
-	<meta name="og:description" content={meta.description} />
-	<meta name="og:type" content="website" />
-</svelte:head>
+<h1>Blog</h1>
 
 <div class="mt-normal">
 	<input
@@ -147,7 +135,7 @@
 					<h2 style:--post-title="post-title-{post.slug}" class="mark-hover">
 						{post.title}
 					</h2>
-					<time datetime={humanDate(post.date)}>{humanDate(post.date)}</time>
+					<time datetime={post.date}>{humanDate(post.date)}</time>
 					<div>{post.description}</div>
 				</a>
 				<div>

@@ -71,21 +71,8 @@ export async function load({ params }) {
 				logos: post.metadata.tags
 					.map((tag) => {
 						switch (tag.toLowerCase()) {
-							case 'dotnet':
-							case '.net':
-								return { src: 'dotnet.svg', alt: 'The .NET logo' };
-							case 'angular':
-								return { src: 'angular.png', alt: 'The Angular logo' };
 							case 'playwright':
 								return { src: 'playwright.svg', alt: 'The Playwright logo' };
-							case 'ngrx':
-								return { src: 'ngrx.svg', alt: 'The NgRx logo' };
-							case 'azure':
-								return { src: 'azure.svg', alt: 'The Azure logo' };
-							case 'zod':
-								return { src: 'zod.svg', alt: 'The zod logo' };
-							case 'angular testing library':
-								return { src: 'atl.svg', alt: 'The Angular Testing Library logo' };
 							default:
 								return null;
 						}

@@ -1,30 +1,13 @@
 <script lang="ts">
-	import Head from '$lib/Head.svelte';
-	import Socials from '$lib/Socials.svelte';
-
-	let meta = {
-		canonical: 'https://crashnaut.com/contact',
-		title: 'Contact Me - Mike Sell',
-		description: 'Get in touch with Mike Sell for SDET, Test Automation, and QA consulting opportunities',
-	};
+	import Seo from '$lib/Seo.svelte';
+	import { site } from '$lib/seo';
 </script>
 
-<Head title="Contact Me - Mike Sell" details={true} />
-
-<svelte:head>
-	<link rel="canonical" href={meta.canonical} />
-
-	<meta name="title" content={meta.title} />
-	<meta name="description" content={meta.description} />
-
-	<meta name="twitter:title" content={meta.title} />
-	<meta name="twitter:description" content={meta.description} />
-
-	<meta name="og:url" content={meta.canonical} />
-	<meta name="og:title" content={meta.title} />
-	<meta name="og:description" content={meta.description} />
-	<meta name="og:type" content="website" />
-</svelte:head>
+<Seo
+	title="Contact Me - Mike Sell"
+	description="Get in touch with Mike Sell for SDET, test automation, and QA consulting opportunities."
+	canonical={`${site.url}/contact`}
+/>
 
 <section>
 	<h1>Contact Me</h1>
@@ -63,19 +46,12 @@
 				Book a Call
 			</a>
 		</div>
-
-
-
-		
 	</div>
 
 	<p>
 		Available for <strong>direct contracting</strong>. 
 		I work remotely from Brazil, while maintaining 
 		US market standards and timezone compatibility.
-
-
-		
 	</p>
 
 </section>
@@ -113,46 +89,6 @@
 	.contact-method p {
 		margin-bottom: var(--spacing);
 		color: var(--text-color-light);
-	}
-
-	.contact-link {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--spacing-half);
-		padding: var(--spacing-half) var(--spacing);
-		background-color: var(--accent-color);
-		color: white;
-		text-decoration: none;
-		border-radius: 4px;
-		font-weight: 500;
-		transition: background-color 0.2s ease;
-	}
-
-	.contact-link:hover {
-		background-color: var(--accent-color-dark, #5a8bd4);
-	}
-
-	.availability {
-		margin: var(--spacing-large) 0;
-		padding: var(--spacing);
-		background-color: var(--background-color-subtle);
-		border-radius: 8px;
-		border-left: 4px solid var(--accent-color);
-	}
-
-	.availability h2 {
-		margin-top: 0;
-		margin-bottom: var(--spacing-half);
-	}
-
-	.socials-section {
-		margin-top: var(--spacing-large);
-		padding-top: var(--spacing);
-		border-top: 1px solid var(--text-color-subtle);
-	}
-
-	.socials-section p {
-		margin-bottom: var(--spacing-half);
 	}
 
 	@media (max-width: 768px) {
