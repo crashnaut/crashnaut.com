@@ -20,6 +20,8 @@ import pallete from "shiki/themes/rose-pine.mjs";
 import palleteDawn from "shiki/themes/rose-pine-dawn.mjs";
 import { codeGroup } from "./code-block";
 import { customBlock } from "./custom-block";
+import { compareBlock } from "./compare-block";
+import { barChart } from "./bar-chart";
 import type { TOC } from "./models";
 
 fs.writeFileSync("src/routes/dark.theme.css", createStyle("dark", pallete));
@@ -29,7 +31,7 @@ fs.writeFileSync(
 );
 
 marked.use({
-  extensions: [codeGroup, customBlock],
+  extensions: [codeGroup, customBlock, compareBlock, barChart],
 });
 const renderer = new marked.Renderer();
 

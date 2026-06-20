@@ -1,6 +1,6 @@
 ---
 title: "Vanilla Playwright with Page Object Model: A Clean Setup"
-date: 2024-10-18
+date: 2025-11-02T00:00:00.000Z
 draft: true
 tags: ["playwright", "testing", "automation", "page-object-model", "typescript"]
 summary: "A production-ready Playwright boilerplate with Page Object Model, domain-driven architecture, and Docker support—without the overhead of BDD frameworks."
