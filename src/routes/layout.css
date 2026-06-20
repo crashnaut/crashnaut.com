@@ -42,6 +42,7 @@ html.light {
 	--background-color: hsla(0, 0%, 100%, 0.9);
 	--background-color-subtle: rgba(0, 0, 0, 0.025);
 	--background-color-transparent: hsla(0, 0%, 0%, 0.07);
+	--diagram-surface: #ffffff;
 	--text-color: hsla(0, 0%, 0%, 0.9);
 	--text-color-light: hsla(0, 0%, 0%, 0.7);
 	--text-color-subtle: hsla(0, 0%, 0%, 0.4);
@@ -52,6 +53,7 @@ html.dark {
 	--background-color: hsla(0, 0%, 0%, 0.9);
 	--background-color-subtle: rgba(0, 0, 0, 0.08);
 	--background-color-transparent: hsla(0, 0%, 100%, 0.1);
+	--diagram-surface: #0a0a0a;
 	--text-color: hsla(0, 0%, 100%, 0.9);
 	--text-color-light: hsla(0, 0%, 100%, 0.7);
 	--text-color-subtle: hsla(0, 0%, 100%, 0.4);
@@ -281,6 +283,7 @@ body > div > main > iframe,
 body > div > main > figure,
 body > div > main > p:has(video),
 body > div > main > table,
+body > div > main > div.compare-block,
 body > div > main > div.wide {
 	grid-column: 1 / 4;
 	width: 100%;
@@ -300,6 +303,7 @@ body > div > main > div.wide {
 	body > div > main[data-segment*='blog/'] > figure,
 	body > div > main[data-segment*='blog/'] > p:has(video),
 	body > div > main[data-segment*='blog/'] > table,
+	body > div > main[data-segment*='blog/'] > div.compare-block,
 	body > div > main[data-segment*='blog/'] > div.wide {
 		width: 70%;
 	}
@@ -318,6 +322,7 @@ body > div > main > div.wide {
 	body > div > main[data-segment*='blog/'] > iframe,
 	body > div > main[data-segment*='blog/'] > p:has(video),
 	body > div > main[data-segment*='blog/'] > table,
+	body > div > main[data-segment*='blog/'] > div.compare-block,
 	body > div > main[data-segment*='blog/'] > div.wide {
 		transform: translateX(17%);
 		width: 73%;
@@ -716,6 +721,7 @@ pre > .code-heading > a {
 	grid-template-columns: 1fr 1fr;
 	gap: 1rem;
 	margin: var(--spacing) 0;
+	align-items: start;
 }
 @media (max-width: 640px) {
 	.compare-block {
@@ -728,8 +734,31 @@ pre > .code-heading > a {
 	background: var(--background-color);
 	border: 1px solid var(--border-color);
 	border-radius: 3px;
-	padding: 0.5em 1em 0.8em;
+	padding: 0.7em 1.25em 1em;
 	overflow: auto;
+	line-height: 1.55;
+}
+/* Body only — keep .compare-title at its own size (rem), not shrunk with the list */
+.compare-col > :not(.compare-title) {
+	font-size: 0.66em;
+}
+.compare-col ul {
+	margin: 0;
+	padding-left: 1.2em;
+}
+.compare-col li {
+	margin: 0.3em 0;
+}
+.compare-col code {
+	font-size: 0.82em;
+}
+.compare-col.do code {
+	background: hsla(135, 59%, 49%, 0.16);
+	border-color: hsla(135, 59%, 49%, 0.45);
+}
+.compare-col.dont code {
+	background: hsla(0, 74%, 56%, 0.16);
+	border-color: hsla(0, 74%, 56%, 0.45);
 }
 .compare-col.do {
 	--background-color: hsla(135, 59%, 49%, 0.1);
@@ -744,15 +773,20 @@ pre > .code-heading > a {
 .compare-title {
 	text-transform: uppercase;
 	font-weight: bold;
-	font-size: 0.95rem;
+	font-size: 0.85rem;
+	line-height: 1.28;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	column-gap: 0.35em;
 	margin-bottom: 0.5rem;
 	color: var(--title-color);
 }
 .compare-title::before {
+	grid-column: 1;
 	font-family: 'Material Symbols Outlined';
 	font-size: 1.2rem;
-	margin-right: 0.4em;
-	vertical-align: middle;
+	line-height: 1;
 }
 .compare-col.do .compare-title::before {
 	content: 'check_circle';
@@ -809,6 +843,12 @@ pre > .code-heading > a {
 .bar-fill.good {
 	background: hsla(135, 59%, 42%, 1);
 }
+.bar-fill.amber {
+	background: hsla(38, 92%, 45%, 1);
+}
+.bar-fill.info {
+	background: hsla(211, 60%, 48%, 1);
+}
 .bar-fill.bad {
 	background: hsla(0, 74%, 52%, 1);
 }
@@ -853,7 +893,7 @@ pre > .code-heading > a {
 	stroke-width: 1.5;
 }
 .diagram .d-node {
-	fill: var(--background-color-transparent);
+	fill: var(--diagram-surface);
 	stroke: var(--text-color-subtle);
 	stroke-width: 1.5;
 }
@@ -872,6 +912,33 @@ pre > .code-heading > a {
 }
 .diagram .d-arrow {
 	fill: var(--text-color-subtle);
+}
+.diagram .d-panel {
+	fill: none;
+	stroke: var(--text-color-subtle);
+	stroke-width: 1.5;
+}
+.diagram .d-title {
+	fill: var(--text-color);
+	font-family: var(--head-font);
+	font-size: 18px;
+	font-weight: 700;
+}
+.diagram .d-fill {
+	fill: hsla(152, 52%, 46%, 1);
+}
+.diagram .d-on-fill {
+	fill: #ffffff;
+	font-family: var(--text-font);
+	font-size: 12.5px;
+}
+.diagram .d-flow {
+	stroke: var(--text-color);
+	stroke-width: 3;
+	fill: none;
+}
+.diagram .d-flow-head {
+	fill: var(--text-color);
 }
 .diagram .d-text {
 	fill: var(--text-color);

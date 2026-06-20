@@ -9,15 +9,15 @@ Every integration test has the same five-part skeleton. Learn it and writing tes
 5. **Verify state (writes only)** — go to the DB and confirm the change actually landed.
 
 ```python
-async def test_create_submission(self, admin_auth, execute, db_defaults, db, test_db):
-    mutation, data = load_assets("submission", "create_submission")
-    data["details"]["name"] = "Test Submission"
+async def test_create_order(self, admin_auth, execute, db_defaults, db, test_db):
+    mutation, data = load_assets("order", "create_order")
+    data["details"]["name"] = "Test Order"
     response = await execute(mutation, data)
     assert response.errors is None          # errors first
-    uuid = response.data["upsertSubmission"]["uuid"]
+    uuid = response.data["upsertOrder"]["uuid"]
     with db.session(database=test_db) as session:   # verify state
-        row = session.run("MATCH (s:Submission {uuid:$u}) RETURN s.name AS name", u=uuid).single()
-        assert row["name"] == "Test Submission"
+        row = session.run("MATCH (s:Order {uuid:$u}) RETURN s.name AS name", u=uuid).single()
+        assert row["name"] == "Test Order"
 ```
 
 Reads stop at step 4; writes don't skip step 5.

@@ -11,9 +11,10 @@
 // good (green), bad (red), neutral (grey), accent. Bars are scaled to the
 // largest value in the chart. The [title] is optional.
 
-const startReg = /^:::bar-chart(?:\[(.*?)\])?\s*$/;
+const startReg = /^:::bar-chart(\s+log)?(?:\[(.*?)\])?\s*$/;
 const endReg = /^:::$/;
-const rowReg = /^(.+?)\s*\|\s*([\d.]+)\s*(?:\|\s*(good|bad|neutral|accent))?\s*$/;
+const rowReg =
+	/^(.+?)\s*\|\s*([\d.]+)\s*(?:\|\s*(good|bad|neutral|accent|amber|info))?\s*$/;
 
 export const barChart = {
 	name: 'barChart',
@@ -44,16 +45,21 @@ export const barChart = {
 		return {
 			type: 'barChart',
 			raw: lines.slice(0, end + 1).join('\n'),
-			title: m0[1] || '',
+			title: m0[2] || '',
+			log: Boolean(m0[1]),
 			rows,
 			tokens: [],
 		};
 	},
 	renderer(this, token) {
 		const max = Math.max(...token.rows.map((r) => r.value), 0) || 1;
+		const logMax = Math.log(max) || 1;
 		const rows = token.rows
 			.map((r) => {
-				const pct = Math.max(3, (r.value / max) * 100).toFixed(1);
+				const raw = token.log
+					? (Math.log(r.value) / logMax) * 100
+					: (r.value / max) * 100;
+				const pct = Math.max(3, raw).toFixed(1);
 				const cc = r.color ? ` ${r.color}` : '';
 				return `<div class="bar-row"><span class="bar-label">${r.label}</span><span class="bar-track"><span class="bar-fill${cc}" style="width:${pct}%"><span class="bar-value">${r.value}</span></span></span></div>`;
 			})

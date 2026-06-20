@@ -36,26 +36,26 @@ For anything that mutates data, the response saying "OK" isn't proof. Go to the 
 ## What it looks like together
 
 ```python
-async def test_create_submission(self, admin_auth, execute, db_defaults, db, test_db):
+async def test_create_order(self, admin_auth, execute, db_defaults, db, test_db):
     # 2 — setup (default seed data is enough here)
 
     # 3 — load & execute
-    mutation, data = load_assets("submission", "create_submission")
-    data["details"]["name"] = "Test Submission"
+    mutation, data = load_assets("order", "create_order")
+    data["details"]["name"] = "Test Order"
     response = await execute(mutation, data)
 
     # 4 — assert the response (errors first!)
     assert response.errors is None
-    uuid = response.data["upsertSubmission"]["uuid"]
+    uuid = response.data["upsertOrder"]["uuid"]
     assert uuid is not None
 
     # 5 — verify the database state
     with db.session(database=test_db) as session:
         row = session.run(
-            "MATCH (s:Submission {uuid: $uuid}) RETURN s.name AS name",
+            "MATCH (s:Order {uuid: $uuid}) RETURN s.name AS name",
             uuid=uuid,
         ).single()
-        assert row["name"] == "Test Submission"
+        assert row["name"] == "Test Order"
 ```
 
 Fixtures, setup, execute, assert, verify. Every test you write fits this mould, and the ones that don't are usually the ones hiding a problem — a missing state check, a hardcoded ID, an assertion that never looks at the data. Learn the skeleton, and writing tests becomes filling in five blanks instead of facing an empty file.

@@ -20,4 +20,14 @@ class TestMutations:      # function scope → isolated
 - Use a randomly named test DB (`test_8a2f3c9d`), never your default DB.
 - Never hardcode the DB name — resolve it from a fixture, or you'll silently hit shared data.
 
+```python
+# ✗ hardcoded — hits the shared database
+with conn.session(database="main") as session:
+    ...
+
+# ✓ always resolve the current test's database from a fixture
+with conn.session(database=test_db_name) as session:
+    ...
+```
+
 **Why not just mock the DB?** Mocks don't catch constraint violations, bad queries, or transaction edge cases. Real DB + right-sized isolation = honest tests without a slow suite.

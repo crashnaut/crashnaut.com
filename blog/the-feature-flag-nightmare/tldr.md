@@ -4,9 +4,10 @@ A QA-seat companion to Jerome Dane's [Feature Flags are Dangerous](https://jerom
 
 **The core problem:** every independent on/off flag *doubles* the test surface. `n` flags = `2ⁿ` configurations.
 
-:::bar-chart[Configurations to test grow as 2ⁿ]
-3 flags | 8 | neutral
+:::bar-chart log[Configurations to test grow as 2ⁿ (log scale)]
+3 flags | 8 | info
 5 flags | 32 | amber
+8 flags | 256 | bad
 10 flags | 1024 | bad
 :::
 

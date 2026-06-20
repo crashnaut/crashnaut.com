@@ -9,7 +9,7 @@ tags: testing, feature-flags, qa
 
 # The Feature Flag Nightmare: A QA Perspective
 
-My boss, Jerome Dane, wrote a piece I keep coming back to: [Feature Flags are Dangerous](https://jeromedane.medium.com/feature-flags-are-dangerous-88ef9d6c9f04). His argument is from the engineering and architecture seat — flags blur what's actually running in production, leave landmines of dead code, create multiple code paths, and quietly drift between environments and caches.
+My former boss, Jerome Dane, wrote a piece I keep coming back to: [Feature Flags are Dangerous](https://jeromedane.medium.com/feature-flags-are-dangerous-88ef9d6c9f04). His argument is from the engineering and architecture seat — flags blur what's actually running in production, leave landmines of dead code, create multiple code paths, and quietly drift between environments and caches.
 
 I want to add the view from the chair next to his: the QA chair. Because everything he says is true on the way *in*, and it gets worse on the way *out*. If feature flags are dangerous to write, they are pure hell to test.
 
@@ -19,10 +19,8 @@ Here's the part that doesn't fit in a standup update: **every independent flag d
 
 A single on/off flag means a feature has two states. Two flags, four. Three, eight. The number of distinct configurations is `2ⁿ`, and exponential growth gets out of hand faster than intuition expects.
 
-:::bar-chart[Configurations to test grow as 2ⁿ]
-1 flag | 2 | neutral
-2 flags | 4 | neutral
-3 flags | 8 | neutral
+:::bar-chart log[Configurations to test grow as 2ⁿ (log scale)]
+3 flags | 8 | info
 5 flags | 32 | amber
 8 flags | 256 | bad
 10 flags | 1024 | bad
@@ -39,12 +37,12 @@ Here's what that looks like for just three flags:
   <text class="d-text-sm" x="6" y="184">Flag B</text>
   <text class="d-text-sm" x="6" y="254">Flag C</text>
   <path class="d-line" d="M350,56 L205,110 M350,56 L495,110"/>
-  <path class="d-line" d="M205,119 L132.5,171 M205,119 L277.5,171 M495,119 L422.5,171 M495,119 L567.5,171"/>
-  <path class="d-line" d="M132.5,189 L96.25,238 M132.5,189 L168.75,238 M277.5,189 L241.25,238 M277.5,189 L313.75,238 M422.5,189 L386.25,238 M422.5,189 L458.75,238 M567.5,189 L531.25,238 M567.5,189 L603.75,238"/>
+  <path class="d-line" d="M205,110 L132.5,180 M205,110 L277.5,180 M495,110 L422.5,180 M495,110 L567.5,180"/>
+  <path class="d-line" d="M132.5,180 L96.25,250 M132.5,180 L168.75,250 M277.5,180 L241.25,250 M277.5,180 L313.75,250 M422.5,180 L386.25,250 M422.5,180 L458.75,250 M567.5,180 L531.25,250 M567.5,180 L603.75,250"/>
   <rect class="d-box" x="305" y="22" width="90" height="34" rx="4"/>
   <text class="d-text" x="350" y="43" text-anchor="middle">1 feature</text>
-  <text class="d-edge" x="262" y="90" text-anchor="middle">off</text>
-  <text class="d-edge" x="438" y="90" text-anchor="middle">on</text>
+  <text class="d-edge" x="250" y="78" text-anchor="middle">off</text>
+  <text class="d-edge" x="450" y="78" text-anchor="middle">on</text>
   <circle class="d-node" cx="205" cy="110" r="9"/>
   <circle class="d-node" cx="495" cy="110" r="9"/>
   <circle class="d-node" cx="132.5" cy="180" r="9"/>

@@ -26,16 +26,16 @@ Give yourself two setup fixtures and let each test choose.
 **Function-scoped — for mutation tests.** Any test that writes gets a brand-new database, created before the test and dropped after. Because nothing is shared, a write in one test can never leak into another, and tests can run in any order (or in parallel) without interfering.
 
 ```python
-class TestSubmissionQueries:
+class TestOrderQueries:
     # read-only → class scope, one shared DB, fast
-    def test_submission_has_fields(self, db_query_defaults, db):
-        result = run_query(submission_query, data)
+    def test_order_has_fields(self, db_query_defaults, db):
+        result = run_query(order_query, data)
         assert result.errors is None
 
-class TestSubmissionMutations:
+class TestOrderMutations:
     # writes → function scope, fresh DB per test, isolated
-    def test_create_submission(self, db_defaults, db):
-        result = run_mutation(create_submission, data)
+    def test_create_order(self, db_defaults, db):
+        result = run_mutation(create_order, data)
         assert result.errors is None
         # safe to verify DB state — nothing else touched this DB
 ```
