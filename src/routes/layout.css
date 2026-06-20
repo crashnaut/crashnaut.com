@@ -710,6 +710,193 @@ pre > .code-heading > a {
 	content: 'warning';
 }
 
+/* ── Side-by-side do / don't comparison ───────────────────────── */
+.compare-block {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+	margin: var(--spacing) 0;
+}
+@media (max-width: 640px) {
+	.compare-block {
+		grid-template-columns: 1fr;
+	}
+}
+.compare-col {
+	--background-color: none;
+	--border-color: none;
+	background: var(--background-color);
+	border: 1px solid var(--border-color);
+	border-radius: 3px;
+	padding: 0.5em 1em 0.8em;
+	overflow: auto;
+}
+.compare-col.do {
+	--background-color: hsla(135, 59%, 49%, 0.1);
+	--border-color: hsla(135, 59%, 49%, 0.8);
+	--title-color: hsla(135, 59%, 49%, 1);
+}
+.compare-col.dont {
+	--background-color: hsla(0, 74%, 56%, 0.1);
+	--border-color: hsla(0, 74%, 56%, 0.8);
+	--title-color: hsla(0, 74%, 56%, 1);
+}
+.compare-title {
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 0.95rem;
+	margin-bottom: 0.5rem;
+	color: var(--title-color);
+}
+.compare-title::before {
+	font-family: 'Material Symbols Outlined';
+	font-size: 1.2rem;
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+.compare-col.do .compare-title::before {
+	content: 'check_circle';
+}
+.compare-col.dont .compare-title::before {
+	content: 'cancel';
+}
+.compare-col > p:first-of-type {
+	margin-top: 0;
+}
+.compare-col pre {
+	margin: 0.4em 0 0;
+}
+
+/* ── Dependency-free CSS bar chart ────────────────────────────── */
+.bar-chart {
+	margin: var(--spacing) 0;
+	padding: 0.4em 0;
+}
+.bar-chart-title {
+	font-weight: bold;
+	font-size: 0.95rem;
+	margin-bottom: 0.8rem;
+}
+.bar-row {
+	display: grid;
+	grid-template-columns: minmax(5em, 9em) 1fr;
+	align-items: center;
+	gap: 0.8rem;
+	margin: 0.45rem 0;
+}
+.bar-label {
+	font-size: 0.9rem;
+	color: var(--text-color-light);
+	text-align: right;
+}
+.bar-track {
+	background: var(--background-color-transparent);
+	border-radius: 3px;
+	overflow: hidden;
+}
+.bar-fill {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	min-width: 2.4em;
+	padding: 0.28em 0.6em;
+	border-radius: 3px;
+	color: #fff;
+	font-size: 0.85rem;
+	font-weight: 700;
+	background: hsla(211, 60%, 48%, 1);
+}
+.bar-fill.good {
+	background: hsla(135, 59%, 42%, 1);
+}
+.bar-fill.bad {
+	background: hsla(0, 74%, 52%, 1);
+}
+.bar-fill.neutral {
+	background: hsla(0, 0%, 45%, 1);
+}
+.bar-fill.accent {
+	background: hsla(var(--playwright), 1);
+}
+.bar-value {
+	white-space: nowrap;
+}
+
+/* ── Inline SVG diagrams (flowcharts / trees) ─────────────────── */
+.diagram {
+	margin: var(--spacing) 0;
+	text-align: center;
+	overflow-x: auto;
+}
+.diagram svg {
+	max-width: 100%;
+	height: auto;
+}
+.diagram .d-box {
+	fill: var(--background-color-transparent);
+	stroke: var(--text-color-subtle);
+	stroke-width: 1.5;
+}
+.diagram .d-box-green {
+	fill: hsla(135, 59%, 49%, 0.12);
+	stroke: hsla(135, 59%, 49%, 0.75);
+	stroke-width: 1.5;
+}
+.diagram .d-box-red {
+	fill: hsla(0, 74%, 56%, 0.12);
+	stroke: hsla(0, 74%, 56%, 0.75);
+	stroke-width: 1.5;
+}
+.diagram .d-box-amber {
+	fill: hsla(45, 100%, 50%, 0.14);
+	stroke: hsla(45, 90%, 45%, 0.8);
+	stroke-width: 1.5;
+}
+.diagram .d-node {
+	fill: var(--background-color-transparent);
+	stroke: var(--text-color-subtle);
+	stroke-width: 1.5;
+}
+.diagram .d-node-green {
+	fill: hsla(135, 59%, 49%, 0.9);
+	stroke: none;
+}
+.diagram .d-node-red {
+	fill: hsla(0, 74%, 56%, 0.85);
+	stroke: none;
+}
+.diagram .d-line {
+	stroke: var(--text-color-subtle);
+	stroke-width: 1.5;
+	fill: none;
+}
+.diagram .d-arrow {
+	fill: var(--text-color-subtle);
+}
+.diagram .d-text {
+	fill: var(--text-color);
+	font-family: var(--text-font);
+	font-size: 13px;
+}
+.diagram .d-text-sm {
+	fill: var(--text-color-light);
+	font-family: var(--text-font);
+	font-size: 11px;
+}
+.diagram .d-edge {
+	fill: var(--text-color-light);
+	font-family: var(--text-font);
+	font-size: 11px;
+	font-weight: bold;
+}
+.diagram figcaption,
+.diagram .d-caption {
+	color: var(--text-color-light);
+	font-size: 0.85rem;
+	font-style: italic;
+	margin-top: 0.6rem;
+}
+
 .code-group {
 	overflow: auto;
 }
