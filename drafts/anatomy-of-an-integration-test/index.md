@@ -4,7 +4,7 @@ slug: anatomy-of-an-integration-test
 description: "Once you see the five-part shape every integration test shares, writing them stops being creative work and becomes mechanical — in the good way."
 author: Mike Sell
 date: 2026-01-07T00:00:00.000Z
-tags: testing, qa, integration-tests
+tags:
 ---
 
 # The Anatomy of an Integration Test

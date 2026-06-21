@@ -10,7 +10,7 @@
 - [x] Add meta descriptions to all pages
 - [x] Add Open Graph tags
 - [x] Irish Ltd mention in footer
-- [x] Simple portfolio section
+- [ ] Simple portfolio section
 
 # Success Metrics
 

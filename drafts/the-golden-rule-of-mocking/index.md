@@ -4,7 +4,7 @@ slug: the-golden-rule-of-mocking
 description: "Most flaky, hollow test suites share one root cause — they mock the wrong things. Here's the single rule that keeps integration tests honest: mock the boundary, not your own code."
 author: Mike Sell
 date: 2025-12-25T00:00:00.000Z
-tags: testing, mocking, qa
+tags: mocking, stubs
 ---
 
 # The Golden Rule of Mocking: Mock the Boundary, Not the Code

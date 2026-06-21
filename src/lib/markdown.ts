@@ -382,6 +382,12 @@ function extractFrontmatter(markdown): {
         if (a.toLowerCase() === "typescript") {
           return "TypeScript"
         }
+        if (a.toLowerCase() === "ai") {
+          return "AI"
+        }
+        if (a.toLowerCase() === "ci") {
+          return "CI"
+        }
         if (a.toLowerCase() === "ngrx") {
           return "NgRx"
         }

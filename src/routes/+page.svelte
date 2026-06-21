@@ -99,44 +99,6 @@
     accelerating deployment cycles.
   </p>
 
-  <section class="services" aria-labelledby="portfolio-heading">
-    <h2 id="portfolio-heading">Selected work</h2>
-    <div class="service-grid">
-      <article class="service-item">
-        <h3>Playwright boilerplate</h3>
-        <p>
-          Opinionated Playwright + POM + BDD starter used as a teaching baseline
-          for teams adopting browser automation.
-        </p>
-        <a
-          class="mark-hover"
-          href="https://github.com/crashnaut/playwright-pom-boilerplate"
-          rel="external">View on GitHub</a
-        >
-      </article>
-      <article class="service-item">
-        <h3>Writing</h3>
-        <p>
-          Long-form notes on SDET practice: CI, flags, flaky tests, and how
-          teams actually ship quality.
-        </p>
-        <a class="mark-hover" href="/blog">Read the blog</a>
-      </article>
-      <article class="service-item">
-        <h3>Contracting</h3>
-        <p>
-          FinTech-focused SDET engagements: automation architecture, pipelines,
-          and hands-on delivery.
-        </p>
-        <a
-          class="mark-hover"
-          href="https://calendly.com/mikesell404"
-          rel="external">Schedule a call</a
-        >
-      </article>
-    </div>
-  </section>
-
   <div class="cta-section">
     <a
       href="https://calendly.com/mikesell404"
@@ -165,39 +127,6 @@
     padding: 0;
     line-height: inherit;
     vertical-align: baseline;
-  }
-
-  .services {
-    margin: var(--spacing-large) 0;
-  }
-
-  .services h2 {
-    margin-bottom: var(--spacing);
-  }
-
-  .service-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing);
-    margin-top: var(--spacing);
-  }
-
-  .service-item {
-    padding: var(--spacing);
-    border: 1px solid var(--text-color-subtle);
-    border-radius: 4px;
-    background-color: var(--background-color-subtle);
-  }
-
-  .service-item h3 {
-    margin: 0 0 var(--spacing-half) 0;
-    font-size: 1.1rem;
-  }
-
-  .service-item p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--text-color-subtle);
   }
 
   .cta-section {

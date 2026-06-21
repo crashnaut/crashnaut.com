@@ -173,6 +173,7 @@ export const TAG_COLORS: Record<string, string> = {
   cypress: "cypress",
   javascript: "javascript",
   svelte: "svelte",
-  "github actions": "devops",
+  monorepo: "devops",
+  ci: "devops",
   iframes: "javascript",
 }

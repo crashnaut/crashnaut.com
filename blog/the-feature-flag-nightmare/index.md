@@ -4,7 +4,7 @@ slug: the-feature-flag-nightmare
 description: "Feature flags are dangerous to write — and pure hell to test. From the QA chair, every flag doubles the test surface, and the combinations explode faster than any team can cover. Here's why, with the maths."
 author: Mike Sell
 date: 2026-03-14T00:00:00.000Z
-tags: testing, feature-flags, qa
+tags:
 ---
 
 # The Feature Flag Nightmare: A QA Perspective

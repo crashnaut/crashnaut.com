@@ -4,5 +4,5 @@ slug: playwright-wait-issues
 description: Fix flaky tests caused by modal animations. Learn how to handle fade in/out transitions in Playwright effectively.
 author: Mike Sell
 date: 2025-12-12T00:00:00.000Z
-tags: Playwright, Testing
+tags: Playwright
 ---

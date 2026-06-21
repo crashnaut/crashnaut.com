@@ -4,7 +4,7 @@ slug: vanilla-playwright-pom-setup
 description: "A production-grade Playwright + Page Object Model layout — no BDD, no base-class inheritance, no separate navigation helper. One pageFactory owns navigation, page objects own interactions, and specs read like manual scripts."
 author: Mike Sell
 date: 2025-11-02T00:00:00.000Z
-tags: playwright, testing, page-object-model, typescript
+tags: playwright
 ---
 
 # Vanilla Playwright with Page Object Model: A Clean Setup

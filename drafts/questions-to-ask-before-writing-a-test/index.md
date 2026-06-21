@@ -4,7 +4,7 @@ slug: questions-to-ask-before-writing-a-test
 description: "The blank test file is a trap. Two quick questions, asked before you start typing, save you from writing duplicate coverage that adds runtime and noise without adding protection."
 author: Mike Sell
 date: 2026-01-20T00:00:00.000Z
-tags: testing, qa
+tags:
 ---
 
 # The Questions to Ask Before You Write a Test

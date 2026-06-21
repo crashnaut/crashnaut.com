@@ -4,7 +4,7 @@ slug: custom-ai-agent-skills-for-your-team
 description: "Prompting an AI agent the same way every time is tribal knowledge waiting to be lost. Package those workflows as reusable skills, and the whole team ships the same way by default."
 author: Mike Sell
 date: 2026-05-20T00:00:00.000Z
-tags: ai, tooling, engineering
+tags:
 ---
 
 # Custom AI Agent Skills for Your Team

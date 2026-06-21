@@ -77,6 +77,11 @@ html.dark {
   margin-top: var(--spacing);
 }
 
+/* Skip link is first in DOM but off-screen; don't add vertical rhythm gap above fixed header */
+.skip-to-content + header {
+  margin-top: 0;
+}
+
 main {
   margin-top: var(--header-height);
 }
@@ -283,12 +288,19 @@ body > div > main > iframe,
 body > div > main > figure,
 body > div > main > p:has(video),
 body > div > main > table,
-body > div > main > div.compare-block,
 body > div > main > div.wide {
   grid-column: 1 / 4;
   width: 100%;
   max-width: 95ch;
   justify-self: center;
+}
+
+/* Blog figures/diagrams/charts share the prose column so gutters match headings and paragraphs. */
+body > div > main[data-segment*="blog/"] > figure {
+  grid-column: 2;
+  max-width: none;
+  width: 100%;
+  justify-self: stretch;
 }
 
 @media (max-width: 1799px) {
@@ -298,12 +310,9 @@ body > div > main > div.wide {
 
   body > div > main[data-segment*="blog/"] > pre,
   body > div > main[data-segment*="blog/"] > div.code-group,
-  body > div > main[data-segment*="blog/"] > figure,
   body > div > main[data-segment*="blog/"] > iframe,
-  body > div > main[data-segment*="blog/"] > figure,
   body > div > main[data-segment*="blog/"] > p:has(video),
   body > div > main[data-segment*="blog/"] > table,
-  body > div > main[data-segment*="blog/"] > div.compare-block,
   body > div > main[data-segment*="blog/"] > div.wide {
     width: 70%;
   }
@@ -317,11 +326,9 @@ body > div > main > div.wide {
 
   body > div > main[data-segment*="blog/"] > pre,
   body > div > main[data-segment*="blog/"] > div.code-group,
-  body > div > main[data-segment*="blog/"] > figure,
   body > div > main[data-segment*="blog/"] > iframe,
   body > div > main[data-segment*="blog/"] > p:has(video),
   body > div > main[data-segment*="blog/"] > table,
-  body > div > main[data-segment*="blog/"] > div.compare-block,
   body > div > main[data-segment*="blog/"] > div.wide {
     transform: translateX(17%);
     width: 73%;
@@ -721,13 +728,18 @@ pre > .code-heading > a {
   content: "warning";
 }
 
-/* ── Stacked do / don't comparison (flex column; use ::do and/or ::dont only) ─ */
+/* ── Stacked do / don't comparison (same text column as article; max ~ old half-column) ─ */
 .compare-block {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin: var(--spacing) 0;
+  margin-top: var(--spacing);
+  margin-bottom: var(--spacing);
+  margin-left: auto;
+  margin-right: auto;
   align-items: stretch;
+  max-width: 52ch;
+  width: 100%;
 }
 .compare-col {
   --background-color: none;
@@ -739,19 +751,12 @@ pre > .code-heading > a {
   overflow: auto;
   line-height: 1.55;
 }
-/* Body only — keep .compare-title at its own size (rem), not shrunk with the list */
-.compare-col > :not(.compare-title) {
-  font-size: 0.66em;
-}
 .compare-col ul {
   margin: 0;
   padding-left: 1.2em;
 }
 .compare-col li {
   margin: 0.3em 0;
-}
-.compare-col code {
-  font-size: 0.82em;
 }
 .compare-col.do code {
   background: hsla(135, 59%, 49%, 0.16);
@@ -804,27 +809,34 @@ pre > .code-heading > a {
 
 /* ── Dependency-free CSS bar chart ────────────────────────────── */
 .bar-chart {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 0.85rem;
+  row-gap: 0.5rem;
+  align-items: center;
   margin: var(--spacing) 0;
   padding: 0.4em 0;
 }
 .bar-chart-title {
+  grid-column: 1 / -1;
   font-weight: bold;
   font-size: 0.95rem;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.35rem;
+  text-align: left;
+  text-wrap: balance;
 }
+/* One shared label column for the whole chart; bars line up in column 2 */
 .bar-row {
-  display: grid;
-  grid-template-columns: minmax(5em, 9em) 1fr;
-  align-items: center;
-  gap: 0.8rem;
-  margin: 0.45rem 0;
+  display: contents;
 }
 .bar-label {
   font-size: 0.9rem;
   color: var(--text-color-light);
-  text-align: right;
+  text-align: left;
+  padding-right: 0.15rem;
 }
 .bar-track {
+  min-width: 0;
   background: var(--background-color-transparent);
   border-radius: 3px;
   overflow: hidden;
@@ -870,8 +882,10 @@ pre > .code-heading > a {
   overflow-x: auto;
 }
 .diagram svg {
+  display: block;
   max-width: 100%;
   height: auto;
+  margin-inline: auto;
 }
 .diagram .d-box {
   fill: var(--background-color-transparent);
@@ -965,6 +979,10 @@ pre > .code-heading > a {
   font-size: 0.85rem;
   font-style: italic;
   margin-top: 0.6rem;
+  padding-inline: 0.75rem;
+  max-width: 65ch;
+  margin-inline: auto;
+  text-wrap: balance;
 }
 
 .code-group {

@@ -4,7 +4,7 @@ slug: coverage-is-a-health-signal
 description: "Blocking every pull request until it raises the coverage number feels rigorous and quietly rots your test suite. Treat coverage as a trend to read, not a gate to pass, and it starts telling you the truth."
 author: Mike Sell
 date: 2026-02-16T00:00:00.000Z
-tags: testing, coverage, qa
+tags:
 ---
 
 # Coverage Is a Health Signal, Not a Per-PR Gate

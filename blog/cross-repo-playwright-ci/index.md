@@ -4,7 +4,7 @@ slug: cross-repo-playwright-ci
 description: A practical guide to maintaining Playwright tests in one repository while running them against every PR in your application repository.
 author: Mike Sell
 date: 2025-10-26T00:00:00.000Z
-tags: Playwright, GitHub Actions
+tags: Playwright
 ---
 
 # Run Playwright Tests from a Separate Repository in CI

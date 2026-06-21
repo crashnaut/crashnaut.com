@@ -4,7 +4,7 @@ slug: ai-code-smells-review-checklist
 description: "AI coding assistants are fast and capable, but they fill gaps with plausible-looking code. Here are nine recurring smells to watch for in review — and what to look for when you spot each one."
 author: Mike Sell
 date: 2026-04-23T00:00:00.000Z
-tags: ai, code-review, engineering
+tags:
 ---
 
 # AI Code Smells: A Review Checklist
@@ -16,6 +16,21 @@ The thing to internalise is this: **you own the loop, the AI assists within it.*
 After reviewing a lot of AI-assisted pull requests, the same patterns keep showing up. None of them is automatically a bug — but each is always worth a second look. When you spot one, ask: _was this intentional, or an artifact of how the AI filled in a gap?_
 
 Here are the nine.
+
+<figure class="diagram">
+<svg viewBox="0 0 720 254" role="img" aria-label="The nine AI code smells as a three by three grid: Abstraction Tax, Defensive Wall, Rename Alias, Comment Echo, Complexity Mismatch, Hallucinated API, Test Mannequin, Catch-All Handler, Polite Rewrite">
+  <rect class="d-box" x="10" y="10" width="225" height="70" rx="6"/><circle cx="38" cy="45" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="38" y="49" text-anchor="middle">1</text><text class="d-text" x="60" y="49">Abstraction Tax</text>
+  <rect class="d-box" x="247" y="10" width="225" height="70" rx="6"/><circle cx="275" cy="45" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="275" y="49" text-anchor="middle">2</text><text class="d-text" x="297" y="49">Defensive Wall</text>
+  <rect class="d-box" x="484" y="10" width="225" height="70" rx="6"/><circle cx="512" cy="45" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="512" y="49" text-anchor="middle">3</text><text class="d-text" x="534" y="49">Rename Alias</text>
+  <rect class="d-box" x="10" y="92" width="225" height="70" rx="6"/><circle cx="38" cy="127" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="38" y="131" text-anchor="middle">4</text><text class="d-text" x="60" y="131">Comment Echo</text>
+  <rect class="d-box" x="247" y="92" width="225" height="70" rx="6"/><circle cx="275" cy="127" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="275" y="131" text-anchor="middle">5</text><text class="d-text" x="297" y="131">Complexity Mismatch</text>
+  <rect class="d-box" x="484" y="92" width="225" height="70" rx="6"/><circle cx="512" cy="127" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="512" y="131" text-anchor="middle">6</text><text class="d-text" x="534" y="131">Hallucinated API</text>
+  <rect class="d-box" x="10" y="174" width="225" height="70" rx="6"/><circle cx="38" cy="209" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="38" y="213" text-anchor="middle">7</text><text class="d-text" x="60" y="213">Test Mannequin</text>
+  <rect class="d-box" x="247" y="174" width="225" height="70" rx="6"/><circle cx="275" cy="209" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="275" y="213" text-anchor="middle">8</text><text class="d-text" x="297" y="213">Catch-All Handler</text>
+  <rect class="d-box" x="484" y="174" width="225" height="70" rx="6"/><circle cx="512" cy="209" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="512" y="213" text-anchor="middle">9</text><text class="d-text" x="534" y="213">Polite Rewrite</text>
+</svg>
+<figcaption>The nine smells at a glance — the checklist to run during review.</figcaption>
+</figure>
 
 ## 1. The Abstraction Tax
 

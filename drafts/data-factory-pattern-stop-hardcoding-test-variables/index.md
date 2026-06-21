@@ -4,5 +4,5 @@ slug: data-factory-pattern-stop-hardcoding-test-variables
 description: Eliminate hardcoded test data with the Data Factory Pattern. Create maintainable, scalable test data generation.
 author: Mike Sell
 date: 2025-11-28T00:00:00.000Z
-tags: Testing
+tags:
 ---
