@@ -9,6 +9,11 @@ export const site = {
   defaultImage: `${variables.basePath}/images/mike.jpg`,
   locale: "en_US",
   twitter: "@crashnaut",
+  /** Trading / legal entity for contracting (Ireland). */
+  legalEntity: {
+    name: "Crashnaut Ltd",
+    addressCountry: "IE",
+  },
 }
 
 export function personJsonLd() {
@@ -24,6 +29,14 @@ export function personJsonLd() {
       "https://github.com/crashnaut",
       "https://bsky.app/profile/crashnaut.com",
     ],
+    worksFor: {
+      "@type": "Organization",
+      name: site.legalEntity.name,
+      address: {
+        "@type": "PostalAddress",
+        addressCountry: site.legalEntity.addressCountry,
+      },
+    },
   }
 }
 
@@ -57,7 +70,15 @@ export function blogPostingJsonLd(opts: {
     datePublished: opts.publishedAt,
     dateModified: opts.modifiedAt ?? opts.publishedAt,
     author: { "@type": "Person", name: site.author, url: site.url },
-    publisher: { "@type": "Person", name: site.author },
+    publisher: {
+      "@type": "Organization",
+      name: site.legalEntity.name,
+      url: site.url,
+      address: {
+        "@type": "PostalAddress",
+        addressCountry: site.legalEntity.addressCountry,
+      },
+    },
     keywords: opts.tags?.join(", "),
     mainEntityOfPage: { "@type": "WebPage", "@id": opts.url },
   }

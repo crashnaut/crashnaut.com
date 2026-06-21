@@ -9,9 +9,9 @@ test("blog discovery flow from homepage to article details is deterministic", as
 
   const firstPostMatch = blogHtml.match(/href="(\/blog\/[a-z0-9-]+)"/)
   expect(firstPostMatch).not.toBeNull()
-
-  const postPath = firstPostMatch![1]
-  const postResponse = await request.get(postPath)
+  const postPath = firstPostMatch?.[1]
+  expect(postPath).toBeTruthy()
+  const postResponse = await request.get(postPath as string)
   expect(postResponse.ok()).toBeTruthy()
 
   const postHtml = await postResponse.text()

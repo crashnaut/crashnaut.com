@@ -4,5 +4,6 @@ import Host from "./Host.svelte"
 
 it("renders host", () => {
   render(Host)
-  expect(screen.getByText(/Azure/)).toBeDefined()
+  expect(screen.getByText(/Firebase/)).toBeDefined()
+  expect(screen.getByText(/Crashnaut Ltd/)).toBeDefined()
 })

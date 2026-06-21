@@ -531,11 +531,18 @@ pre:hover {
   transition: all 0.2s ease-in;
 }
 
-:not(pre) > code {
-  padding: 0.3em 0.5em;
-  border-radius: 0.3em;
+/* Inline code in prose — subtle chip (Slack-like), scoped to main */
+main :not(pre) > code {
+  padding: 0.12em 0.4em;
+  border-radius: 3px;
   white-space: normal;
   line-height: inherit;
+  font-size: 0.9em;
+  font-weight: 500;
+  background: hsla(var(--base-color), 0.055);
+  color: hsla(var(--base-color), 0.82);
+  border: 1px solid hsla(var(--base-color), 0.09);
+  vertical-align: 0.04em;
 }
 
 pre > code {
@@ -714,18 +721,13 @@ pre > .code-heading > a {
   content: "warning";
 }
 
-/* ── Side-by-side do / don't comparison ───────────────────────── */
+/* ── Stacked do / don't comparison (flex column; use ::do and/or ::dont only) ─ */
 .compare-block {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
   margin: var(--spacing) 0;
-  align-items: start;
-}
-@media (max-width: 640px) {
-  .compare-block {
-    grid-template-columns: 1fr;
-  }
+  align-items: stretch;
 }
 .compare-col {
   --background-color: none;
@@ -1086,4 +1088,24 @@ pre > .code-heading > a {
   100% {
     font-variation-settings: "wght" 100;
   }
+}
+
+/* Skip link — keyboard / screen reader first stop */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: 0.5rem;
+  z-index: 10000;
+  padding: 0.5rem 1rem;
+  background: var(--text-color);
+  color: var(--background-color);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.skip-to-content:focus {
+  left: 0.5rem;
+  outline: 2px solid var(--accent-color, hsla(0, 0%, 50%, 1));
+  outline-offset: 2px;
 }

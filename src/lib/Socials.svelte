@@ -21,7 +21,7 @@
 and
 <a
   class="mt-0 mark mark-hover"
-  href="https://www.linkedin.com/in/mikedcsell/"
+  href="https://www.linkedin.com/in/mike-sell-crashnaut"
   rel="external"
   ><svg
     width="15"

@@ -141,6 +141,8 @@
 
 <svelte:window bind:scrollY />
 
+<a class="skip-to-content" href="#main-content">Skip to main content</a>
+
 <header>
   <div>
     <h2>
@@ -153,19 +155,27 @@
       >
       {#if $theme === "dark"}
         <button
+          type="button"
           class="theme-switch"
           title="Switch to light theme"
+          aria-label="Switch to light theme"
           onclick={(evt) => toggleTheme(evt, "light")}
         >
-          <span class="material-symbols-outlined"> light_mode </span>
+          <span class="material-symbols-outlined" aria-hidden="true">
+            light_mode
+          </span>
         </button>
       {:else}
         <button
+          type="button"
           class="theme-switch"
           title="Switch to dark theme"
+          aria-label="Switch to dark theme"
           onclick={(evt) => toggleTheme(evt, "dark")}
         >
-          <span class="material-symbols-outlined"> dark_mode </span>
+          <span class="material-symbols-outlined" aria-hidden="true">
+            dark_mode
+          </span>
         </button>
       {/if}
     </nav>
@@ -201,10 +211,7 @@
   </div>
 </header>
 
-<main
-  style={segment?.startsWith("bit") ? "	perspective: 2000px;" : ""}
-  data-segment={segment}
->
+<main id="main-content" data-segment={segment}>
   {@render children?.()}
   {#if segment && segment !== "contact"}
     <div class="support-section">
@@ -255,17 +262,6 @@
 
   header * {
     margin-top: 0;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--head-font);
-    line-height: 1.2;
-    font-weight: 700;
   }
 
   :global(html.light) header {

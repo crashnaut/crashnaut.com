@@ -65,7 +65,15 @@
 
 <section>
   <h1>
-    Hi, I'm Mike <div class="wave">👋</div>
+    Hi, I'm Mike
+    <button
+      type="button"
+      class="wave"
+      aria-label="Celebrate"
+      onclick={fireConfetti}
+    >
+      👋
+    </button>
   </h1>
 
   <p>
@@ -87,9 +95,47 @@
   </ul>
 
   <p>
-    I build automated testing systems that catches bugs before production,
+    I build automated testing systems that catch bugs before production,
     accelerating deployment cycles.
   </p>
+
+  <section class="services" aria-labelledby="portfolio-heading">
+    <h2 id="portfolio-heading">Selected work</h2>
+    <div class="service-grid">
+      <article class="service-item">
+        <h3>Playwright boilerplate</h3>
+        <p>
+          Opinionated Playwright + POM + BDD starter used as a teaching baseline
+          for teams adopting browser automation.
+        </p>
+        <a
+          class="mark-hover"
+          href="https://github.com/crashnaut/playwright-pom-boilerplate"
+          rel="external">View on GitHub</a
+        >
+      </article>
+      <article class="service-item">
+        <h3>Writing</h3>
+        <p>
+          Long-form notes on SDET practice: CI, flags, flaky tests, and how
+          teams actually ship quality.
+        </p>
+        <a class="mark-hover" href="/blog">Read the blog</a>
+      </article>
+      <article class="service-item">
+        <h3>Contracting</h3>
+        <p>
+          FinTech-focused SDET engagements: automation architecture, pipelines,
+          and hands-on delivery.
+        </p>
+        <a
+          class="mark-hover"
+          href="https://calendly.com/mikesell404"
+          rel="external">Schedule a call</a
+        >
+      </article>
+    </div>
+  </section>
 
   <div class="cta-section">
     <a
@@ -108,6 +154,17 @@
   section {
     font-size: 1.25rem;
     margin-top: 2em;
+  }
+
+  h1 .wave {
+    display: inline;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font: inherit;
+    padding: 0;
+    line-height: inherit;
+    vertical-align: baseline;
   }
 
   .services {
@@ -150,7 +207,6 @@
     flex-wrap: wrap;
   }
 
-  .cta-primary,
   .cta-secondary {
     display: inline-block;
     padding: 0.75rem 1.5rem;
@@ -158,18 +214,6 @@
     text-decoration: none;
     font-weight: bold;
     transition: all 0.2s ease-in-out;
-  }
-
-  .cta-primary {
-    background-color: var(--text-color);
-    color: var(--background-color);
-  }
-
-  .cta-primary:hover {
-    background-color: var(--text-color-subtle);
-  }
-
-  .cta-secondary {
     border: 1px solid var(--text-color);
     color: var(--text-color);
   }

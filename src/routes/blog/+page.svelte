@@ -97,7 +97,12 @@
   }
 </script>
 
-<Seo title="Blog - Mike Sell" {description} canonical={`${site.url}/blog`} />
+<Seo
+  title="Blog - Mike Sell"
+  {description}
+  canonical={`${site.url}/blog`}
+  keywords="SDET, QA, test automation, Playwright, CI/CD, Mike Sell, Crashnaut"
+/>
 
 <h1>Blog</h1>
 

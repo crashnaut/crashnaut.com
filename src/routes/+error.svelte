@@ -10,9 +10,9 @@
   robots="noindex"
 />
 
-<h1>Yikes. This is an awkward...</h1>
+<h1>Page not found</h1>
 <p>
-  Go to the <a class="mark" href="/">Home</a> page so we can quickly forget
-  about this, or search for articles on the
-  <a class="mark" href="/blog">Blog</a> page.
+  That URL does not match anything on this site. Try the
+  <a class="mark" href="/">home</a> page or browse the
+  <a class="mark" href="/blog">blog</a>.
 </p>

@@ -1,6 +1,6 @@
-// Side-by-side "do / don't" comparison block.
+// Stacked "do / don't" comparison block (green above red by default when both are used).
 //
-// Usage in markdown:
+// Usage in markdown — one column, two columns, or either colour alone:
 //
 //   :::compare
 //   ::do[Pull a real record]
@@ -13,8 +13,18 @@
 //   ```
 //   :::
 //
-// The optional [title] overrides the default "Do this" / "Don't do this".
-// Content inside each column is full markdown (code blocks get highlighted).
+//   :::compare
+//   ::do[Good path only]
+//   - step one
+//   :::
+//
+//   :::compare
+//   ::dont[Anti-pattern only]
+//   - what not to do
+//   :::
+//
+// Section order in the file is render order (top to bottom). The optional [title]
+// overrides the default "Do this" / "Don't do this". Each column is full markdown.
 
 // Allow leading whitespace so authors can indent ::dont / ::: to match list nesting in editors.
 const startReg = /^\s*:::compare\s*$/

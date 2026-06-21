@@ -53,6 +53,7 @@
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:image" content={image} />
+  <meta property="og:image:alt" content={title} />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
@@ -78,6 +79,7 @@
   {/if}
 
   {#each schemas as item}
-    {@html `<script type="application/ld+json">${JSON.stringify(item).replace(/</g, "\\u003c")}</script>`}
+    {@html `<script type="application/ld+json">${JSON.stringify(item).replace(/</g, "\\u003c")}</scr` +
+      `ipt>`}
   {/each}
 </svelte:head>

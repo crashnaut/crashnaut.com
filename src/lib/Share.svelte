@@ -7,7 +7,7 @@
    */
 
   /** @type {Props} */
-  let { text = "", url = "", title = "" } = $props()
+  let { text: _text = "", url = "", title = "" } = $props()
 </script>
 
 <h4>{title}</h4>
