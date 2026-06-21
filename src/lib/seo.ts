@@ -1,4 +1,4 @@
-import { variables } from "./variables";
+import { variables } from "./variables"
 
 export const site = {
   name: "Crashnaut",
@@ -9,7 +9,7 @@ export const site = {
   defaultImage: `${variables.basePath}/images/mike.jpg`,
   locale: "en_US",
   twitter: "@crashnaut",
-};
+}
 
 export function personJsonLd() {
   return {
@@ -24,7 +24,7 @@ export function personJsonLd() {
       "https://github.com/crashnaut",
       "https://bsky.app/profile/crashnaut.com",
     ],
-  };
+  }
 }
 
 export function websiteJsonLd() {
@@ -35,17 +35,17 @@ export function websiteJsonLd() {
     url: site.url,
     description: site.description,
     author: { "@type": "Person", name: site.author },
-  };
+  }
 }
 
 export function blogPostingJsonLd(opts: {
-  title: string;
-  description: string;
-  url: string;
-  image: string;
-  publishedAt: string;
-  modifiedAt?: string;
-  tags?: string[];
+  title: string
+  description: string
+  url: string
+  image: string
+  publishedAt: string
+  modifiedAt?: string
+  tags?: string[]
 }) {
   return {
     "@context": "https://schema.org",
@@ -60,7 +60,7 @@ export function blogPostingJsonLd(opts: {
     publisher: { "@type": "Person", name: site.author },
     keywords: opts.tags?.join(", "),
     mainEntityOfPage: { "@type": "WebPage", "@id": opts.url },
-  };
+  }
 }
 
 export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
@@ -73,5 +73,5 @@ export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
       name: item.name,
       item: item.url,
     })),
-  };
+  }
 }

@@ -4,4 +4,4 @@ export const variables = {
   twitterBearerToken: import.meta.env.VITE_PUBLIC_TWITTER_BEARER_TOKEN,
   basePath: import.meta.env.VITE_PUBLIC_BASE_PATH || "https://crashnaut.com",
   timestamp: new Date(),
-};
+}

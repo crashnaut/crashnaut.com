@@ -1,311 +1,341 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
-	import { page } from '$app/stores';
-	import { afterNavigate, onNavigate } from '$app/navigation';
-	import { variables } from '$lib/variables';
-	import Host from '$lib/Host.svelte';
-	import { blog } from '$lib/current-blog.svelte';
-	import { theme } from '$lib/theme.store';
-	import './layout.css';
-	import Socials from '$lib/Socials.svelte';
-	import Support from '$lib/Support.svelte';
+  import { onMount, tick } from "svelte"
+  import { page } from "$app/stores"
+  import { afterNavigate, onNavigate } from "$app/navigation"
+  import { variables } from "$lib/variables"
+  import Host from "$lib/Host.svelte"
+  import { blog } from "$lib/current-blog.svelte"
+  import { theme } from "$lib/theme.store"
+  import "./layout.css"
+  import Socials from "$lib/Socials.svelte"
+  import Support from "$lib/Support.svelte"
 
-	let { children } = $props();
+  let { children } = $props()
 
-	let segment = $derived($page.url.pathname.substring(1));
-	let support = $state<HTMLElement | null>();
-	let scrollY = $state(0);
+  let segment = $derived($page.url.pathname.substring(1))
+  let support = $state<HTMLElement | null>()
+  let scrollY = $state(0)
 
-	onMount(() => {
-		if (segment.startsWith('blog/') && typeof kofiWidgetOverlay !== 'undefined') {
-			kofiWidgetOverlay.draw('crashnaut', {
-				type: 'floating-chat',
-				'floating-chat.donateButton.text': '',
-				...(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-					? {
-							'floating-chat.donateButton.background-color': '#fff',
-							'floating-chat.donateButton.text-color': '#111',
-						}
-					: {
-							'floating-chat.donateButton.background-color': '#fff',
-							'floating-chat.donateButton.text-color': '#eee',
-						}),
-			});
-			support = document.querySelector('[id*=kofi-widget-overlay]');
-		}
+  onMount(() => {
+    if (
+      segment.startsWith("blog/") &&
+      typeof kofiWidgetOverlay !== "undefined"
+    ) {
+      kofiWidgetOverlay.draw("crashnaut", {
+        type: "floating-chat",
+        "floating-chat.donateButton.text": "",
+        ...(window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? {
+              "floating-chat.donateButton.background-color": "#fff",
+              "floating-chat.donateButton.text-color": "#111",
+            }
+          : {
+              "floating-chat.donateButton.background-color": "#fff",
+              "floating-chat.donateButton.text-color": "#eee",
+            }),
+      })
+      support = document.querySelector("[id*=kofi-widget-overlay]")
+    }
 
-		if (variables.gtag_id) {
-			const script = document.createElement('script');
-			script.async = true;
-			script.src = `https://www.googletagmanager.com/gtag/js?id=${variables.gtag_id}`;
-			document.head.appendChild(script);
-			gtag('config', variables.gtag_id);
-		}
-	});
+    if (variables.gtag_id) {
+      const script = document.createElement("script")
+      script.async = true
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${variables.gtag_id}`
+      document.head.appendChild(script)
+      gtag("config", variables.gtag_id)
+    }
+  })
 
-	onNavigate((navigation) => {
-		if (!document.startViewTransition) return;
-		return new Promise((resolve) => {
-			document.startViewTransition(async () => {
-				resolve();
-				await navigation.complete;
-			});
-		});
-	});
+  onNavigate((navigation) => {
+    if (!document.startViewTransition) return
+    return new Promise((resolve) => {
+      document.startViewTransition(async () => {
+        resolve()
+        await navigation.complete
+      })
+    })
+  })
 
-	afterNavigate(({ to }) => {
-		if (variables.gtag_id && typeof gtag === 'function') {
-			gtag('event', 'page_view', {
-				page_title: document.title,
-				page_location: location.href,
-				page_path: to.url.pathname,
-			});
-		}
-	});
+  afterNavigate(({ to }) => {
+    if (variables.gtag_id && typeof gtag === "function") {
+      gtag("event", "page_view", {
+        page_title: document.title,
+        page_location: location.href,
+        page_path: to.url.pathname,
+      })
+    }
+  })
 
-	$effect(() => {
-		if (support) {
-			if (segment.startsWith('blog/') && scrollY > 1000) {
-				support.style.display = 'block';
-			} else {
-				support.style.display = 'none';
-			}
-		}
-	});
+  $effect(() => {
+    if (support) {
+      if (segment.startsWith("blog/") && scrollY > 1000) {
+        support.style.display = "block"
+      } else {
+        support.style.display = "none"
+      }
+    }
+  })
 
-	function toggleTheme(event: MouseEvent, newTheme: string) {
-		const isAppearanceTransition =
-			document.startViewTransition &&
-			!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function toggleTheme(event: MouseEvent, newTheme: string) {
+    const isAppearanceTransition =
+      document.startViewTransition &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
-		if (!isAppearanceTransition) {
-			theme.set(newTheme);
-			return;
-		}
+    if (!isAppearanceTransition) {
+      theme.set(newTheme)
+      return
+    }
 
-		const x = event.clientX;
-		const y = event.clientY;
-		const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-		const transition = document.startViewTransition(async () => {
-			theme.set(newTheme);
-			await tick();
-		});
-		transition.ready.then(() => {
-			const clipPath = [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`];
-			document.documentElement.animate(
-				{
-					clipPath: newTheme === 'dark' ? [...clipPath].reverse() : clipPath,
-				},
-				{
-					duration: 400,
-					easing: 'ease-out',
-					pseudoElement:
-						newTheme === 'dark' ? '::view-transition-old(root)' : '::view-transition-new(root)',
-				},
-			);
-		});
-	}
+    const x = event.clientX
+    const y = event.clientY
+    const endRadius = Math.hypot(
+      Math.max(x, innerWidth - x),
+      Math.max(y, innerHeight - y),
+    )
+    const transition = document.startViewTransition(async () => {
+      theme.set(newTheme)
+      await tick()
+    })
+    transition.ready.then(() => {
+      const clipPath = [
+        `circle(0px at ${x}px ${y}px)`,
+        `circle(${endRadius}px at ${x}px ${y}px)`,
+      ]
+      document.documentElement.animate(
+        {
+          clipPath: newTheme === "dark" ? [...clipPath].reverse() : clipPath,
+        },
+        {
+          duration: 400,
+          easing: "ease-out",
+          pseudoElement:
+            newTheme === "dark"
+              ? "::view-transition-old(root)"
+              : "::view-transition-new(root)",
+        },
+      )
+    })
+  }
 
-	$effect(() => {
-		if (typeof document !== 'undefined') {
-			document.documentElement.className = $theme;
-		}
-	});
+  $effect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.className = $theme
+    }
+  })
 </script>
 
 <svelte:head>
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-	{#if segment.startsWith('blog/')}
-		<script async src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"></script>
-	{/if}
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossOrigin="anonymous"
+  />
+  {#if segment.startsWith("blog/")}
+    <script
+      async
+      src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"
+    ></script>
+  {/if}
 </svelte:head>
 
 <svelte:window bind:scrollY />
 
 <header>
-	<div>
-		<h2>
-			<a href="/">Crashnaut</a>
-		</h2>
+  <div>
+    <h2>
+      <a href="/">Crashnaut</a>
+    </h2>
 
-		<nav>
-			<a href="/blog" class:active={segment.startsWith('blog')}>BLOG</a>
-			<a href="/contact" class:active={segment.startsWith('contact')}>CONTACT</a>
-			{#if $theme === 'dark'}
-				<button
-					class="theme-switch"
-					title="Switch to light theme"
-					onclick={(evt) => toggleTheme(evt, 'light')}
-				>
-					<span class="material-symbols-outlined"> light_mode </span>
-				</button>
-			{:else}
-				<button
-					class="theme-switch"
-					title="Switch to dark theme"
-					onclick={(evt) => toggleTheme(evt, 'dark')}
-				>
-					<span class="material-symbols-outlined"> dark_mode </span>
-				</button>
-			{/if}
-		</nav>
+    <nav>
+      <a href="/blog" class:active={segment.startsWith("blog")}>BLOG</a>
+      <a href="/contact" class:active={segment.startsWith("contact")}>CONTACT</a
+      >
+      {#if $theme === "dark"}
+        <button
+          class="theme-switch"
+          title="Switch to light theme"
+          onclick={(evt) => toggleTheme(evt, "light")}
+        >
+          <span class="material-symbols-outlined"> light_mode </span>
+        </button>
+      {:else}
+        <button
+          class="theme-switch"
+          title="Switch to dark theme"
+          onclick={(evt) => toggleTheme(evt, "dark")}
+        >
+          <span class="material-symbols-outlined"> dark_mode </span>
+        </button>
+      {/if}
+    </nav>
 
-		{#if blog.blog}
-			<div
-				class="current-details title"
-				onclick={() =>
-					navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}`)}
-				onkeydown={() =>
-					navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}`)}
-				role="button"
-				tabindex="0"
-			>
-				<span class="material-symbols-outlined"> link </span>
-				{blog.blog.title}
-			</div>
-		{/if}
+    {#if blog.blog}
+      <div
+        class="current-details title"
+        onclick={() =>
+          navigator.clipboard.writeText(
+            `${window.location.origin}${window.location.pathname}`,
+          )}
+        onkeydown={() =>
+          navigator.clipboard.writeText(
+            `${window.location.origin}${window.location.pathname}`,
+          )}
+        role="button"
+        tabindex="0"
+      >
+        <span class="material-symbols-outlined"> link </span>
+        {blog.blog.title}
+      </div>
+    {/if}
 
-		{#if blog.blog && blog.blog.state !== 'single'}
-			<div class="current-details">
-				<button onclick={blog.toggleTldr}
-					>{blog.blog.state === 'detailed'
-						? 'Switch to TLDR version'
-						: 'Switch to detailed version'}</button
-				>
-			</div>
-		{/if}
-	</div>
+    {#if blog.blog && blog.blog.state !== "single"}
+      <div class="current-details">
+        <button onclick={blog.toggleTldr}
+          >{blog.blog.state === "detailed"
+            ? "Switch to TLDR version"
+            : "Switch to detailed version"}</button
+        >
+      </div>
+    {/if}
+  </div>
 </header>
 
-<main style={segment?.startsWith('bit') ? '	perspective: 2000px;' : ''} data-segment={segment}>
-	{@render children?.()}
-	{#if segment && segment !== 'contact'}
-		<div class="support-section">
-			<Support />
-		</div>
-	{/if}
+<main
+  style={segment?.startsWith("bit") ? "	perspective: 2000px;" : ""}
+  data-segment={segment}
+>
+  {@render children?.()}
+  {#if segment && segment !== "contact"}
+    <div class="support-section">
+      <Support />
+    </div>
+  {/if}
 </main>
 
 {#if segment}
-	<footer>
-		<Host />
-		<Socials />
-	</footer>
+  <footer>
+    <Host />
+    <Socials />
+  </footer>
 {/if}
 
 <style>
-	header {
-		position: fixed;
-		top: 0;
-		width: 100%;
-		height: var(--header-height);
-		backdrop-filter: saturate(100%) blur(3px);
-		z-index: 3;
-	}
+  header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: var(--header-height);
+    backdrop-filter: saturate(100%) blur(3px);
+    z-index: 3;
+  }
 
-	header > div {
-		display: grid;
-		grid-template-columns: 2fr 1fr;
-		align-items: center;
-	}
+  header > div {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    align-items: center;
+  }
 
-	header > div > *:nth-child(even) {
-		justify-self: right;
-	}
+  header > div > *:nth-child(even) {
+    justify-self: right;
+  }
 
-	header .current-details {
-		margin-top: -1.5em;
-		font-size: 0.8rem;
-	}
+  header .current-details {
+    margin-top: -1.5em;
+    font-size: 0.8rem;
+  }
 
-	header .current-details.title {
-		cursor: pointer;
-	}
+  header .current-details.title {
+    cursor: pointer;
+  }
 
-	.theme-switch {
-		color: var(--text-color-light);
-	}
+  .theme-switch {
+    color: var(--text-color-light);
+  }
 
-	header * {
-		margin-top: 0;
-	}
+  header * {
+    margin-top: 0;
+  }
 
-	h1, h2, h3, h4, h5, h6 {
-		font-family: var(--head-font);
-		line-height: 1.2;
-		font-weight: 700;
-	}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--head-font);
+    line-height: 1.2;
+    font-weight: 700;
+  }
 
-	:global(html.light) header {
-		box-shadow: rgb(0 0 0 / 5%) 0px 5px 15px;
-	}
+  :global(html.light) header {
+    box-shadow: rgb(0 0 0 / 5%) 0px 5px 15px;
+  }
 
-	:global(html.dark) header {
-		box-shadow: rgb(255 255 255 / 5%) 0px 5px 15px;
-	}
+  :global(html.dark) header {
+    box-shadow: rgb(255 255 255 / 5%) 0px 5px 15px;
+  }
 
-	@media (max-width: 480px) {
-		header > div {
-			grid-template-columns: auto auto;
-		}
+  @media (max-width: 480px) {
+    header > div {
+      grid-template-columns: auto auto;
+    }
 
-		header .current-details.title {
-			visibility: hidden;
-		}
-	}
+    header .current-details.title {
+      visibility: hidden;
+    }
+  }
 
-	header h2 > a {
-		text-decoration: none;
-	}
+  header h2 > a {
+    text-decoration: none;
+  }
 
-	.support-section {
-		margin-top: var(--spacing-large);
-		padding: var(--spacing) 0;
-		border-top: 1px solid var(--text-color-subtle);
-	}
+  .support-section {
+    margin-top: var(--spacing-large);
+    padding: var(--spacing) 0;
+    border-top: 1px solid var(--text-color-subtle);
+  }
 
-	footer {
-		position: static;
-		bottom: 0;
-		width: 100%;
-		color: var(--text-color-light);
-		font-size: 0.9rem;
-		text-align: center;
-	}
+  footer {
+    position: static;
+    bottom: 0;
+    width: 100%;
+    color: var(--text-color-light);
+    font-size: 0.9rem;
+    text-align: center;
+  }
 
+  nav {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    gap: 0.6em;
+  }
 
-	nav {
-		width: 100%;
-		display: flex;
-		justify-content: end;
-		gap: 0.6em;
-	}
+  nav > *:last-child {
+    margin-left: 0.6em;
+  }
 
-	nav > *:last-child {
-		margin-left: 0.6em;
-	}
+  nav a {
+    color: var(--text-color-light);
+    transition: 0.2s ease-in-out;
+    text-decoration: none;
+  }
 
-	nav a {
-		color: var(--text-color-light);
-		transition: 0.2s ease-in-out;
-		text-decoration: none;
-	}
+  nav a.active,
+  nav a:hover {
+    color: var(--text-color);
+    text-decoration: underline;
+    font-weight: bold;
+  }
 
-	nav a.active,
-	nav a:hover {
-		color: var(--text-color);
-		text-decoration: underline;
-		font-weight: bold;
-	}
+  header button {
+    padding: 0;
+    margin: 0;
+    border: none;
+  }
 
-	header button {
-		padding: 0;
-		margin: 0;
-		border: none;
-	}
-
-	.theme-switch > span:first-child {
-		vertical-align: text-top;
-	}
-
+  .theme-switch > span:first-child {
+    vertical-align: text-top;
+  }
 </style>

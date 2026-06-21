@@ -7,7 +7,7 @@
 
 **The trap:** Mocking your own code makes tests pass without proving anything. A stubbed resolver can't fail, so it can't warn you.
 
-**The subtlety:** Mocking *input payloads* (e.g. an auth token at the boundary) is fine. Mocking *your code's behaviour* is not.
+**The subtlety:** Mocking _input payloads_ (e.g. an auth token at the boundary) is fine. Mocking _your code's behaviour_ is not.
 
 **Practical fixes:**
 
@@ -24,4 +24,4 @@ assert response.errors is None
 - Don't hardcode UUIDs — pull a real record from the test DB so tests run anywhere.
 - Default to integration tests through the whole pipeline; keep unit tests for high-reuse utilities.
 
-**When in doubt:** ask *"do I own this?"* If yes, let it run.
+**When in doubt:** ask _"do I own this?"_ If yes, let it run.

@@ -1,7 +1,7 @@
-import type { PlaywrightTestConfig } from "@playwright/test";
+import type { PlaywrightTestConfig } from "@playwright/test"
 
-const port = process.env.CI ? 4173 : 5173;
-const baseURL = `http://localhost:${port}`;
+const port = process.env.CI ? 4173 : 5173
+const baseURL = `http://localhost:${port}`
 
 const config: PlaywrightTestConfig = {
   forbidOnly: !!process.env.CI,
@@ -19,5 +19,5 @@ const config: PlaywrightTestConfig = {
     port,
     reuseExistingServer: !process.env.CI,
   },
-};
-export default config;
+}
+export default config

@@ -11,7 +11,7 @@ tags: ci-cd, devops, infrastructure
 
 The dream is simple: open a branch, get a live URL where you (and the reviewer, and the designer, and QA) can click around the actual change before it merges. The naive implementation of that dream — spin up a complete, dedicated environment for every branch — gets expensive and slow the moment more than a handful of branches are open at once.
 
-There's a middle path that gives you the preview URLs without the unbounded cost. It rests on three ideas: immutable artifacts, slug-based routing, and a fixed pool of reusable backend *slots*.
+There's a middle path that gives you the preview URLs without the unbounded cost. It rests on three ideas: immutable artifacts, slug-based routing, and a fixed pool of reusable backend _slots_.
 
 ## 1. Immutable, versioned artifacts on every push
 
@@ -21,7 +21,7 @@ Start by making every push to every branch produce one immutable, versioned arti
 ARTIFACT_TAG = <YYYY.MM.DD>-<short-sha>     # e.g. 2026.05.01-abc1234f
 ```
 
-It's human-readable, sortable by date, and traceable back to the exact commit. Crucially it's *immutable* — that tag always points at that build, forever. Mutable convenience pointers like `latest` are pushed only on protected branches, where they belong. Everything downstream deploys an artifact by its tag, never a moving target.
+It's human-readable, sortable by date, and traceable back to the exact commit. Crucially it's _immutable_ — that tag always points at that build, forever. Mutable convenience pointers like `latest` are pushed only on protected branches, where they belong. Everything downstream deploys an artifact by its tag, never a moving target.
 
 ## 2. Slug-based routing
 
@@ -36,7 +36,7 @@ The slug rule lowercases and replaces every non-alphanumeric character with a hy
 
 ## 3. A pool of reusable slots
 
-Here's the part that controls cost. Instead of one environment per branch, you keep a fixed pool of backend *slots* — say eight — and assign an active branch to a slot when it needs one. The frontend can be per-branch and cheap; the expensive backend is shared across the pool.
+Here's the part that controls cost. Instead of one environment per branch, you keep a fixed pool of backend _slots_ — say eight — and assign an active branch to a slot when it needs one. The frontend can be per-branch and cheap; the expensive backend is shared across the pool.
 
 A small bit of state in a parameter store tracks which branch owns which slot. Slots come in two modes:
 
@@ -53,4 +53,4 @@ The failure mode of preview environments is that they pile up. Wire teardown to 
 
 Put together, the flow is: every push builds an immutable artifact → a branch that wants a preview is assigned a slot from the pool → its slug routes a subdomain to that slot → deleting the branch releases the slot. You get a live URL per active branch, bounded infrastructure, and nothing to clean up by hand.
 
-The insight worth keeping even if you implement none of the specifics: *previews need to be per-branch, but the expensive backend doesn't.* Separate the two — cheap per-branch frontends, a shared pool of backends — and "an environment for every branch" stops being a budget problem.
+The insight worth keeping even if you implement none of the specifics: _previews need to be per-branch, but the expensive backend doesn't._ Separate the two — cheap per-branch frontends, a shared pool of backends — and "an environment for every branch" stops being a budget problem.

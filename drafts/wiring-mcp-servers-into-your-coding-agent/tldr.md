@@ -4,8 +4,8 @@ Your agent is great at code but blind to the ticket, the doc, and the diagram ar
 
 **The distinction:**
 
-- **Skill** = extends *reasoning* (how to do something).
-- **MCP server** = extends *reach* (what it can touch — issue tracker, wiki, diagrams).
+- **Skill** = extends _reasoning_ (how to do something).
+- **MCP server** = extends _reach_ (what it can touch — issue tracker, wiki, diagrams).
 
 The strong combos use both: a shipping skill that calls an issue-tracker MCP to pull a ticket and seed the branch name.
 

@@ -9,7 +9,7 @@ tags: playwright, testing, page-object-model, typescript
 
 # Vanilla Playwright with Page Object Model: A Clean Setup
 
-Not every team needs BDD. If only engineers write your tests, the Cucumber/Gherkin layer is overhead you can skip — you keep the same Page Object Model underneath, just without the translation step. (If you *do* want the Gherkin layer, I wrote about that in [Playwright BDD](/blog/playwright-bdd); both setups share this same architecture.)
+Not every team needs BDD. If only engineers write your tests, the Cucumber/Gherkin layer is overhead you can skip — you keep the same Page Object Model underneath, just without the translation step. (If you _do_ want the Gherkin layer, I wrote about that in [Playwright BDD](/blog/playwright-bdd); both setups share this same architecture.)
 
 Here's the whole thing in one picture: specs and page objects both meet at a single `pageFactory` — the factory owns navigation and hands the right page object back to the spec.
 
@@ -52,7 +52,7 @@ Here's the whole thing in one picture: specs and page objects both meet at a sin
 <figcaption>Specs depend only on the pageFactory; the factory owns navigation and constructs the right page object.</figcaption>
 </figure>
 
-This is the vanilla version, drawn from a real production suite. It's deliberately boring in the right places. The whole design comes down to a few rules about *where code is allowed to live*.
+This is the vanilla version, drawn from a real production suite. It's deliberately boring in the right places. The whole design comes down to a few rules about _where code is allowed to live_.
 
 ## The shape of it
 
@@ -73,7 +73,7 @@ test/
 └── utils/                     # plain helper functions
 ```
 
-Two things are deliberately *absent*: there's no generic `pages/` dump (page objects live in feature folders), and there's no `navigationPage.ts` (the factory handles navigation). Organise by domain, not by file type.
+Two things are deliberately _absent_: there's no generic `pages/` dump (page objects live in feature folders), and there's no `navigationPage.ts` (the factory handles navigation). Organise by domain, not by file type.
 
 ## The layers, and the one rule that matters
 
@@ -87,7 +87,7 @@ Everything hangs off a single principle: **assertions live in specs; interaction
 
 ## pageFactory owns navigation
 
-One class constructs page objects *and* handles `goto()`. No separate navigation helper, no `BasePage.navigate()`. Each method navigates, waits for load, and returns the page object — and takes a `skipGoto` flag for when you've already arrived (e.g. you clicked a nav link to get there).
+One class constructs page objects _and_ handles `goto()`. No separate navigation helper, no `BasePage.navigate()`. Each method navigates, waits for load, and returns the page object — and takes a `skipGoto` flag for when you've already arrived (e.g. you clicked a nav link to get there).
 
 ```typescript
 class PageFactory {
@@ -100,12 +100,12 @@ class PageFactory {
   }
 
   async loginPage(options?: GotoOptions): Promise<LoginPage> {
-    await this.navigate('/login', options)
+    await this.navigate("/login", options)
     return new LoginPage(this.page)
   }
 
   async productsPage(options?: GotoOptions): Promise<ProductsPage> {
-    await this.navigate('/products', options)
+    await this.navigate("/products", options)
     return new ProductsPage(this.page)
   }
 }
@@ -128,11 +128,11 @@ export class ProductsPage {
   }
 
   getAddToCartButton(): Locator {
-    return this.page.getByRole('button', { name: 'Add to Cart' })
+    return this.page.getByRole("button", { name: "Add to Cart" })
   }
 
   getViewCartButton(): Locator {
-    return this.page.getByRole('button', { name: 'View Cart' })
+    return this.page.getByRole("button", { name: "View Cart" })
   }
 }
 ```
@@ -141,18 +141,19 @@ Method names follow fixed prefixes so a page object is scannable at a glance: `g
 
 ## Locators: reach for the accessible ones first
 
-This is where most flaky suites are won or lost. Playwright's locator priority is the policy: target what the *user* perceives, not how the markup happens to be built today.
+This is where most flaky suites are won or lost. Playwright's locator priority is the policy: target what the _user_ perceives, not how the markup happens to be built today.
 
 :::compare
 ::do[Reach for these first]
+
 - `getByRole('button', { name: 'Login' })`
 - `getByText`, `getByLabel`, `getByPlaceholder`
 - `getByTestId` when role/label/text genuinely can't target it
-::dont[Avoid these]
+  ::dont[Avoid these]
 - CSS chains and XPath (`page.locator()` is the last resort)
 - `.nth()` / `.first()` to paper over ambiguity
 - `getByTestId` when `getByRole` already works
-:::
+  :::
 
 Real UIs fight back, and the page object is exactly where you absorb that. When icon-font glyphs pollute an accessible name and break a plain `getByRole('link', { name })`, combine a role query with a text filter — and leave a comment so the next person knows why:
 
@@ -170,11 +171,11 @@ getNavLink(name: string): Locator {
 Because all the machinery lives below them, specs end up short and narrative. Page-object variables are named `onXxxPage`, so a test reads as "on the dashboard page, click products; on the products page, the buttons are visible":
 
 ```typescript
-import { expect, test } from '../../fixtures/test'
-import { pageFactory } from '../../page-objects/pageFactory'
+import { expect, test } from "../../fixtures/test"
+import { pageFactory } from "../../page-objects/pageFactory"
 
-test.describe('Products', { tag: ['@smoke', '@products'] }, () => {
-  test('should navigate to Products page', async ({ page }) => {
+test.describe("Products", { tag: ["@smoke", "@products"] }, () => {
+  test("should navigate to Products page", async ({ page }) => {
     const onDashboardPage = await pageFactory(page).dashboardPage()
 
     await onDashboardPage.topNavBar.clickProducts()
@@ -215,12 +216,13 @@ Smoke specs are read-only "did the page load?" checks. The trap is letting the t
 
 :::compare
 ::do[Name fits the assertion]
+
 - "should navigate to Products page" — checks the landmark buttons
 - "should show Cart heading from Cart tab"
-::dont[Name oversells]
+  ::dont[Name oversells]
 - "should show products list" — implies table rows it never checks
 - "should complete checkout" — implies an action and an output
-:::
+  :::
 
 When the same flow must hold for several user variants (regions, roles), don't copy-paste specs — loop over a parametrised list of cases and tag each with its variant, so one spec body covers them all.
 
@@ -230,16 +232,16 @@ The config is small on purpose: base URL from an env var, Chromium on a desktop-
 
 ```typescript
 export default defineConfig({
-  testDir: './test/e2e',
+  testDir: "./test/e2e",
   fullyParallel: true,
   retries: isCI ? 2 : 0,
-  reporter: isCI ? [['html', { open: 'never' }], ['list']] : [['list']],
+  reporter: isCI ? [["html", { open: "never" }], ["list"]] : [["list"]],
   use: {
     baseURL: process.env.BASE_URL,
-    trace: isCI ? 'on-first-retry' : 'on',
-    screenshot: isCI ? 'only-on-failure' : 'off',
+    trace: isCI ? "on-first-retry" : "on",
+    screenshot: isCI ? "only-on-failure" : "off",
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 })
 ```
 
@@ -249,16 +251,17 @@ Trace-on for local runs is the quiet hero here — when something fails on your 
 
 :::compare
 ::do[This setup]
+
 - Domain folders, one per feature
 - One `pageFactory` owns `goto()` + construction
 - Composition: util functions + component objects
 - Assertions only in specs; user-facing locators
-::dont[The setup to avoid]
+  ::dont[The setup to avoid]
 - A generic `pages/` dump
 - A separate navigation helper class
 - A deep `BasePage` inheritance tree
 - `expect()` leaking into page objects; CSS/XPath everywhere
-:::
+  :::
 
 ## Wrapping up
 

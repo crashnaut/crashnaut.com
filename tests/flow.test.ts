@@ -1,20 +1,20 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "@playwright/test"
 
 test("blog discovery flow from homepage to article details is deterministic", async ({
   request,
 }) => {
-  const blogResponse = await request.get("/blog");
-  expect(blogResponse.ok()).toBeTruthy();
-  const blogHtml = await blogResponse.text();
+  const blogResponse = await request.get("/blog")
+  expect(blogResponse.ok()).toBeTruthy()
+  const blogHtml = await blogResponse.text()
 
-  const firstPostMatch = blogHtml.match(/href="(\/blog\/[a-z0-9-]+)"/);
-  expect(firstPostMatch).not.toBeNull();
+  const firstPostMatch = blogHtml.match(/href="(\/blog\/[a-z0-9-]+)"/)
+  expect(firstPostMatch).not.toBeNull()
 
-  const postPath = firstPostMatch![1];
-  const postResponse = await request.get(postPath);
-  expect(postResponse.ok()).toBeTruthy();
+  const postPath = firstPostMatch![1]
+  const postResponse = await request.get(postPath)
+  expect(postResponse.ok()).toBeTruthy()
 
-  const postHtml = await postResponse.text();
-  expect(postHtml).toContain("<h1");
-  expect(postHtml).toContain("<h2");
-});
+  const postHtml = await postResponse.text()
+  expect(postHtml).toContain("<h1")
+  expect(postHtml).toContain("<h2")
+})

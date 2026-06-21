@@ -1,6 +1,7 @@
 ## 5-Minute Setup
 
 Install Nix:
+
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 ```
@@ -8,6 +9,7 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 Clone and configure:
 
 :::code-group
+
 ```bash[title=macOS]
 git clone https://github.com/crashnaut/nix.git
 cd nix/mac
@@ -25,11 +27,13 @@ git clone https://github.com/crashnaut/nix.git
 cd nix/windows
 # Edit flake.nix with your username/hostname
 ```
+
 :::
 
 Apply:
 
 :::code-group
+
 ```bash[title=macOS]
 nix run nix-darwin -- switch --flake .#your-hostname
 ```
@@ -41,6 +45,7 @@ nix run home-manager/master -- switch --flake .#your-username@your-hostname
 ```bash[title=Windows (WSL2)]
 nix run home-manager/master -- switch --flake .#your-username@your-hostname
 ```
+
 :::
 
 ## What You Get
@@ -57,6 +62,7 @@ nix flake update
 ```
 
 :::code-group
+
 ```bash[title=macOS]
 darwin-rebuild switch --flake .
 # Rollback: darwin-rebuild switch --rollback
@@ -66,6 +72,7 @@ darwin-rebuild switch --flake .
 home-manager switch --flake .
 # Rollback: home-manager switch --switch-generation <number>
 ```
+
 :::
 
 ## Key Benefits
@@ -76,4 +83,3 @@ home-manager switch --flake .
 ✅ Version controlled configuration
 
 **Repo**: [github.com/crashnaut/nix](https://github.com/crashnaut/nix)
-

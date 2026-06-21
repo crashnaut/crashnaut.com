@@ -14,6 +14,7 @@ tags: BDD, playwright
 I've seen many BDD implementations that start well but become unmaintainable over time. The most common issue? Using functional programming patterns with utility functions instead of proper Page Objects.
 
 Here's what typically happens:
+
 - Test utilities become a scattered mess of functions
 - Duplicated logic across different step definitions
 - No clear ownership of UI interactions
@@ -61,7 +62,7 @@ export class LoginPage extends BasePage {
 Connect Gherkin to Page Objects:
 
 ```typescript
-When('the user logs in with valid credentials', async ({ page }) => {
+When("the user logs in with valid credentials", async ({ page }) => {
   const loginPage = pageFactory(page).getPage(LoginPage)
   await loginPage.login(validUser.email, validUser.password)
 })
@@ -108,7 +109,7 @@ Keep page objects pure:
 export class LoginPage {
   async login(email, password) {
     // ...
-    expect(this.page.url()).toContain('/dashboard')  // Don't do this
+    expect(this.page.url()).toContain("/dashboard") // Don't do this
   }
 }
 
@@ -120,8 +121,8 @@ export class LoginPage {
 }
 
 // Assertions in step definitions
-Then('the user should be logged in', async ({ page }) => {
-  expect(page.url()).toContain('/dashboard')  // Assertions here
+Then("the user should be logged in", async ({ page }) => {
+  expect(page.url()).toContain("/dashboard") // Assertions here
 })
 ```
 
@@ -130,11 +131,13 @@ Then('the user should be logged in', async ({ page }) => {
 Two modes of testing:
 
 ### Local Mode (PR Testing)
+
 - Starts your app inside the container
 - Tests against `localhost:3000`
 - Perfect for validating changes before merge
 
 ### Remote Mode (Environment Testing)
+
 - Tests against deployed environments
 - No local app needed
 - For dev/staging/production validation
@@ -163,17 +166,20 @@ All running in Docker for consistency.
 ## Benefits of This Approach
 
 ### For Product/BA
+
 - Write scenarios in plain English
 - No technical knowledge required
 - Features become living documentation
 
 ### For QA/SDET
+
 - Maintainable page objects
 - Clear separation of concerns
 - Easy to refactor when UI changes
 - Reusable step definitions
 
 ### For Developers
+
 - Scenarios serve as specifications
 - Can run tests locally
 - Quick feedback loop
@@ -182,6 +188,7 @@ All running in Docker for consistency.
 ## The Boilerplate
 
 I've created a complete boilerplate with:
+
 - Playwright BDD (playwright-bdd package)
 - Domain-driven page objects
 - Combined factory pattern
@@ -215,12 +222,14 @@ That's it. Five minutes from clone to running tests.
 ## When to Use BDD vs Plain POM
 
 **Use BDD when:**
+
 - Collaborating with non-technical stakeholders
 - Need living documentation
 - Want tests readable by Product/BA
 - Multiple people write scenarios
 
 **Use plain POM when:**
+
 - Pure technical testing
 - Don't need Gherkin scenarios
 - Faster test execution
@@ -229,15 +238,19 @@ That's it. Five minutes from clone to running tests.
 ## Lessons Learned
 
 ### 1. Don't Use Functional Utilities
+
 I've refactored too many codebases with messy utility functions. Page Objects are worth the upfront structure.
 
 ### 2. Keep Step Definitions Thin
+
 All logic belongs in page objects. Step definitions should just call page object methods and assert.
 
 ### 3. Tag Everything
+
 Use tags (`@smoke`, `@regression`) to run different test suites. Not every test needs to run on every commit.
 
 ### 4. Docker is Non-Negotiable
+
 The "works on my machine" problem is real. Docker ensures consistency.
 
 ## Resources
@@ -250,4 +263,4 @@ The "works on my machine" problem is real. Docker ensures consistency.
 
 BDD doesn't have to mean unmaintainable test code. By combining Gherkin with proper Page Objects, you get the best of both worlds: readable tests that stakeholders understand, and maintainable code that scales with your application.
 
-*More posts coming on Playwright patterns, Docker testing strategies, and CI/CD optimization. [Follow me](#) for updates.*
+_More posts coming on Playwright patterns, Docker testing strategies, and CI/CD optimization. [Follow me](#) for updates._

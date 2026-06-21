@@ -36,4 +36,3 @@ pnpm docker:test:local  # Docker testing
 ```
 
 **When to use:** BDD for stakeholder collaboration, Plain POM for technical-only testing.
-

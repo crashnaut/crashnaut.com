@@ -17,8 +17,8 @@ MCP servers fix that. They give your agent authenticated access to the systems y
 
 It's worth being precise about the two, because they're easy to conflate:
 
-- A **skill** extends the agent's *reasoning* — it's a workflow that tells the agent how to do something (see [Custom AI Agent Skills for Your Team](/blog/custom-ai-agent-skills-for-your-team)).
-- An **MCP server** extends the agent's *reach* — it's a connector that gives the agent API access to an external service.
+- A **skill** extends the agent's _reasoning_ — it's a workflow that tells the agent how to do something (see [Custom AI Agent Skills for Your Team](/blog/custom-ai-agent-skills-for-your-team)).
+- An **MCP server** extends the agent's _reach_ — it's a connector that gives the agent API access to an external service.
 
 Skills are the "how." MCP servers are the "what it can touch." The powerful combinations use both: a shipping skill that calls an issue-tracker MCP server to pull a ticket's summary, then uses it to name the branch and seed the commit message.
 
@@ -40,6 +40,6 @@ Two things matter when you set this up.
 
 ## The caution worth stating
 
-Reach cuts both ways. A connector that can *read* your issue tracker is low-risk. A connector that can *write* — create tickets, edit docs, change diagrams — is acting on shared systems your teammates rely on. Grant write access deliberately, prefer read-only where it's enough, and keep write-capable connectors scoped to the projects that actually need them.
+Reach cuts both ways. A connector that can _read_ your issue tracker is low-risk. A connector that can _write_ — create tickets, edit docs, change diagrams — is acting on shared systems your teammates rely on. Grant write access deliberately, prefer read-only where it's enough, and keep write-capable connectors scoped to the projects that actually need them.
 
 Used with that bit of care, MCP servers are what turn an agent from a clever code generator into something that actually participates in your workflow — aware of the ticket, the doc, and the diagram, instead of guessing at the world from the code alone.

@@ -7,7 +7,7 @@ async function forceOpenShadowDOM(page: Page) {
   await page.addInitScript(() => {
     const orig = Element.prototype.attachShadow
     Element.prototype.attachShadow = function (init) {
-      return orig.call(this, { ...init, mode: 'open' })
+      return orig.call(this, { ...init, mode: "open" })
     }
   })
 }
@@ -26,12 +26,12 @@ test.beforeEach(async ({ page }) => {
 Or to specific tests:
 
 ```typescript
-test('test shadow DOM', async ({ page }) => {
+test("test shadow DOM", async ({ page }) => {
   await forceOpenShadowDOM(page)
-  await page.goto('https://your-app.com')
-  
+  await page.goto("https://your-app.com")
+
   // Access shadow DOM elements normally
-  await page.locator('#shadow-host').locator('button').click()
+  await page.locator("#shadow-host").locator("button").click()
 })
 ```
 

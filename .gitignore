@@ -111,6 +111,9 @@ playwright-report/
 playwright/.cache/
 qa-artifacts/
 
+# Cursor / Playwright MCP local snapshots
+.playwright-mcp/
+
 # Firebase
 .firebase/
 firebase-debug.log

@@ -1,227 +1,237 @@
 <script lang="ts">
-	import Seo from '$lib/Seo.svelte';
-	import { humanDate } from '$lib/formatters';
-	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { site } from '$lib/seo';
+  import Seo from "$lib/Seo.svelte"
+  import { humanDate } from "$lib/formatters"
+  import { page } from "$app/stores"
+  import { goto } from "$app/navigation"
+  import { onMount } from "svelte"
+  import { site } from "$lib/seo"
 
-	const { data } = $props();
-	const { posts, tags } = data;
+  const { data } = $props()
+  const { posts, tags } = data
 
-	let filter = $state({
-		query: null,
-		from: null,
-		to: null,
-	});
+  let filter = $state({
+    query: null,
+    from: null,
+    to: null,
+  })
 
-	const description = `${posts.length} notes about QA, SDET, test automation, and quality engineering`;
+  const description = `${posts.length} notes about QA, SDET, test automation, and quality engineering`
 
-	onMount(() => {
-		filter = {
-			query: $page.url.searchParams.get('q'),
-			from: $page.url.searchParams.get('from'),
-			to: $page.url.searchParams.get('to'),
-		};
-	});
+  onMount(() => {
+    filter = {
+      query: $page.url.searchParams.get("q"),
+      from: $page.url.searchParams.get("from"),
+      to: $page.url.searchParams.get("to"),
+    }
+  })
 
-	$effect(() => {
-		const params = new URLSearchParams(window.location.search);
-		if (filter.query) {
-			params.set('q', filter.query);
-		} else {
-			params.delete('q');
-		}
+  $effect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (filter.query) {
+      params.set("q", filter.query)
+    } else {
+      params.delete("q")
+    }
 
-		goto(params.size ? `?${params.toString()}` : '?', {
-			noScroll: true,
-			replaceState: true,
-			keepFocus: true,
-		});
-	});
+    goto(params.size ? `?${params.toString()}` : "?", {
+      noScroll: true,
+      replaceState: true,
+      keepFocus: true,
+    })
+  })
 
-	const queryParts = $derived(() => (filter.query || '').split(' '));
+  const queryParts = $derived(() => (filter.query || "").split(" "))
 
-	const filteredPosts = $derived(() => {
-		let filteredPosts = posts;
+  const filteredPosts = $derived(() => {
+    let filteredPosts = posts
 
-		if (filter.query) {
-			const parts = queryParts();
-			filteredPosts = posts.filter((p) => {
-				return parts.every(
-					(q) => p.tags.some((t) => match(t, q)) || like(p.title, q) || like(p.description, q),
-				);
-			});
-		}
+    if (filter.query) {
+      const parts = queryParts()
+      filteredPosts = posts.filter((p) => {
+        return parts.every(
+          (q) =>
+            p.tags.some((t) => match(t, q)) ||
+            like(p.title, q) ||
+            like(p.description, q),
+        )
+      })
+    }
 
-		if (filter.from) {
-			filteredPosts = filteredPosts.filter((p) => new Date(p.date) >= new Date(filter.from));
-		}
+    if (filter.from) {
+      filteredPosts = filteredPosts.filter(
+        (p) => new Date(p.date) >= new Date(filter.from),
+      )
+    }
 
-		if (filter.to) {
-			filteredPosts = filteredPosts.filter((p) => new Date(p.date) <= new Date(filter.to));
-		}
+    if (filter.to) {
+      filteredPosts = filteredPosts.filter(
+        (p) => new Date(p.date) <= new Date(filter.to),
+      )
+    }
 
-		return filteredPosts;
-	});
+    return filteredPosts
+  })
 
-	function tagClicked(tag) {
-		if (filter.query === tag) {
-			filter.query = '';
-		} else if (queryParts().includes(tag)) {
-			filter.query = queryParts()
-				.filter((q) => q !== tag)
-				.join(' ');
-		} else if (queryParts().join(' ').toLowerCase().includes(tag.toLowerCase())) {
-			filter.query = `${filter.query.replace(new RegExp(tag, 'ig'), '').trim()}`;
-		} else {
-			filter.query = filter.query ? `${filter.query.trim()} ${tag}` : tag;
-		}
-	}
+  function tagClicked(tag) {
+    if (filter.query === tag) {
+      filter.query = ""
+    } else if (queryParts().includes(tag)) {
+      filter.query = queryParts()
+        .filter((q) => q !== tag)
+        .join(" ")
+    } else if (
+      queryParts().join(" ").toLowerCase().includes(tag.toLowerCase())
+    ) {
+      filter.query = `${filter.query.replace(new RegExp(tag, "ig"), "").trim()}`
+    } else {
+      filter.query = filter.query ? `${filter.query.trim()} ${tag}` : tag
+    }
+  }
 
-	function like(text, value) {
-		return text.match(new RegExp(value, 'i'));
-	}
+  function like(text, value) {
+    return text.match(new RegExp(value, "i"))
+  }
 
-	function match(text, value) {
-		return text.match(new RegExp(`^${value}$`, 'i'));
-	}
+  function match(text, value) {
+    return text.match(new RegExp(`^${value}$`, "i"))
+  }
 </script>
 
-<Seo
-	title="Blog - Mike Sell"
-	description={description}
-	canonical={`${site.url}/blog`}
-/>
+<Seo title="Blog - Mike Sell" {description} canonical={`${site.url}/blog`} />
 
 <h1>Blog</h1>
 
 <div class="mt-normal">
-	<input
-		type="search"
-		bind:value={filter.query}
-		placeholder="Search"
-		autocomplete="off"
-		aria-label="Search"
-	/>
-	<div class="mt-0 search-info">
-		<div><small>Found {filteredPosts().length} posts out of {posts.length} posts</small></div>
-		{#if filter.from}
-			<div class="mt-0"><small>From {filter.from}</small></div>
-		{/if}
-		{#if filter.to}
-			<div class="mt-0"><small>To {filter.to}</small></div>
-		{/if}
-		<small></small>
-	</div>
-	{#each tags as tag}
-		<button
-			class={tag}
-			class:active={filter.query === tag ||
-				queryParts().join(' ').includes(tag) ||
-				queryParts().some((q) => match(q, tag))}
-			onclick={() => tagClicked(tag)}
-		>
-			{tag}
-		</button>
-	{/each}
+  <input
+    type="search"
+    bind:value={filter.query}
+    placeholder="Search"
+    autocomplete="off"
+    aria-label="Search"
+  />
+  <div class="mt-0 search-info">
+    <div>
+      <small
+        >Found {filteredPosts().length} posts out of {posts.length} posts</small
+      >
+    </div>
+    {#if filter.from}
+      <div class="mt-0"><small>From {filter.from}</small></div>
+    {/if}
+    {#if filter.to}
+      <div class="mt-0"><small>To {filter.to}</small></div>
+    {/if}
+    <small></small>
+  </div>
+  {#each tags as tag}
+    <button
+      class={tag}
+      class:active={filter.query === tag ||
+        queryParts().join(" ").includes(tag) ||
+        queryParts().some((q) => match(q, tag))}
+      onclick={() => tagClicked(tag)}
+    >
+      {tag}
+    </button>
+  {/each}
 </div>
 
 <ul>
-	{#each filteredPosts() as post}
-		<li style:--accent-color={`var(--${post.color})`}>
-			<article>
-				<a href={`/blog/${post.slug}`} data-sveltekit-preload-data="hover">
-					<h2 style:--post-title="post-title-{post.slug}" class="mark-hover">
-						{post.title}
-					</h2>
-					<time datetime={post.date}>{humanDate(post.date)}</time>
-					<div>{post.description}</div>
-				</a>
-				<div>
-					<a
-						href={`/blog/${post.slug}`}
-						data-sveltekit-preload-data="hover"
-						class="bold mark-hover"
-					>
-						Read more</a
-					>
-					{#if post.tldr}
-						| <a
-							href={`/blog/${post.slug}?tldr=true`}
-							data-sveltekit-preload-data="hover"
-							class="bold mark-hover">Read TLDR</a
-						>
-					{/if}
-				</div>
-			</article>
-		</li>
-	{:else}Sorry, no posts matched your criteria...
-	{/each}
+  {#each filteredPosts() as post}
+    <li style:--accent-color={`var(--${post.color})`}>
+      <article>
+        <a href={`/blog/${post.slug}`} data-sveltekit-preload-data="hover">
+          <h2 style:--post-title="post-title-{post.slug}" class="mark-hover">
+            {post.title}
+          </h2>
+          <time datetime={post.date}>{humanDate(post.date)}</time>
+          <div>{post.description}</div>
+        </a>
+        <div>
+          <a
+            href={`/blog/${post.slug}`}
+            data-sveltekit-preload-data="hover"
+            class="bold mark-hover"
+          >
+            Read more</a
+          >
+          {#if post.tldr}
+            | <a
+              href={`/blog/${post.slug}?tldr=true`}
+              data-sveltekit-preload-data="hover"
+              class="bold mark-hover">Read TLDR</a
+            >
+          {/if}
+        </div>
+      </article>
+    </li>
+  {:else}Sorry, no posts matched your criteria...
+  {/each}
 </ul>
 
 <style>
-	button {
-		color: var(--text-color-light);
-		border: 1px solid transparent;
-		transition: color 0.2s ease;
-	}
+  button {
+    color: var(--text-color-light);
+    border: 1px solid transparent;
+    transition: color 0.2s ease;
+  }
 
-	button:hover,
-	button.active {
-		color: var(--text-color);
-		border-color: hsla(var(--accent-color), 0.8);
-	}
+  button:hover,
+  button.active {
+    color: var(--text-color);
+    border-color: hsla(var(--accent-color), 0.8);
+  }
 
-	button.active {
-		background-color: hsla(var(--accent-color), 0.1);
-		border-color: hsla(var(--accent-color), 0.8);
-	}
+  button.active {
+    background-color: hsla(var(--accent-color), 0.1);
+    border-color: hsla(var(--accent-color), 0.8);
+  }
 
-	li {
-		list-style: none;
-		padding: 1em;
-		border: 1px solid;
-		border-left-width: 8px;
-		border-radius: 3px;
-		border-color: hsla(var(--accent-color), 0.2);
-	}
+  li {
+    list-style: none;
+    padding: 1em;
+    border: 1px solid;
+    border-left-width: 8px;
+    border-radius: 3px;
+    border-color: hsla(var(--accent-color), 0.2);
+  }
 
-	li:hover {
-		transition-property: background-color, border-color, border-width, transform;
-		transition-duration: 0.2s;
-		transition-timing-function: ease-out;
-		transform: scale(1.05);
-		background-color: hsla(var(--accent-color), 0.1);
-		border-color: hsla(var(--accent-color), 0.8);
-		border-left-width: 16px;
-	}
+  li:hover {
+    transition-property:
+      background-color, border-color, border-width, transform;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out;
+    transform: scale(1.05);
+    background-color: hsla(var(--accent-color), 0.1);
+    border-color: hsla(var(--accent-color), 0.8);
+    border-left-width: 16px;
+  }
 
-	li + li {
-		margin-top: var(--spacing);
-	}
+  li + li {
+    margin-top: var(--spacing);
+  }
 
-	li div {
-		margin-top: var(--spacing-small);
-		color: var(--text-color-light);
-	}
+  li div {
+    margin-top: var(--spacing-small);
+    color: var(--text-color-light);
+  }
 
-	time {
-		color: var(--text-color-light);
-	}
+  time {
+    color: var(--text-color-light);
+  }
 
-	.search-info {
-		color: var(--text-color-light);
-		text-align: right;
-	}
+  .search-info {
+    color: var(--text-color-light);
+    text-align: right;
+  }
 
-	article {
-		font-weight: 300;
-	}
+  article {
+    font-weight: 300;
+  }
 
-	@media (prefers-reduced-motion: no-preference) {
-		h2 {
-			view-transition-name: var(--post-title);
-		}
-	}
+  @media (prefers-reduced-motion: no-preference) {
+    h2 {
+      view-transition-name: var(--post-title);
+    }
+  }
 </style>

@@ -49,7 +49,7 @@ async function forceOpenShadowDOM(page: Page) {
     const orig = Element.prototype.attachShadow
     Element.prototype.attachShadow = function (init) {
       // Force mode: 'open' even if the component requests 'closed'
-      return orig.call(this, { ...init, mode: 'open' })
+      return orig.call(this, { ...init, mode: "open" })
     }
   })
 }
@@ -77,12 +77,12 @@ test.beforeEach(async ({ page }) => {
 Alternatively, for specific tests:
 
 ```typescript
-test('should interact with shadow DOM elements', async ({ page }) => {
+test("should interact with shadow DOM elements", async ({ page }) => {
   await forceOpenShadowDOM(page)
-  await page.goto('https://your-app.com')
-  
+  await page.goto("https://your-app.com")
+
   // Now you can access shadow DOM elements normally
-  await page.locator('#shadow-host').locator('button').click()
+  await page.locator("#shadow-host").locator("button").click()
 })
 ```
 
@@ -93,4 +93,3 @@ test('should interact with shadow DOM elements', async ({ page }) => {
 - **iFrame Support**: This works within iFrames as well, making it perfect for testing embedded components.
 
 This approach gives you the testing capability you need while respecting that closed Shadow DOM serves legitimate purposes in production code.
-

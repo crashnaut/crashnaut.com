@@ -9,7 +9,7 @@ tags: testing, qa, integration-tests
 
 # The Anatomy of an Integration Test
 
-People treat writing tests as a creative act, agonising over each one from a blank file. It isn't. A good integration test has the same five-part skeleton every time. Once you internalise the shape, writing tests becomes mechanical — and mechanical is exactly what you want, because it means you spend your thinking on *what* to test, not *how* to structure it.
+People treat writing tests as a creative act, agonising over each one from a blank file. It isn't. A good integration test has the same five-part skeleton every time. Once you internalise the shape, writing tests becomes mechanical — and mechanical is exactly what you want, because it means you spend your thinking on _what_ to test, not _how_ to structure it.
 
 Here are the five parts.
 
@@ -27,7 +27,7 @@ Load the request — the query or mutation — and its input payload, patch in w
 
 ## 4. Assert the response
 
-Check the result, and check errors *first*. Assert there were no errors before you reach into the response data — otherwise a failed call throws a confusing `KeyError` or `None` access instead of a clear "this returned an error" failure. Then verify the shape, the values, and the counts you expect.
+Check the result, and check errors _first_. Assert there were no errors before you reach into the response data — otherwise a failed call throws a confusing `KeyError` or `None` access instead of a clear "this returned an error" failure. Then verify the shape, the values, and the counts you expect.
 
 ## 5. Verify the state (writes only)
 

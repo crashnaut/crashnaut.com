@@ -2,31 +2,26 @@
 /// <reference types="svelte" />
 /// <reference types="vite/client" />
 
-declare let gtag: (...args) => void;
-declare let kofiWidgetOverlay: {
-  draw: (name: string, config: Record<string, string>) => void;
-};
-
 interface ImportMetaEnv {
-  VITE_PUBLIC_BASE_PATH: string;
-  VITE_PUBLIC_GA_TRACKING_ID: string;
+  VITE_PUBLIC_BASE_PATH: string
+  VITE_PUBLIC_GA_TRACKING_ID: string
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv;
+  readonly env: ImportMetaEnv
 }
 
-export {};
+export {}
 
 declare global {
-  interface ViewTransition {
-    updateCallbackDone: Promise<void>;
-    ready: Promise<void>;
-    finished: Promise<void>;
-    skipTransition: () => void;
-  }
+  /** Google tag (gtag.js) — loaded from app.html / GTM snippet */
+  function gtag(...args: unknown[]): void
 
-  interface Document {
-    startViewTransition(updateCallback: () => Promise<void>): ViewTransition;
-  }
+  /** Ko-fi floating widget — external script on blog (may be absent) */
+  // eslint-disable-next-line no-var -- optional global injected by Ko-fi script
+  var kofiWidgetOverlay:
+    | {
+        draw: (name: string, config: Record<string, string>) => void
+      }
+    | undefined
 }

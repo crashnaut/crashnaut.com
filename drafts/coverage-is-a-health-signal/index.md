@@ -9,7 +9,7 @@ tags: testing, coverage, qa
 
 # Coverage Is a Health Signal, Not a Per-PR Gate
 
-Somewhere along the way, "we should have good test coverage" turned into "every pull request must increase the coverage percentage." It sounds rigorous. It's actually one of the faster ways to rot a test suite, because it changes what people optimise for — from *covering the code they wrote* to *making a number go up*.
+Somewhere along the way, "we should have good test coverage" turned into "every pull request must increase the coverage percentage." It sounds rigorous. It's actually one of the faster ways to rot a test suite, because it changes what people optimise for — from _covering the code they wrote_ to _making a number go up_.
 
 A healthier framing: pick a target for the codebase as a whole — say 80% — and reach it collectively over time. The way you get there isn't by demanding each PR push the percentage higher. It's by making sure everyone covers what they build. Then read the trend as a signal, not a gate.
 
@@ -26,7 +26,7 @@ Before | 60 | neutral
 After | 72 | good
 :::
 
-**New code with no tests, or a pile of tests with no movement → investigate.** This is the only pattern that's actually a signal. A drop means code shipped untested and quietly pulled the number down. A batch of new tests that *doesn't* move the number is worth a closer look too — it often means those tests are hitting paths already covered, adding runtime and maintenance without adding protection.
+**New code with no tests, or a pile of tests with no movement → investigate.** This is the only pattern that's actually a signal. A drop means code shipped untested and quietly pulled the number down. A batch of new tests that _doesn't_ move the number is worth a closer look too — it often means those tests are hitting paths already covered, adding runtime and maintenance without adding protection.
 
 ## Why the per-PR gate backfires
 

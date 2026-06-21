@@ -9,7 +9,7 @@ tags: testing, qa
 
 # The Questions to Ask Before You Write a Test
 
-The instinct, when you're told to add test coverage, is to open a new test file and start typing. That's the trap. A surprising amount of low-value testing comes not from bad tests but from *unnecessary* ones — tests that re-cover paths already covered, adding runtime, maintenance, and noise without adding any protection.
+The instinct, when you're told to add test coverage, is to open a new test file and start typing. That's the trap. A surprising amount of low-value testing comes not from bad tests but from _unnecessary_ ones — tests that re-cover paths already covered, adding runtime, maintenance, and noise without adding any protection.
 
 Two questions, asked before you write a line, prevent most of it.
 

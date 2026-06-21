@@ -11,7 +11,7 @@ tags: Playwright, GitHub Actions
 
 ## The Problem
 
-You want to keep your Playwright tests in a separate repository from your application code, but you also want those tests to run automatically on every pull request. 
+You want to keep your Playwright tests in a separate repository from your application code, but you also want those tests to run automatically on every pull request.
 
 Maybe your test suite has grown large enough to deserve its own repo. Maybe you're testing multiple applications with the same test suite. Or maybe you just want clean separation between test code and application code.
 
@@ -68,14 +68,14 @@ jobs:
     name: Run Playwright Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    
+
     steps:
       # Check out the application (the PR code)
       - name: Checkout app
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          
+
       # Check out the test repository
       - name: Checkout tests
         uses: actions/checkout@v4
@@ -83,31 +83,31 @@ jobs:
           repository: your-org/your-test-repo-name
           token: ${{ secrets.PLAYWRIGHT_TESTS_TOKEN }}
           path: tests
-          
+
       # Set up Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          
+          cache: "npm"
+
       # Install app dependencies
       - name: Install app dependencies
         run: npm ci
-        
+
       # Install test dependencies
       - name: Install test dependencies
         run: |
           cd tests
           npm ci
           npx playwright install --with-deps chromium
-          
+
       # Start the app in the background
       - name: Start dev server
         run: |
           npm run dev &
           npx wait-on http://localhost:3000 --timeout 60000
-          
+
       # Run Playwright tests
       - name: Run tests
         run: |
@@ -115,7 +115,7 @@ jobs:
           npx playwright test
         env:
           BASE_URL: http://localhost:3000
-          
+
       # Upload test report on failure
       - name: Upload test report
         uses: actions/upload-artifact@v4
@@ -133,14 +133,14 @@ Replace `your-org/your-test-repo-name` with your actual test repository.
 In your **test repository**, make sure your `playwright.config.ts` uses environment variables:
 
 ```typescript
-import { defineConfig } from '@playwright/test';
+import { defineConfig } from "@playwright/test"
 
 export default defineConfig({
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.BASE_URL || "http://localhost:3000",
   },
   // Your other config...
-});
+})
 ```
 
 This allows the tests to run against different environments without code changes.
@@ -160,6 +160,7 @@ npm install --save-dev wait-on
 **Problem:** Tests fail with connection errors.
 
 **Solution:** Check that:
+
 - Your dev server actually starts on port 3000 (or update the port)
 - The `wait-on` timeout is long enough (default: 60 seconds)
 - Your application doesn't require environment variables to start
@@ -169,6 +170,7 @@ npm install --save-dev wait-on
 **Problem:** "fatal: could not read Username" or similar errors.
 
 **Solution:** Make sure:
+
 - The token has `repo` scope
 - The secret name matches exactly (`PLAYWRIGHT_TESTS_TOKEN`)
 - The token hasn't expired
@@ -178,6 +180,7 @@ npm install --save-dev wait-on
 **Problem:** Tests work on your machine but fail in GitHub Actions.
 
 **Solution:** Common causes:
+
 - Different BASE_URL (check your local `.env`)
 - Missing test dependencies (run `npx playwright install --with-deps`)
 - Timing issues (add proper waits, not fixed sleeps)
@@ -215,7 +218,7 @@ This workflow tests against `localhost`. To test against deployed preview enviro
 # Instead of starting the dev server
 - name: Wait for deployment
   run: npx wait-on ${{ env.DEPLOY_URL }} --timeout 300000
-  
+
 - name: Run tests
   run: |
     cd tests
@@ -237,4 +240,4 @@ Separating test repositories from application code is straightforward with GitHu
 
 This pattern scales well and keeps your test code organized separately without sacrificing CI integration.
 
-*More posts on Playwright patterns and CI/CD optimization coming soon.*
+_More posts on Playwright patterns and CI/CD optimization coming soon._

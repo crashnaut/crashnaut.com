@@ -11,9 +11,9 @@ tags: ai, code-review, engineering
 
 AI coding assistants are genuinely good now. They're fast, they're capable, and they'll happily produce a working diff for almost anything you ask. But "working" and "good" aren't the same thing — and the gap between them is where AI quietly creates problems.
 
-The thing to internalise is this: **you own the loop, the AI assists within it.** The assistant doesn't know your system, your team, or your constraints. You do. It fills gaps with code that *looks* right, and the only thing standing between that and your main branch is review.
+The thing to internalise is this: **you own the loop, the AI assists within it.** The assistant doesn't know your system, your team, or your constraints. You do. It fills gaps with code that _looks_ right, and the only thing standing between that and your main branch is review.
 
-After reviewing a lot of AI-assisted pull requests, the same patterns keep showing up. None of them is automatically a bug — but each is always worth a second look. When you spot one, ask: *was this intentional, or an artifact of how the AI filled in a gap?*
+After reviewing a lot of AI-assisted pull requests, the same patterns keep showing up. None of them is automatically a bug — but each is always worth a second look. When you spot one, ask: _was this intentional, or an artifact of how the AI filled in a gap?_
 
 Here are the nine.
 
@@ -37,7 +37,7 @@ A variable that just holds another variable's value under a new name — `result
 
 ## 4. The Comment Echo
 
-A comment that restates the code in plain English. `# Get the user by UUID` above `user = get_user(uuid)` tells the reader nothing they can't already see. Good comments explain the *why* — a constraint, a workaround, a non-obvious invariant — not the *what*.
+A comment that restates the code in plain English. `# Get the user by UUID` above `user = get_user(uuid)` tells the reader nothing they can't already see. Good comments explain the _why_ — a constraint, a workaround, a non-obvious invariant — not the _what_.
 
 **Look for:** comments that could be auto-generated from the function name, or that you could delete without changing anyone's understanding.
 

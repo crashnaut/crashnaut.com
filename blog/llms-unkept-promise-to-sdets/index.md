@@ -7,18 +7,17 @@ date: 2025-10-19T00:00:00.000Z
 tags: AI / ML
 ---
 
-
 # The AI Promise That Never Delivers
 
 Apple Intelligence has been out for about a year now, but like most AI promises, it has fallen short of expectations.
 
-The AI hype machine has been driven by the alluring promise of AGI (Artificial General Intelligence). Countless movies and novels explore worlds where such AGIs exist—from HAL 9000 to Skynet to Samantha from *Her*.
+The AI hype machine has been driven by the alluring promise of AGI (Artificial General Intelligence). Countless movies and novels explore worlds where such AGIs exist—from HAL 9000 to Skynet to Samantha from _Her_.
 
 But despite half a decade of promises, Apple Intelligence is just the latest example of these products missing the mark.
 
 Apple Intelligence was announced at WWDC in June 2024, but didn't ship with the brand new iPhones and other hardware announced then. Months later, we got some very mediocre features. Eventually, we received "liquid glass" effects and text message summaries.
 
-*"The really good stuff is coming,"* we're promised.
+_"The really good stuff is coming,"_ we're promised.
 
 I believe we've heard that before.
 
@@ -130,7 +129,7 @@ This is a hard problem, but a very compelling one! If an AI agent needs millions
 
 I want an agent to learn much like a human, via back-and-forth interactions, rather than from millions of pre-generated examples. More importantly, I would like this agent to use that knowledge to go off and continually learn on its own. It should be learning autonomously even without direct human intervention.
 
-It would be nice with the prompt interface to have an AI agent learn your preferences without it being a whole *Black Mirror* episode of digital cloning.
+It would be nice with the prompt interface to have an AI agent learn your preferences without it being a whole _Black Mirror_ episode of digital cloning.
 
 At the moment, the prominent promise of AGI is this idea of the single all-knowing agent that has seen so much data that it can generalize to anything. This completely fails to include the importance of learning, and this notion is just absurd.
 

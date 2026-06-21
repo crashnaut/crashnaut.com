@@ -31,7 +31,7 @@ Take the most common one: shipping a change. Done ad hoc, every engineer prompts
   7. Report back           →  link + summary
 ```
 
-The engineer says "ship this." The conventions are applied automatically. Nobody has to remember the branch-naming rule because the skill *is* the rule.
+The engineer says "ship this." The conventions are applied automatically. Nobody has to remember the branch-naming rule because the skill _is_ the rule.
 
 ## What's worth turning into a skill
 

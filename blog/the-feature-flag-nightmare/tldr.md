@@ -2,7 +2,7 @@
 
 A QA-seat companion to Jerome Dane's [Feature Flags are Dangerous](https://jeromedane.medium.com/feature-flags-are-dangerous-88ef9d6c9f04). Flags are dangerous to write — and hell to test.
 
-**The core problem:** every independent on/off flag *doubles* the test surface. `n` flags = `2ⁿ` configurations.
+**The core problem:** every independent on/off flag _doubles_ the test surface. `n` flags = `2ⁿ` configurations.
 
 :::bar-chart log[Configurations to test grow as 2ⁿ (log scale)]
 3 flags | 8 | info
@@ -21,7 +21,7 @@ A QA-seat companion to Jerome Dane's [Feature Flags are Dangerous](https://jerom
 
 - Fewer flags; prefer small releases and branches.
 - Treat every live flag as a tested parameter, with pairwise coverage.
-- Kill flags fast — each one removed *halves* the surface.
+- Kill flags fast — each one removed _halves_ the surface.
 - Log which flags were on, so failures reproduce.
 - Pin flag state in test runs.
 

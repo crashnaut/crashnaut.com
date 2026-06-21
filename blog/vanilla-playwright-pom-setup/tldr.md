@@ -1,6 +1,6 @@
 ## TL;DR
 
-Vanilla Playwright + Page Object Model, no BDD, no `BasePage`, no separate navigation helper. The whole design is about *where code is allowed to live*.
+Vanilla Playwright + Page Object Model, no BDD, no `BasePage`, no separate navigation helper. The whole design is about _where code is allowed to live_.
 
 **The one rule:** assertions live in specs; interactions live in page objects. Specs depend only on `pageFactory`; the factory owns navigation and constructs page objects.
 
@@ -31,7 +31,7 @@ class PageFactory {
   }
 
   async productsPage(options?: GotoOptions): Promise<ProductsPage> {
-    await this.navigate('/products', options)
+    await this.navigate("/products", options)
     return new ProductsPage(this.page)
   }
 }
@@ -50,7 +50,7 @@ export class ProductsPage {
   }
 
   getAddToCartButton(): Locator {
-    return this.page.getByRole('button', { name: 'Add to Cart' })
+    return this.page.getByRole("button", { name: "Add to Cart" })
   }
 }
 ```
@@ -59,12 +59,13 @@ export class ProductsPage {
 
 :::compare
 ::do[Reach for first]
+
 - `getByRole({ name })`, `getByText`, `getByLabel`
 - `getByTestId` only when needed
-::dont[Avoid]
+  ::dont[Avoid]
 - CSS chains, XPath, `.nth()`/`.first()`
 - `getByTestId` when `getByRole` works
-:::
+  :::
 
 When icon-font noise breaks a plain name match, filter a role query by text:
 
@@ -80,15 +81,17 @@ getNavLink(name: string): Locator {
 **Specs read like a manual script** (`onXxxPage` variables, assertions only here):
 
 ```typescript
-import { expect, test } from '../../fixtures/test'
-import { pageFactory } from '../../page-objects/pageFactory'
+import { expect, test } from "../../fixtures/test"
+import { pageFactory } from "../../page-objects/pageFactory"
 
-test.describe('Products', { tag: ['@smoke', '@products'] }, () => {
-  test('should navigate to Products page', async ({ page }) => {
+test.describe("Products", { tag: ["@smoke", "@products"] }, () => {
+  test("should navigate to Products page", async ({ page }) => {
     const onDashboardPage = await pageFactory(page).dashboardPage()
     await onDashboardPage.topNavBar.clickProducts()
 
-    const onProductsPage = await pageFactory(page).productsPage({ skipGoto: true })
+    const onProductsPage = await pageFactory(page).productsPage({
+      skipGoto: true,
+    })
 
     await expect(onProductsPage.getAddToCartButton()).toBeVisible()
     await expect(onProductsPage.getViewCartButton()).toBeVisible()
@@ -116,16 +119,16 @@ export const test = base.extend<AuthFixtures>({
 
 ```typescript
 export default defineConfig({
-  testDir: './test/e2e',
+  testDir: "./test/e2e",
   fullyParallel: true,
   retries: isCI ? 2 : 0,
-  reporter: isCI ? [['html', { open: 'never' }], ['list']] : [['list']],
+  reporter: isCI ? [["html", { open: "never" }], ["list"]] : [["list"]],
   use: {
     baseURL: process.env.BASE_URL,
-    trace: isCI ? 'on-first-retry' : 'on',
-    screenshot: isCI ? 'only-on-failure' : 'off',
+    trace: isCI ? "on-first-retry" : "on",
+    screenshot: isCI ? "only-on-failure" : "off",
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 })
 ```
 

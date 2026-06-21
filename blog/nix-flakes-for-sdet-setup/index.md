@@ -20,6 +20,7 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 ### Step 2: Clone and Customize (1 minute)
 
 :::code-group
+
 ```bash[title=macOS]
 git clone https://github.com/crashnaut/nix.git
 cd nix/mac
@@ -34,6 +35,7 @@ cd nix/linux
 git clone https://github.com/crashnaut/nix.git
 cd nix/windows
 ```
+
 :::
 
 Edit `flake.nix` to set your username and hostname, and customize the package list.
@@ -41,6 +43,7 @@ Edit `flake.nix` to set your username and hostname, and customize the package li
 ### Step 3: Apply Configuration (2 minutes)
 
 :::code-group
+
 ```bash[title=macOS]
 nix run nix-darwin -- switch --flake .#your-hostname
 ```
@@ -52,6 +55,7 @@ nix run home-manager/master -- switch --flake .#your-username@your-hostname
 ```bash[title=Windows (WSL2)]
 nix run home-manager/master -- switch --flake .#your-username@your-hostname
 ```
+
 :::
 
 Done! All your tools are now installed and configured.
@@ -59,18 +63,21 @@ Done! All your tools are now installed and configured.
 ## What's Included
 
 ### Development Tools
+
 - Git, GitHub CLI, Vim, GPG
 - **Node.js 20+ (LTS)** with pnpm package manager
 - **OrbStack** (fast, lightweight Docker alternative - Mac only)
 - Language toolchains ready to add
 
 ### CLI Utilities
+
 - Modern tools: `ripgrep`, `bat`, `fd`, `eza`
 - System monitoring: `htop`, `btop`
 - Essentials: `curl`, `wget`, `jq`
 - Zsh with Oh My Zsh
 
 ### GUI Applications (Mac/Linux)
+
 - **Browsers**: Brave, Firefox
 - **Communication**: Slack, Telegram, WhatsApp
 - **Productivity**: Logseq, Postman, Obsidian
@@ -86,6 +93,7 @@ nix flake update
 ```
 
 :::code-group
+
 ```bash[title=macOS]
 darwin-rebuild switch --flake .
 ```
@@ -93,6 +101,7 @@ darwin-rebuild switch --flake .
 ```bash[title=Linux/Windows]
 home-manager switch --flake .
 ```
+
 :::
 
 ### Add a Package
@@ -111,6 +120,7 @@ packages = with pkgs; [
 ### Rollback on Issues
 
 :::code-group
+
 ```bash[title=macOS]
 darwin-rebuild switch --rollback
 ```
@@ -119,6 +129,7 @@ darwin-rebuild switch --rollback
 home-manager generations
 home-manager switch --switch-generation <number>
 ```
+
 :::
 
 ## SDET Use Cases
@@ -177,4 +188,3 @@ Yes! OrbStack is included on Mac (faster and lighter than Docker Desktop). Linux
 ---
 
 **Questions?** Open an issue on [GitHub](https://github.com/crashnaut/nix) or check the [Nix docs](https://nixos.org/manual/nix/stable/).
-

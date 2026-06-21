@@ -1,18 +1,22 @@
 <h4>Support me</h4>
 <p class="mt-0">
-	I appreciate it if you would support me if you have enjoyed this post and found it useful, thank
-	you in advance.
+  I appreciate it if you would support me if you have enjoyed this post and
+  found it useful, thank you in advance.
 </p>
 <div>
-	<a href="https://ko-fi.com/M4M11LXCGS" target="_blank" rel="noreferrer" class="support mt-0"
-		><img
-			height="36"
-			style="border:0px;"
-			src="/images/kofi.webp"
-			alt="Buy Me a Coffee at ko-fi.com"
-		/></a
-	>
-	<!-- <a
+  <a
+    href="https://ko-fi.com/M4M11LXCGS"
+    target="_blank"
+    rel="noreferrer"
+    class="support mt-0"
+    ><img
+      height="36"
+      style="border:0px;"
+      src="/images/kofi.webp"
+      alt="Buy Me a Coffee at ko-fi.com"
+    /></a
+  >
+  <!-- <a
 		target="_blank"
 		rel="noreferrer"
 		href="https://www.paypal.com/donate?hosted_button_id=YOUR_BUTTON_ID_HERE"
@@ -28,10 +32,9 @@
 </div>
 
 <style>
-	a {
-		display: inline-block;
-		vertical-align: middle;
-		margin-right: 1em;
-	}
+  a {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 1em;
+  }
 </style>
-

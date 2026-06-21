@@ -63,6 +63,6 @@ with conn.session(database=test_db_name) as session:
 
 ## Why bother instead of just mocking the DB?
 
-Because a mocked database doesn't catch the bugs that actually happen — constraint violations, query mistakes, transaction edge cases, the gap between what your query *says* and what the engine *does*. Testing against a real database with real isolation is what makes an integration test worth running. The function-vs-class split is simply how you keep that honesty without making the suite painful to run.
+Because a mocked database doesn't catch the bugs that actually happen — constraint violations, query mistakes, transaction edge cases, the gap between what your query _says_ and what the engine _does_. Testing against a real database with real isolation is what makes an integration test worth running. The function-vs-class split is simply how you keep that honesty without making the suite painful to run.
 
 Pick the scope per test, name the database randomly, and never hardcode it. That's the whole pattern.

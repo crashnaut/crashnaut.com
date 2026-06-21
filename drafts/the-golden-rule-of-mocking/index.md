@@ -23,20 +23,21 @@ Draw a line around the system you own. Everything inside that line — your busi
 
 :::compare
 ::do[Mock these — you don't own them]
+
 - Cloud storage reads and writes (S3 and friends)
 - Third-party APIs (payments, accounting, geocoding)
 - Email and notification sending
 - Any external HTTP service
 - Token validation against an external identity provider
-::dont[Never mock these — they're yours]
+  ::dont[Never mock these — they're yours]
 - Your database queries
 - Your resolvers, controllers, or handlers
 - Your business-logic models
 - Your data transformations
 - Your authorization logic
-:::
+  :::
 
-The reason is simple. A test exists to catch a regression in *your* code. The moment you mock your own resolver to "return a UUID," you've replaced the thing under test with a puppet. It can never fail, so it can never warn you.
+The reason is simple. A test exists to catch a regression in _your_ code. The moment you mock your own resolver to "return a UUID," you've replaced the thing under test with a puppet. It can never fail, so it can never warn you.
 
 ```python
 # ✗ Don't do this — you're testing the mock, not the code
@@ -53,7 +54,7 @@ def test_create_address(client, fake_geocoding):
 
 ## The subtle part: mock payloads, not your code
 
-Here's the distinction that trips people up. Mocking *input data* is fine. Mocking *your code's behaviour* is not.
+Here's the distinction that trips people up. Mocking _input data_ is fine. Mocking _your code's behaviour_ is not.
 
 An auth fixture that hands your code a valid token payload is mocking input — it's standing in for the identity provider at the boundary. That's correct. But reaching inside and stubbing your own permission-checking function so it always returns `True` is mocking your code. Now you're not testing whether permissions work; you're testing whether `True == True`.
 
@@ -67,4 +68,4 @@ The payoff is trust. When an integration test goes green, it means the actual pa
 
 ## The one rule to remember
 
-If you're testing your own code, run it for real. If you're crossing a boundary into a third-party service, mock it. When you're staring at a test wondering whether to patch something, ask one question: *do I own this?* If yes, let it run.
+If you're testing your own code, run it for real. If you're crossing a boundary into a third-party service, mock it. When you're staring at a test wondering whether to patch something, ask one question: _do I own this?_ If yes, let it run.

@@ -11,7 +11,7 @@ tags: testing, feature-flags, qa
 
 My former boss, Jerome Dane, wrote a piece I keep coming back to: [Feature Flags are Dangerous](https://jeromedane.medium.com/feature-flags-are-dangerous-88ef9d6c9f04). His argument is from the engineering and architecture seat — flags blur what's actually running in production, leave landmines of dead code, create multiple code paths, and quietly drift between environments and caches.
 
-I want to add the view from the chair next to his: the QA chair. Because everything he says is true on the way *in*, and it gets worse on the way *out*. If feature flags are dangerous to write, they are pure hell to test.
+I want to add the view from the chair next to his: the QA chair. Because everything he says is true on the way _in_, and it gets worse on the way _out_. If feature flags are dangerous to write, they are pure hell to test.
 
 Here's the part that doesn't fit in a standup update: **every independent flag doubles the test surface.** Not adds to it — doubles it.
 
@@ -82,24 +82,25 @@ The gap between what a developer verified and what actually reaches users is whe
 
 :::compare
 ::do[What the developer tested]
+
 - The flag **on**, happy path
 - On their machine, one environment
 - As an admin / their own account
 - With a fresh cache
-::dont[What actually ships to users]
+  ::dont[What actually ships to users]
 - Every reachable **combination** of flags
 - Across every environment
 - Across every role and segment
 - With stale, warm, and cold caches
-:::
+  :::
 
-The developer flipped one flag on and saw their feature work. Then a customer hits it with a *different* flag also on, in production, as a non-admin, behind a stale cache — a cell of the grid no one ever opened. To them it's just a bug. To Jerome's point, this is "testing in production" whether you meant to or not.
+The developer flipped one flag on and saw their feature work. Then a customer hits it with a _different_ flag also on, in production, as a non-admin, behind a stale cache — a cell of the grid no one ever opened. To them it's just a bug. To Jerome's point, this is "testing in production" whether you meant to or not.
 
 ## Why automation doesn't rescue you
 
 The instinct is "we'll just parametrize the tests across flag states." You can — but the matrix is still exponential, so you get to choose between two bad outcomes: run every combination and watch CI time explode past anything usable, or pick a subset and accept the gaps. There's no free lunch hiding in the test runner.
 
-The pragmatic middle ground is **combinatorial (pairwise) testing**: instead of all `2ⁿ` combinations, generate the much smaller set that covers every *pair* of flag values at least once. It catches the large class of bugs that come from two flags interacting, at a fraction of the cost. It is a mitigation, not a cure — it will not catch a bug that only appears when three specific flags line up — but it's the honest tool for the job.
+The pragmatic middle ground is **combinatorial (pairwise) testing**: instead of all `2ⁿ` combinations, generate the much smaller set that covers every _pair_ of flag values at least once. It catches the large class of bugs that come from two flags interacting, at a fraction of the cost. It is a mitigation, not a cure — it will not catch a bug that only appears when three specific flags line up — but it's the honest tool for the job.
 
 ## What actually helps, from the QA seat
 
@@ -146,7 +147,7 @@ A few principles behind that flow:
 
 **Treat every live flag as a test parameter, not an afterthought.** If a flag exists, its states belong in the test plan — default-tested, with pairwise coverage across the rest. A flag that isn't in the test matrix is a flag you're shipping blind.
 
-**Kill flags aggressively.** Every flag you remove *halves* the surface you just saw explode. A sunset date on each flag is the single highest-leverage testing decision a team can make, and it costs nothing.
+**Kill flags aggressively.** Every flag you remove _halves_ the surface you just saw explode. A sunset date on each flag is the single highest-leverage testing decision a team can make, and it costs nothing.
 
 **Make flag state observable.** When a bug report comes in, the first question is "which flags were on?" If your logs answer that, a failure is reproducible. If they don't, you're debugging one unknown cell in a 200-cell grid.
 
@@ -154,6 +155,6 @@ A few principles behind that flow:
 
 ## The bottom line
 
-Feature flags don't remove risk; they *move* it — off the developer's machine and into the tester's matrix, which grows exponentially with every toggle added. Jerome is right that they're dangerous to write. From where I sit, the kindest thing any team can do for the people testing their software is to have fewer flags, register the ones they keep as real test parameters, and kill them fast.
+Feature flags don't remove risk; they _move_ it — off the developer's machine and into the tester's matrix, which grows exponentially with every toggle added. Jerome is right that they're dangerous to write. From where I sit, the kindest thing any team can do for the people testing their software is to have fewer flags, register the ones they keep as real test parameters, and kill them fast.
 
 The fewer cells in the grid, the more of them you can actually open.
