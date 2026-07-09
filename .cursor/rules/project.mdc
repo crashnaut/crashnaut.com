@@ -1,0 +1,14 @@
+---
+description: Playwright test suite — scope and priorities
+alwaysApply: true
+---
+
+# Project guardrails
+
+- **Automation stack:** **Vanilla Playwright** (`@playwright/test`). Keep current releases. No alternate runners unless explicitly requested.
+- **Browser:** **Google Chrome (stable)** via Chromium project unless product asks for more. Do not expand the browser matrix without reason.
+- **Tone of work:** Favor clarity, correctness, and maintainability over cleverness. Keep design **simple**; avoid overengineering.
+- **Secrets:** Never commit real credentials. Use **environment variables** or CI secrets for login and test data.
+- **Stay on target:** Do **not** add unrelated apps, heavy visual-diff infra, load tests, or security tooling unless required. **API checks** stay at HTTP / network / console level — no invented REST contract suites.
+- **Thin boundaries:** Keep `playwright.config.ts` and entrypoints readable; put reusable logic in small **named helpers** or fixtures, not deep class hierarchies.
+- **Layout / POM:** One **`pageFactory.ts`** holds **navigation + construction**; pages **compose** shared components — do not add **`navigationPage.ts`** or **`BasePage`**.

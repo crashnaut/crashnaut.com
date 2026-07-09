@@ -1,0 +1,104 @@
+---
+description: Playwright specs + POM
+globs:
+  - "tests/**/*.spec.ts"
+  - "tests/**/page-objects/**/*.ts"
+  - "test/**/*.spec.ts"
+  - "test/**/page-objects/**/*.ts"
+alwaysApply: false
+---
+
+# Playwright — specs and page objects
+
+Vanilla Playwright + Page Object Model. One **`pageFactory`** owns **`goto`** and page construction — **no** `navigationPage.ts`, **no** `BasePage`.
+
+## Laws
+
+1. **Assertions only in `*.spec.ts`.** Page objects and components must not call `expect()`.
+2. **Interactions, waits, and navigation** live in page objects, components, and **`pageFactory.ts`**. Specs read like manual test scripts.
+3. **User-facing locators first** — follow the priority in **Locators** below. Minimize `page.locator()`; no brittle CSS/XPath unless documented exception.
+4. **Do not bury whole user journeys** in opaque shared helpers; thin `pageFactory.xxxPage()` navigation steps are OK.
+5. **Avoid explicit `timeout:`** on new `waitFor*` / `expect` — use Playwright config defaults.
+6. **Lint-clean** when ESLint exists.
+
+## Specs
+
+- **`test.describe`** grouped by feature; **Arrange / Act / Assert** separated by blank lines.
+- **Tags:** use `@smoke`, feature tags (`@auth`, etc.), and viewport tags (`@desktop`, `@mobile`) when multi-project config is enabled.
+- **Navigate** only via **`await pageFactory.xxxPage()`** — use the **`pageFactory`** fixture → assign to **`onXxxPage`**. Keep **`page`** when asserting URL or browser-level state.
+- **Names** read as behavior (`should show error for invalid login`); no `test1`. **Smoke:** name must match assertions — landmarks/heading/URL only; don't use titles that imply list rows or actions you don't assert.
+- Import **`test`** / **`expect`** from your **`fixtures/test.ts`**. UI login: **`test.use({ apiLogin: false })`** in the describe block.
+
+## Waits and mobile
+
+- Prefer **`expect(locator).to…`** over sleeps. **No** `page.waitForTimeout` unless justified in one comment.
+- **Mobile viewport:** `scrollIntoViewIfNeeded()` before clicks when elements may sit below the fold.
+
+## Page factory and composition
+
+**Page factory** owns navigation and returns initialized page objects. **Composition** splits each page into reusable **components** (nav bars, modals, sidebars).
+
+### Page factory
+
+- Specs obtain pages only via **`await pageFactory.xxxPage(options?)`** — **`pageFactory`** fixture from **`fixtures/test.ts`**. No `new XxxPage(page)` or `pageFactory(page)` in specs.
+- **`options?: { skipGoto?: boolean }`** — skip `goto` when the browser is already on that route (nav click, login redirect, prior step). Default: full navigation.
+- Add routes: **`private navigate(path, options?)`** + factory method returning **`new XxxPage(this.page)`**.
+- **Do not** add **`navigationPage.ts`** or a second navigation class.
+
+### Composition (components)
+
+- **Page objects** = route/feature level. **Components** = reusable UI regions (`TopNavBar`, modals, sidebars).
+- Compose in the page **constructor**: **`readonly topNavBar = new TopNavBar(page)`**.
+- Specs interact through the page: **`onSchedulerPage.topNavBar.clickProducts()`** — not `new TopNavBar(page)` in specs.
+- **Extract a component** when the same region appears on **2+ pages** or a page object file is unwieldy. Do not extract one-off markup.
+- Components follow the same laws as page objects: **no `expect()`**; **`get*` / `click*` / `fill*`** prefixes; all locators inside the component.
+- **Scope locators** to a stable container when one exists (`getByRole('banner')`, etc.). When markup has no clean root, use page-level **`getByRole` + `filter`**.
+
+### Page object style
+
+- **Prefix style:** `get*` → `Locator`; `click*` / `fill*` / `select*` → actions.
+- **All locators in page objects and components** — specs never call `page.locator(...)`, `getBy*`, or raw selectors.
+
+### File layout
+
+- **`page-objects/pageFactory.ts`** — navigation + construction
+- **`page-objects/<feature>/xxxPage.ts`** — feature pages
+- **`page-objects/components/`** — shared components
+
+## Locators
+
+Official guide: [Playwright — Locators](https://playwright.dev/docs/locators). Match Playwright's **recommended built-in** order (best → last resort):
+
+| Priority | API | Use when |
+| -------- | --- | -------- |
+| 1 | `getByRole(role, { name })` | Buttons, links, headings, checkboxes, tables, dialogs. **Default for interactive elements.** |
+| 2 | `getByText(text, { exact? })` | Static / non-interactive copy. **Not** for buttons/links/inputs. |
+| 3 | `getByLabel(text)` | Form controls with an associated `<label>`. |
+| 4 | `getByPlaceholder(text)` | Inputs with placeholder and **no** usable label. |
+| 5 | `getByAltText(text)` | Images and areas with `alt`. |
+| 6 | `getByTitle(text)` | Elements with a `title` attribute. |
+| 7 | `getByTestId(id)` | Stable contract when role/label/text cannot target reliably. |
+| 8 | `page.locator(selector)` | **Last resort** — CSS/XPath only when 1–7 cannot work. Comment why. |
+
+### Minimize `page.locator()`
+
+- **Do not** use CSS chains, XPath, or `.nth()` / `.first()` to paper over ambiguous matches — **narrow** the locator.
+- Prefer `getByRole('textbox', { name })` for labeled form fields.
+
+### Narrowing duplicates (preferred)
+
+```typescript
+this.page.getByRole('link').filter({
+  has: this.page.getByText('Active Items', { exact: true }),
+})
+```
+
+### Strictness
+
+- Locators are strict: one match for actions like `.click()`.
+- If Playwright reports multiple matches, **improve the locator** — do not default to `.first()` / `.nth()`.
+
+## Data and scope
+
+- Shared literals in **`test-data/`**. Credentials via env vars or committed QA fixtures — never production secrets.
+- Network checks at HTTP / network / console level only — no invented REST contract suites.

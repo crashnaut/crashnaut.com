@@ -1,0 +1,24 @@
+---
+description: TypeScript — Playwright config, page-objects, test-data
+globs:
+  - "playwright.config.ts"
+  - "tests/**/page-objects/**/*.ts"
+  - "tests/**/test-data/**/*.ts"
+  - "tests/**/utils/**/*.ts"
+  - "test/**/page-objects/**/*.ts"
+  - "test/**/test-data/**/*.ts"
+  - "test/**/utils/**/*.ts"
+alwaysApply: false
+---
+
+# TypeScript (Playwright support code)
+
+**Spec and POM laws** live in the **playwright-tests** rule. This rule covers **`playwright.config.ts`**, **page-objects**, **test-data**, **utils**.
+
+- Prefer **small exported functions** and **explicit return types** on public helpers.
+- **`fixtures/test.ts`:** exports **`test`**, **`expect`**, **`pageFactory`** fixture, and any auth options (`apiLogin`, `loginUser`, etc.).
+- **`pageFactory.ts`:** keep **`navigate()`** + factory methods **readable**; export **`GotoOptions`** (`skipGoto?`) and **`PageFactory`**; no second navigation class. Alias as `createPageFactory` inside the fixture file if the fixture key is also `pageFactory`.
+- **Components** (`page-objects/components/`): small classes composed in page constructors; scope locators to a container when possible.
+- **Dependencies:** only what the suite needs (`@playwright/test`, `typescript`, `@types/node`, `dotenv`, etc.).
+- **`BASE_URL`** and secrets stay in **`.env`** (gitignored) — never commit personal hostnames or production credentials.
+- Prefer early returns over deep nesting; avoid `any` — use `unknown` and narrow when needed.
