@@ -19,6 +19,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --check . && eslint .",
+    "lint:posts": "node ./scripts/lint-posts.mjs",
     "format": "prettier --write .",
     "copy:content": "npm run copy:blog",
     "copy:blog": "cpy 'blog/**/*.*' '!blog/**/*.md' 'static/blog'",
