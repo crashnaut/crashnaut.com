@@ -3,7 +3,7 @@ title: "Test Database Isolation in pytest: Reads Share, Writes Get Their Own"
 slug: test-database-isolation-function-vs-class
 description: "Share one test database and tests leak state into each other. Give each its own and the suite crawls. Match pytest fixture scope to what each test does."
 author: Mike Sell
-date: 2026-10-10T11:00:00.000Z
+date: 2026-06-09T00:00:00.000Z
 tags: Testing Strategy, Test Architecture, pytest
 ---
 

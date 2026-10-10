@@ -3,7 +3,7 @@ title: "How to Run Preview Environments per PR With a Fixed Pool of Slots"
 slug: ephemeral-preview-environments-slot-based-deploys
 description: "A live preview URL for every pull request without a backend per branch: a fixed slot pool, a GitHub Actions claim step, Playwright on the slot, auto-release."
 author: Mike Sell
-date: 2026-10-10T13:00:00.000Z
+date: 2026-07-30T00:00:00.000Z
 tags: GitHub Actions, CI, Playwright
 ---
 

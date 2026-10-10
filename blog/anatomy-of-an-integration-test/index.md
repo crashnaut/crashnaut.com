@@ -3,7 +3,7 @@ title: "Every Integration Test Has the Same Five Parts"
 slug: anatomy-of-an-integration-test
 description: "Two questions to ask before you write a test, then the five parts every one shares, worked through a create-payment test that checks the ledger."
 author: Mike Sell
-date: 2026-10-10T10:00:00.000Z
+date: 2026-05-21T00:00:00.000Z
 tags: Testing Strategy, Playwright, GraphQL, TypeScript
 ---
 

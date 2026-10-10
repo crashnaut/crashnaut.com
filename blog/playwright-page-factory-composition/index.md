@@ -3,7 +3,7 @@ title: "Playwright Page Factory + Composition: Scaling a Vanilla POM"
 slug: playwright-page-factory-composition
 description: "Combine a page factory, composition pattern, skipGoto navigation, and a Playwright fixture, so specs stay thin as the suite grows."
 author: Mike Sell
-date: 2026-10-09T00:00:00.000Z
+date: 2026-04-07T00:00:00.000Z
 tags: Playwright, Page Object Model, TypeScript, Test Architecture
 ---
 

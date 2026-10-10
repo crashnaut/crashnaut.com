@@ -3,7 +3,7 @@ title: "Playwright BDD: Combining Cucumber with Page Objects"
 slug: playwright-bdd
 description: "Combine Cucumber/Gherkin with the Page Object Model in Playwright so BDD suites stay maintainable instead of decaying into scattered utility functions."
 author: Mike Sell
-date: 2025-10-17T00:00:00.000Z
+date: 2025-11-27T00:00:00.000Z
 tags: BDD, Playwright, Page Object Model, Cucumber
 ---
 

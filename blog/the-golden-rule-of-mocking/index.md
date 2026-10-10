@@ -3,7 +3,7 @@ title: "The Golden Rule of Mocking: Mock the Boundary, Not the Code"
 slug: the-golden-rule-of-mocking
 description: "Mock the payment provider at the HTTP boundary, not your own client class. A TypeScript and MSW example of tests that can actually catch a Stripe bug."
 author: Mike Sell
-date: 2026-10-10T09:00:00.000Z
+date: 2026-04-29T00:00:00.000Z
 tags: Mocking, Testing Strategy, Test Architecture, TypeScript
 ---
 

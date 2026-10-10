@@ -3,7 +3,7 @@ title: Run Playwright Tests from a Separate Repository in CI
 slug: cross-repo-playwright-ci
 description: Keep Playwright tests in their own repository and run them on every PR in your app repo with GitHub Actions, a dual checkout and a least-privilege token.
 author: Mike Sell
-date: 2025-10-26T00:00:00.000Z
+date: 2025-12-16T00:00:00.000Z
 tags: Playwright, GitHub Actions, CI
 ---
 
