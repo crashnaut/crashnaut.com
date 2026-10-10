@@ -9,10 +9,9 @@ export const site = {
   defaultImage: `${variables.basePath}/og/default.png`,
   avatar: `${variables.basePath}/images/mike.jpg`,
   calendly: "https://calendly.com/mikesell404",
-  linkedin: "https://www.linkedin.com/in/mike-sell-crashnaut",
+  linkedin: "https://www.linkedin.com/in/mikedcsell",
   github: "https://github.com/crashnaut",
   locale: "en_US",
-  twitter: "@crashnaut",
   /** Trading / legal entity for contracting (Ireland). */
   legalEntity: {
     name: "Crashnaut Ltd",
@@ -28,11 +27,7 @@ export function personJsonLd() {
     url: site.url,
     image: site.avatar,
     jobTitle: "Senior SDET Contractor",
-    sameAs: [
-      site.linkedin,
-      site.github,
-      "https://bsky.app/profile/crashnaut.com",
-    ],
+    sameAs: [site.linkedin, site.github],
     worksFor: {
       "@type": "Organization",
       name: site.legalEntity.name,

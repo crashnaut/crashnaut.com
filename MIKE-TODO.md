@@ -35,13 +35,11 @@ Related docs:
 
 ## Check what Claude wrote
 
-- [ ] **Engagement steps** on `/contact` ("Intro call → Audit → Build & hand over",
+- [x] **Engagement steps** on `/contact` ("Intro call → Audit → Build & hand over",
       in `src/routes/contact/+page.svelte`): make sure this is really how you work.
-- [ ] **LinkedIn URL:** the old site had both `/in/mikedcsell` and
-      `/in/mike-sell-crashnaut`. The new site uses `/in/mike-sell-crashnaut`
-      (`src/lib/seo.ts`, `firebase.json`). Fix it there if that's wrong.
-- [ ] **Bluesky:** a share button and a `/bluesky` redirect point to
-      `bsky.app/profile/crashnaut.com`. Remove them if you don't use Bluesky.
+- [x] **LinkedIn URL:** `/in/mikedcsell` (`src/lib/seo.ts`, `firebase.json`).
+- [x] **Bluesky / X:** no accounts, so the Bluesky share button, the `/bluesky`
+      and `/twitter` redirects and the `@crashnaut` Twitter meta tags are gone.
 - [ ] **Homepage and footer copy** (`src/routes/+page.svelte`,
       `src/lib/WorkWithMe.svelte`): tweak it so it sounds like you.
 

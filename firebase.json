@@ -26,23 +26,13 @@
         "type": 301
       },
       {
-        "source": "/twitter",
-        "destination": "https://twitter.com/intent/follow?screen_name=crashnaut",
-        "type": 302
-      },
-      {
         "source": "/linkedin",
-        "destination": "https://www.linkedin.com/in/mike-sell-crashnaut",
+        "destination": "https://www.linkedin.com/in/mikedcsell",
         "type": 302
       },
       {
         "source": "/github",
         "destination": "https://github.com/crashnaut",
-        "type": 302
-      },
-      {
-        "source": "/bluesky",
-        "destination": "https://bsky.app/profile/crashnaut.com",
         "type": 302
       },
       {

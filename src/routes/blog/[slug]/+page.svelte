@@ -202,7 +202,7 @@
     {/if}
 
     <div class="share-row">
-      <Share text={meta.title} url={meta.canonical} />
+      <Share url={meta.canonical} />
       <a class="telemetry edit" href={meta.edit} rel="external"
         >Suggest an edit on GitHub</a
       >

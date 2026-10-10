@@ -132,7 +132,8 @@ for (const [name, size, pad] of [
   )
   await page.screenshot({ path: path.join(favDir, name), omitBackground: !pad })
 }
-// favicon.ico wrapping a 32px PNG (ICO files may embed PNG data directly)
+// favicon.ico wrapping a 32px PNG (ICO files may embed PNG data directly).
+// It lives at the site root because browsers request /favicon.ico by default.
 const png = fs.readFileSync(path.join(favDir, "favicon-32x32.png"))
 const header = Buffer.alloc(22)
 header.writeUInt16LE(0, 0)
@@ -144,7 +145,10 @@ header.writeUInt16LE(1, 10)
 header.writeUInt16LE(32, 12)
 header.writeUInt32LE(png.length, 14)
 header.writeUInt32LE(22, 18)
-fs.writeFileSync(path.join(favDir, "favicon.ico"), Buffer.concat([header, png]))
+fs.writeFileSync(
+  path.join(root, "static", "favicon.ico"),
+  Buffer.concat([header, png]),
+)
 console.log("[og] favicons")
 
 await browser.close()

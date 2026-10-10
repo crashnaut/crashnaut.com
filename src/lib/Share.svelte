@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { text = "", url = "" }: { text?: string; url?: string } = $props()
+  let { url = "" }: { url?: string } = $props()
 
   let copied = $state(false)
 
@@ -18,13 +18,6 @@
     rel="noreferrer"
     href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
     >LinkedIn</a
-  >
-  <a
-    class="tag"
-    target="_blank"
-    rel="noreferrer"
-    href={`https://bsky.app/intent/compose?text=${encodeURIComponent(`${text} ${url}`)}`}
-    >Bluesky</a
   >
   <button type="button" class="tag" onclick={copyLink}
     >{copied ? "Link copied" : "Copy link"}</button
