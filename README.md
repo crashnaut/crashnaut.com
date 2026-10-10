@@ -13,8 +13,11 @@ npm run dev          # http://localhost:5173
 ## Write a post
 
 ```bash
-npm run g "How to Test Idempotency in Payment APIs"   # scaffolds drafts/<slug>/index.md
+npm run g "How to Test Idempotency in Payment APIs"   # scaffolds drafts/<slug>/index.md + tldr.md
 ```
+
+Every slot from `docs/EDITORIAL-PLAYBOOK.md` §2 is stubbed as a `TODO(write)` comment;
+`npm run lint:posts` fails on any that reach `blog/`.
 
 Drafts live in `drafts/` and are never built. To publish, move the folder to
 `blog/`, then run `npm run og` to render its share card into `static/og/`

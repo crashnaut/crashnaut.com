@@ -39,7 +39,8 @@ Research notes in `drafts/<slug>/research/` are leads, not sources.
 
 ## Fixed slots for every post
 
-See playbook §2 for the full rules.
+`npm run g` stubs all of these out, and `npm run lint:posts` fails on any stub left in a
+published post. See playbook §2 for the full rules.
 
 - **Title:** a claim or a searchable how-to, never a topic.
 - **Description:** one sentence, 160 characters max.
@@ -57,7 +58,8 @@ never shrink type. US spelling; product names as their vendors write them.
 
 ## Pipeline
 
-1. **Scaffold:** `npm run g "Title"` creates `drafts/<slug>/index.md`.
+1. **Scaffold:** `npm run g "Title"` creates `drafts/<slug>/index.md` and `tldr.md`
+   with every slot stubbed as a `TODO(write)` comment.
 2. **Research:** 1–3 parallel agents (playbook prompt A) write
    `drafts/<slug>/research/<angle>.md`.
 3. **Write:** fill every slot. Pick the angle by value to a FinTech reader.
