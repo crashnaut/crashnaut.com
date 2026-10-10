@@ -1,3 +1,5 @@
+import type { PostSignals } from "./post-signals.ts"
+
 export interface TOC {
   description: string
   level: number
@@ -26,6 +28,8 @@ export interface PostMetadata {
   incomingLinks: PostLink[]
   toc: TOC[]
   outgoingSlugs?: string[]
+  /** Build-time counts and shapes behind the crash report, sigil, ribbon and gauge. */
+  signals: PostSignals
 }
 
 export interface Post {

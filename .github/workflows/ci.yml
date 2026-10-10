@@ -36,6 +36,7 @@ jobs:
       - run: npm run check
       - run: npm run lint
       - run: npm run lint:posts
+      - run: npm run test:unit
 
       - name: Warn when analytics is not configured
         if: env.VITE_PUBLIC_GA_TRACKING_ID == ''
