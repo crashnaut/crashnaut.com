@@ -122,16 +122,16 @@ Jerome's prescription (fewer flags, branches over toggles, small reversible rele
 
 <figure class="diagram">
 <svg viewBox="0 0 620 470" role="img" aria-label="A decision flowchart for whether something should become a feature flag">
-  <defs>
-    <marker id="ffah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
-      <path d="M0,0 L7,3 L0,6 Z" class="d-arrow"/>
-    </marker>
-  </defs>
-  <path class="d-line" d="M200,66 L200,88" marker-end="url(#ffah)"/>
-  <path class="d-line" d="M330,140 L372,140" marker-end="url(#ffah)"/>
-  <path class="d-line" d="M200,192 L200,238" marker-end="url(#ffah)"/>
-  <path class="d-line" d="M330,290 L372,290" marker-end="url(#ffah)"/>
-  <path class="d-line" d="M200,342 L200,386" marker-end="url(#ffah)"/>
+  <path class="d-line" d="M200,66 L200,82"/>
+  <path class="d-arrow" d="M200,90 l-4,-8 l8,0 z"/>
+  <path class="d-line" d="M330,140 L364,140"/>
+  <path class="d-arrow" d="M372,140 l-8,-4 l0,8 z"/>
+  <path class="d-line" d="M200,192 L200,232"/>
+  <path class="d-arrow" d="M200,240 l-4,-8 l8,0 z"/>
+  <path class="d-line" d="M330,290 L364,290"/>
+  <path class="d-arrow" d="M372,290 l-8,-4 l0,8 z"/>
+  <path class="d-line" d="M200,342 L200,380"/>
+  <path class="d-arrow" d="M200,388 l-4,-8 l8,0 z"/>
   <text class="d-edge" x="348" y="132">yes</text>
   <text class="d-edge" x="210" y="218">no</text>
   <text class="d-edge" x="348" y="282">no</text>
