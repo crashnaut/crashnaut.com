@@ -15,8 +15,9 @@ Related docs:
 
 ## Setup (accounts and secrets)
 
-- [ ] **Turn on analytics.** Create a GA4 property for crashnaut.com and copy the
-      measurement ID (`G-XXXXXXXXXX`). In GitHub, open **Settings → Secrets and
+- [ ] **Turn on analytics.** The GA4 property "crashnaut" (509416308) is already
+      linked to the Firebase project. Add a web data stream for
+      `https://crashnaut.com` and copy its measurement ID (`G-XXXXXXXXXX`). In GitHub, open **Settings → Secrets and
       variables → Actions → Variables** and add `GA_MEASUREMENT_ID`. Until it's
       set, builds ship without analytics and CI prints a warning.
 - [ ] **Filter out your own visits.** In GA4, open **Admin → Data streams → Configure
@@ -24,11 +25,6 @@ Related docs:
 - [ ] **Set up Google Search Console.** Verify crashnaut.com (a DNS TXT record is
       easiest) and submit `https://crashnaut.com/sitemap.xml`. It shows which
       search terms bring people in, which GA alone can't.
-- [ ] **Turn on automatic deploys.** Run `npx firebase init hosting:github` (or
-      create a service-account key in GCP IAM) and save the JSON as the repo secret
-      `FIREBASE_SERVICE_ACCOUNT`. Until then, the CI deploy steps are skipped and
-      you deploy by hand:
-      `VITE_PUBLIC_GA_TRACKING_ID=G-… npm run build && npx firebase deploy --only hosting`
 - [ ] **Check that comments work.** Make sure the giscus GitHub app is installed for
       `crashnaut/crashnaut.com` (https://github.com/apps/giscus). Discussions are
       already on; the IDs in `src/lib/Comments.svelte` belong to this repo.
@@ -90,14 +86,12 @@ Each one has a `<!-- TODO(mike) -->` comment in the markdown.
 9. Contract Testing Payment Integrations with Pact
 
 To publish: `npm run g "Title"` → write it in `drafts/` → move the folder to
-`blog/` → `npm run og` → commit the PNG it creates.
+`blog/` → `npm run og` → `npm run lint:posts` → commit the post and the PNG.
 
 ## Process (from the editorial playbook)
 
-- [ ] Add an `AGENTS.md`/`CLAUDE.md` with the ground rules, sourcing rules and definition
-      of done from `docs/EDITORIAL-PLAYBOOK.md`.
-- [ ] Build `scripts/lint-posts.mjs`, a "fit check" for posts that fails on: missing or
-      too-long descriptions, no tags, a missing share card, or `TODO(` in published posts.
+- [ ] When you resolve a post's `TODO(mike)`, remove its slug from `TODO_ALLOWLIST` in
+      `scripts/lint-posts.mjs` so `npm run lint:posts` guards it again.
 - [ ] Run the fact-check prompt on every post before you publish it, and on the two
       pulled posts before you decide whether to fix or delete them.
 

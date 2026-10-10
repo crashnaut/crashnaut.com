@@ -173,10 +173,11 @@ at the end. Then run prompt C and fix P1/P2. Don't commit; show me the diff.
 
 ## 6. Ideas worth porting from the newsletter's tooling
 
-- ⬜ **A build-time content check** (like its "fit check"). Fail the build when a post has
+- ✅ **A build-time content check** (like its "fit check"). Fail the build when a post has
   no description, a description over 160 characters, no tags, a missing share card, an
   unknown internal link, or a `TODO(` comment in a published post. Part of this exists
-  already in `tests/smoke.test.ts`; a `scripts/lint-posts.mjs` would catch it before CI.
+  already in `tests/smoke.test.ts`; `npm run lint:posts` (`scripts/lint-posts.mjs`) catches
+  it before the build.
 - ⬜ **Citations as data.** The newsletter writes `{sourceKey}` in copy and the build
   numbers them and fails on unknown keys. A `sources:` list in frontmatter plus `{key}`
   markers would give posts a numbered references section for free.
@@ -187,12 +188,12 @@ at the end. Then run prompt C and fix P1/P2. Don't commit; show me the diff.
   map computed from the issue's own text (TF-IDF → cosine similarity → MDS). The crashnaut
   equivalent: a per-post "test report" header generated from the post (sections as specs,
   code blocks as assertions), or a "crash log" map of all posts clustered by tag.
-- ⬜ **A scaffold that copies the last good example.** Its `new-issue` script copies the
+- ✅ **A scaffold that copies the last good example.** Its `new-issue` script copies the
   previous issue and bumps the numbers. `npm run g` could start from a template with every
   §2 slot stubbed out.
 - ⬜ **QA reports kept next to the content** (`qa/fact-check.md`, `qa/design-review.md`) as
   a record of what was verified, so a reader's "is this right?" has an answer.
-- ⬜ **An agent guide.** A short `AGENTS.md`/`CLAUDE.md` with ground rules ("never commit
+- ✅ **An agent guide.** A short `AGENTS.md`/`CLAUDE.md` with ground rules ("never commit
   unless asked", "never hand-edit generated files", "propose before changing the design
   system"), a repo map and a definition of done, so every agent session starts from the
   same rules.
