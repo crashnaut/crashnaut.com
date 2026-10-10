@@ -36,7 +36,7 @@ marked.use({
 })
 const renderer = new marked.Renderer()
 
-const highlighter = await shiki.getHighlighter({
+const highlighter = await shiki.createHighlighter({
   themes: [pallete, palleteDawn],
   langs: [
     "json",
