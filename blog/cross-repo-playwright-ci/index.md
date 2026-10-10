@@ -1,10 +1,10 @@
 ---
 title: Run Playwright Tests from a Separate Repository in CI
 slug: cross-repo-playwright-ci
-description: A practical guide to maintaining Playwright tests in one repository while running them against every PR in your application repository.
+description: Keep Playwright tests in their own repository and run them on every PR in your app repo with GitHub Actions, a dual checkout and a least-privilege token.
 author: Mike Sell
 date: 2025-10-26T00:00:00.000Z
-tags: Playwright
+tags: Playwright, GitHub Actions, CI
 ---
 
 # Run Playwright Tests from a Separate Repository in CI
@@ -34,24 +34,47 @@ Before you start, you'll need:
 
 - An application repository (where PRs happen)
 - A test repository with Playwright tests
-- A GitHub Personal Access Token with `repo` scope
+- A fine-grained Personal Access Token with read-only access to the test repository (or a GitHub App — see below)
 
-## Step 1: Create a Personal Access Token
+## Step 1: Create a Least-Privilege Token
 
-The workflow needs permission to access your private test repository.
+The workflow needs permission to read your private test repository — and nothing else. Don't use a classic token with the `repo` scope for this: that grants full control of _every_ private repo you can access, sitting in a CI secret.
 
-1. Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
-2. Click "Generate new token (classic)"
-3. Give it a descriptive name like `Playwright Tests Access`
-4. Select the `repo` scope (full control of private repositories)
-5. Generate and copy the token
+Use a fine-grained Personal Access Token instead:
 
-Now add this to your application repository:
+1. Go to GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
+2. Click "Generate new token"
+3. Give it a descriptive name like `Playwright Tests Access` and set an expiration
+4. Set **Resource owner** to the account or org that owns the test repo
+5. Under **Repository access**, choose "Only select repositories" and pick the test repository
+6. Under **Repository permissions**, set **Contents** to **Read-only** (Metadata read-only is added automatically)
+7. Generate and copy the token
+
+If the test repo belongs to an organization, an org owner may need to allow or approve fine-grained tokens first.
+
+Now add it to your application repository:
 
 1. Go to your app repo → Settings → Secrets and variables → Actions
 2. Click "New repository secret"
 3. Name it `PLAYWRIGHT_TESTS_TOKEN`
 4. Paste the token value
+
+### Alternative: a GitHub App token
+
+For a team setup, a GitHub App is better than a token tied to one person's account: it doesn't leave when they do, and each token it issues expires after an hour. Install the app on the test repository with **Contents: Read-only**, store its client ID and private key in the app repo, and mint a token at the start of the job with [`actions/create-github-app-token`](https://github.com/actions/create-github-app-token):
+
+```yaml
+- name: Generate token for test repo
+  id: app-token
+  uses: actions/create-github-app-token@v3
+  with:
+    client-id: ${{ vars.TESTS_APP_CLIENT_ID }}
+    private-key: ${{ secrets.TESTS_APP_PRIVATE_KEY }}
+    owner: your-org
+    repositories: your-test-repo-name
+```
+
+Then pass `token: ${{ steps.app-token.outputs.token }}` to the test checkout below instead of the PAT secret.
 
 ## Step 2: Create the Workflow
 
@@ -72,13 +95,13 @@ jobs:
     steps:
       # Check out the application (the PR code)
       - name: Checkout app
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
       # Check out the test repository
       - name: Checkout tests
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: your-org/your-test-repo-name
           token: ${{ secrets.PLAYWRIGHT_TESTS_TOKEN }}
@@ -86,10 +109,14 @@ jobs:
 
       # Set up Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
+          # Two lockfiles: the app's and the test repo's
+          cache-dependency-path: |
+            package-lock.json
+            tests/package-lock.json
 
       # Install app dependencies
       - name: Install app dependencies
@@ -118,7 +145,7 @@ jobs:
 
       # Upload test report on failure
       - name: Upload test report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
@@ -171,7 +198,8 @@ npm install --save-dev wait-on
 
 **Solution:** Make sure:
 
-- The token has `repo` scope
+- The fine-grained token includes the test repository and has **Contents: Read-only**
+- If the repo is org-owned, the org allows (and has approved) fine-grained tokens
 - The secret name matches exactly (`PLAYWRIGHT_TESTS_TOKEN`)
 - The token hasn't expired
 
@@ -202,7 +230,7 @@ Some teams prefer Git submodules instead of checking out a separate repository i
 
 ```yaml
 - name: Checkout app with submodules
-  uses: actions/checkout@v4
+  uses: actions/checkout@v7
   with:
     submodules: recursive
     token: ${{ secrets.PLAYWRIGHT_TESTS_TOKEN }}
@@ -233,11 +261,9 @@ You'll need to integrate this with your deployment system (Vercel, Netlify, etc.
 
 Separating test repositories from application code is straightforward with GitHub Actions' multi-repository checkout. The key is:
 
-1. Use a Personal Access Token for private repositories
+1. Use a least-privilege token (fine-grained PAT or GitHub App) for the private test repo
 2. Check out both repos in the same workflow
 3. Install dependencies for both
 4. Use environment variables for configuration
 
 This pattern scales well and keeps your test code organized separately without sacrificing CI integration.
-
-_More posts on Playwright patterns and CI/CD optimization coming soon._

@@ -1,13 +1,13 @@
 ---
-title: "The Feature Flag Nightmare: A QA Perspective"
+title: "How to Test Feature Flags Without Testing 2ⁿ Combinations"
 slug: the-feature-flag-nightmare
-description: "Feature flags are dangerous to write — and pure hell to test. From the QA chair, every flag doubles the test surface, and the combinations explode faster than any team can cover. Here's why, with the maths."
+description: "Every feature flag doubles the test surface: n flags means 2ⁿ configurations. A QA view of why flags are hell to test, and how pairwise testing helps."
 author: Mike Sell
 date: 2026-03-14T00:00:00.000Z
-tags:
+tags: Testing Strategy, Feature Flags, QA, Pairwise Testing
 ---
 
-# The Feature Flag Nightmare: A QA Perspective
+_The feature flag nightmare: a QA perspective._
 
 My former boss, Jerome Dane, wrote a piece I keep coming back to: [Feature Flags are Dangerous](https://jeromedane.medium.com/feature-flags-are-dangerous-88ef9d6c9f04). His argument is from the engineering and architecture seat — flags blur what's actually running in production, leave landmines of dead code, create multiple code paths, and quietly drift between environments and caches.
 
@@ -15,7 +15,7 @@ I want to add the view from the chair next to his: the QA chair. Because everyth
 
 Here's the part that doesn't fit in a standup update: **every independent flag doubles the test surface.** Not adds to it — doubles it.
 
-## The maths nobody wants to hear
+## The math nobody wants to hear
 
 A single on/off flag means a feature has two states. Two flags, four. Three, eight. The number of distinct configurations is `2ⁿ`, and exponential growth gets out of hand faster than intuition expects.
 
@@ -65,7 +65,7 @@ Here's what that looks like for just three flags:
 
 The clean `2ⁿ` number assumes flags are independent and the only thing that varies is the flag itself. Neither is true.
 
-Flags **interact** — flag B behaves differently depending on whether flag A is on, which is exactly the kind of bug that hides in the combinations nobody ran. And flag state is only one axis. The same matrix has to be re-run across the things Jerome warned about: behaviour differs **across environments**, and again across **caches** (a flag value cached locally can disagree with the distributed source of truth). Add the user **roles or segments** most B2B products carry, and the real number is a product of all of them.
+Flags **interact** — flag B behaves differently depending on whether flag A is on, which is exactly the kind of bug that hides in the combinations nobody ran. And flag state is only one axis. The same matrix has to be re-run across the things Jerome warned about: behavior differs **across environments**, and again across **caches** (a flag value cached locally can disagree with the distributed source of truth). Add the user **roles or segments** most B2B products carry, and the real number is a product of all of them.
 
 :::bar-chart[The real matrix: 3 flags, multiplied out]
 Flags alone | 8 | neutral
@@ -101,6 +101,20 @@ The developer flipped one flag on and saw their feature work. Then a customer hi
 The instinct is "we'll just parametrize the tests across flag states." You can — but the matrix is still exponential, so you get to choose between two bad outcomes: run every combination and watch CI time explode past anything usable, or pick a subset and accept the gaps. There's no free lunch hiding in the test runner.
 
 The pragmatic middle ground is **combinatorial (pairwise) testing**: instead of all `2ⁿ` combinations, generate the much smaller set that covers every _pair_ of flag values at least once. It catches the large class of bugs that come from two flags interacting, at a fraction of the cost. It is a mitigation, not a cure — it will not catch a bug that only appears when three specific flags line up — but it's the honest tool for the job.
+
+Here's what that looks like for four on/off flags. Exhaustive testing is `2⁴ = 16` runs. Pairwise needs five:
+
+| Run | Flag A | Flag B | Flag C | Flag D |
+| --- | ------ | ------ | ------ | ------ |
+| 1   | off    | off    | off    | off    |
+| 2   | off    | on     | on     | on     |
+| 3   | on     | off    | on     | on     |
+| 4   | on     | on     | off    | on     |
+| 5   | on     | on     | on     | off    |
+
+Pick any two flags — say B and D — and all four combinations (off/off, off/on, on/off, on/on) appear somewhere in those five rows. That holds for all six pairs. Five is also the floor: no four-row set covers every pair for four flags. And the gap widens fast: ten on/off flags is 1,024 exhaustive runs, but every pair can be covered in as few as six.
+
+You don't build these tables by hand. Tools like [Microsoft PICT](https://github.com/microsoft/pict) take a list of parameters and values (flags, environments, roles) and generate the pairwise set for you, including constraints like "flag C only exists when flag A is on."
 
 ## What actually helps, from the QA seat
 

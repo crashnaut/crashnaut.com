@@ -1,18 +1,11 @@
+// Post dates are calendar dates stored as UTC midnight, so format them in UTC;
+// otherwise readers west of Greenwich (Brazil, the US) see the previous day.
 export function humanDate(date: string | Date) {
-  return toDate(date).toLocaleDateString(undefined, {
+  return toDate(date).toLocaleDateString("en-US", {
     year: "numeric",
-    month: "long",
-    day: "2-digit",
-  })
-}
-
-export function humanDateTime(date: string | Date) {
-  return toDate(date).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
   })
 }
 

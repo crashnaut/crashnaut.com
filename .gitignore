@@ -133,3 +133,7 @@ firestore-debug.log
 
 # Local development
 .local
+
+# copied from blog/ at build time
+static/blog/
+.claude/

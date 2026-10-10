@@ -31,11 +31,11 @@ export default function copyLifeCycle() {
       const code = document.querySelector(`[id="${ref}"] code`)
       if (code instanceof HTMLElement) {
         navigator.clipboard.writeText(code.innerText).then(() => {
-          target.innerHTML = "assignment_turned_in"
+          target.textContent = "copied"
           target.classList.add("success")
           setTimeout(() => {
             target.classList.remove("success")
-            target.innerHTML = "content_paste"
+            target.textContent = "copy"
           }, 1000)
         })
       }

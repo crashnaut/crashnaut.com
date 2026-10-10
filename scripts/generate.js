@@ -19,7 +19,7 @@ const slugify = (string) => {
 
 function createPost(title) {
   let slug = slugify(title)
-  let path = `./blog/${slug}`
+  let path = `./drafts/${slug}`
 
   mkdirSync(path)
   mkdirSync(`${path}/images`)
@@ -35,7 +35,7 @@ tags:
 `,
   )
 
-  console.log(`Post created at ${path}.md`)
+  console.log(`Draft created at ${path}/index.md (move it to blog/ to publish)`)
 }
 
 const [slug] = process.argv.slice(2)

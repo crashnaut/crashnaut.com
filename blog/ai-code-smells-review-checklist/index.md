@@ -1,17 +1,17 @@
 ---
 title: "AI Code Smells: A Review Checklist"
 slug: ai-code-smells-review-checklist
-description: "AI coding assistants are fast and capable, but they fill gaps with plausible-looking code. Here are nine recurring smells to watch for in review — and what to look for when you spot each one."
+description: "AI coding assistants fill gaps with plausible-looking code. Nine recurring AI code smells to catch in review, and what to look for when you spot each one."
 author: Mike Sell
 date: 2026-04-23T00:00:00.000Z
-tags:
+tags: AI, Code Review, Testing
 ---
 
 # AI Code Smells: A Review Checklist
 
 AI coding assistants are genuinely good now. They're fast, they're capable, and they'll happily produce a working diff for almost anything you ask. But "working" and "good" aren't the same thing — and the gap between them is where AI quietly creates problems.
 
-The thing to internalise is this: **you own the loop, the AI assists within it.** The assistant doesn't know your system, your team, or your constraints. You do. It fills gaps with code that _looks_ right, and the only thing standing between that and your main branch is review.
+The thing to internalize is this: **you own the loop, the AI assists within it.** The assistant doesn't know your system, your team, or your constraints. You do. It fills gaps with code that _looks_ right, and the only thing standing between that and your main branch is review.
 
 After reviewing a lot of AI-assisted pull requests, the same patterns keep showing up. None of them is automatically a bug — but each is always worth a second look. When you spot one, ask: _was this intentional, or an artifact of how the AI filled in a gap?_
 
@@ -40,19 +40,19 @@ A helper, base class, or utility introduced for logic that's used exactly once. 
 
 ## 2. The Defensive Wall
 
-`try/except` blocks and null checks wrapping code paths that cannot fail. The AI guards against `None` on a value that's always set, or catches exceptions on a dictionary key that's always present. It adds noise and buries the real errors when they finally happen.
+`try/catch` blocks and null checks wrapping code paths that cannot fail. The AI guards against `null` or `undefined` on a value that's always set, or wraps a lookup on a key that's always present in a `try`. It adds noise and buries the real errors when they finally happen.
 
-**Look for:** error handling around your own internal calls, `if x is not None` checks on values your own code guarantees, fallback branches that can never be reached.
+**Look for:** error handling around your own internal calls, `if (x != null)` checks on values your own code guarantees, fallback branches that can never be reached.
 
 ## 3. The Rename Alias
 
-A variable that just holds another variable's value under a new name — `result = response`, `user_id = uid` — with nothing happening in between. The AI lost track of what it already had.
+A variable that just holds another variable's value under a new name — `const result = response`, `const userId = uid` — with nothing happening in between. The AI lost track of what it already had.
 
 **Look for:** consecutive assignments where the right-hand side is just another local, with no transformation.
 
 ## 4. The Comment Echo
 
-A comment that restates the code in plain English. `# Get the user by UUID` above `user = get_user(uuid)` tells the reader nothing they can't already see. Good comments explain the _why_ — a constraint, a workaround, a non-obvious invariant — not the _what_.
+A comment that restates the code in plain English. `// Get the user by UUID` above `const user = getUser(uuid)` tells the reader nothing they can't already see. Good comments explain the _why_ — a constraint, a workaround, a non-obvious invariant — not the _what_.
 
 **Look for:** comments that could be auto-generated from the function name, or that you could delete without changing anyone's understanding.
 
@@ -66,7 +66,7 @@ The solution is far bigger than the requirement. A three-line bug fix arrives as
 
 A method, attribute, or import that doesn't actually exist. The AI filled in a plausible-sounding name. It looks correct at a glance and then throws at runtime — especially dangerous when the invented name closely resembles a real one.
 
-**Look for:** calls on your own classes you don't recognise, imports from unusual paths. Grep it to verify before approving.
+**Look for:** calls on your own classes you don't recognize, imports from unusual paths. Grep it to verify before approving.
 
 ## 7. The Test Mannequin
 
@@ -76,9 +76,9 @@ A test that passes green but verifies nothing. It asserts there were no errors a
 
 ## 8. The Catch-All Handler
 
-`except Exception` swallowing errors with a `pass` or a stray log line. The AI silenced a failing path instead of fixing the root cause — so real errors vanish in production and turn into incidents that take hours to trace.
+`catch (e) {}` swallowing errors with an empty block or a stray `console.log`. The AI silenced a failing path instead of fixing the root cause — so real errors vanish in production and turn into incidents that take hours to trace.
 
-**Look for:** bare `except` clauses, broad exception catches, error paths that log and continue instead of raising.
+**Look for:** empty `catch` blocks, catches that never inspect or rethrow the error, `.catch(() => {})` on promises, error paths that log and continue instead of raising.
 
 ## 9. The Polite Rewrite
 

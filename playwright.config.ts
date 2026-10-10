@@ -1,23 +1,24 @@
-import type { PlaywrightTestConfig } from "@playwright/test"
+import { defineConfig } from "@playwright/test"
 
-const port = process.env.CI ? 4173 : 5173
-const baseURL = `http://localhost:${port}`
+// Tests run against the production build (`vite preview`), the same static
+// output Firebase serves.
+const port = 4173
 
-const config: PlaywrightTestConfig = {
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 1,
-  timeout: 30_000,
-  outputDir: "test-results",
+export default defineConfig({
   testDir: "tests",
-  reporter: process.env.CI ? "github" : "html",
+  testMatch: /.*\.test\.ts/,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 1 : 0,
+  fullyParallel: true,
+  outputDir: "test-results",
+  reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
-    baseURL,
+    baseURL: `http://localhost:${port}`,
     trace: "on-first-retry",
   },
   webServer: {
-    command: process.env.CI ? "npm run preview" : "npm run dev",
+    command: `npm run preview -- --port ${port} --strictPort`,
     port,
     reuseExistingServer: !process.env.CI,
   },
-}
-export default config
+})

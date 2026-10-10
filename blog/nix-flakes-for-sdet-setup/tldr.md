@@ -50,9 +50,9 @@ nix run home-manager/master -- switch --flake .#your-username@your-hostname
 
 ## What You Get
 
-- **Dev Tools**: Git, Node.js 20+, pnpm, OrbStack (Mac), Vim, GPG
+- **Dev Tools**: Git, Node.js 22, pnpm, OrbStack (Mac), Vim, GPG, Postman
 - **CLI Utils**: `ripgrep`, `bat`, `fd`, `htop`, `jq`
-- **GUI Apps** (Mac/Linux): Brave, Slack, Logseq, Postman
+- **Personal GUI apps** (browser, chat, notes): optional, remove what you don't need
 - **Ready for**: Playwright E2E testing with all dependencies
 
 ## Update & Rollback

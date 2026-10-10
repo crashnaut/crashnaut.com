@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
       sveltekit(),
       svgLoader(),
       VitePluginRestart({
-        restart: ["./blog/**", "./bits/**", "!*.webp"],
+        restart: ["./blog/**", "!*.webp"],
       }),
     ],
     server: {
@@ -19,7 +19,6 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       include: ["src/**/*.test.ts"],
-      environmentMatchGlobs: [["src/**/*.dom.test.ts", "jsdom"]],
     },
     resolve: {
       conditions: mode === "test" ? ["browser"] : [],

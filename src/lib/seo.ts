@@ -6,7 +6,11 @@ export const site = {
   url: variables.basePath,
   description:
     "Mike Sell (Crashnaut), Senior SDET specializing in test automation, CI/CD, and quality engineering.",
-  defaultImage: `${variables.basePath}/images/mike.jpg`,
+  defaultImage: `${variables.basePath}/og/default.png`,
+  avatar: `${variables.basePath}/images/mike.jpg`,
+  calendly: "https://calendly.com/mikesell404",
+  linkedin: "https://www.linkedin.com/in/mike-sell-crashnaut",
+  github: "https://github.com/crashnaut",
   locale: "en_US",
   twitter: "@crashnaut",
   /** Trading / legal entity for contracting (Ireland). */
@@ -22,11 +26,11 @@ export function personJsonLd() {
     "@type": "Person",
     name: site.author,
     url: site.url,
-    image: site.defaultImage,
+    image: site.avatar,
     jobTitle: "Senior SDET Contractor",
     sameAs: [
-      "https://www.linkedin.com/in/mike-sell-crashnaut",
-      "https://github.com/crashnaut",
+      site.linkedin,
+      site.github,
       "https://bsky.app/profile/crashnaut.com",
     ],
     worksFor: {

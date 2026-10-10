@@ -15,7 +15,7 @@ A QA-seat companion to Jerome Dane's [Feature Flags are Dangerous](https://jerom
 
 **So what happens:** teams test all-off and all-on, and ship the rest blind. The combination a user hits in prod is one nobody ran — "testing in production" by accident.
 
-**Automation doesn't save you:** the matrix is still exponential. Pairwise/combinatorial testing is the honest mitigation (covers every pair cheaply), not a cure.
+**Automation doesn't save you:** the matrix is still exponential. Pairwise/combinatorial testing is the honest mitigation, not a cure: 4 flags need 5 runs instead of 16, 10 flags need as few as 6 instead of 1,024 (tools like Microsoft PICT generate the set).
 
 **What helps (and shrinks the grid):**
 

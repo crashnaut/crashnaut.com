@@ -21,6 +21,7 @@ test/
 **pageFactory owns navigation** (`skipGoto` to reuse a page). No `navigationPage.ts`:
 
 ```typescript
+// waitForPageToLoad = a small util that waits for your app's "ready" signal
 class PageFactory {
   constructor(private readonly page: Page) {}
 
@@ -131,5 +132,7 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 })
 ```
+
+**Part 2:** [Playwright Page Factory + Composition](/blog/playwright-page-factory-composition) — components and a `pageFactory` fixture for larger suites.
 
 Pairs with [Playwright BDD](/blog/playwright-bdd) and [Nix for SDET setup](/blog/nix-flakes-for-sdet-setup).

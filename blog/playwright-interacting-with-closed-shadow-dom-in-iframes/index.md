@@ -1,10 +1,10 @@
 ---
 title: Playwright - Interacting with Closed Shadow DOM in iFrames
 slug: playwright-interacting-with-closed-shadow-dom-in-iframes
-description: Testing closed shadow DOM elements within iframes using Playwright's advanced techniques.
+description: "Force closed shadow roots open with Playwright addInitScript to test web components inside iframes, like embedded payment or ID-verification widgets."
 author: Mike Sell
 date: 2025-10-16T00:00:00.000Z
-tags: Playwright, iframes
+tags: Playwright, iframes, Shadow DOM, Web Components
 ---
 
 ## The Problem: Closed Shadow DOM
@@ -15,11 +15,13 @@ When testing iFrames with Playwright (which, unlike Cypress, has excellent ifram
 
 Notice the `#shadow-root (closed)` label. This is where things get interesting.
 
+A common place to hit this combination is embedded third-party widgets — payment fields, identity-verification flows — that render inside an iframe and keep their internals in a closed shadow root.
+
 ## Why Shadow DOM is Closed
 
-The Shadow DOM provides encapsulation for web components, isolating their internal structure from the rest of the page. When a Shadow DOM is set to `closed` mode, it's done for security and encapsulation reasons:
+The Shadow DOM provides encapsulation for web components, isolating their internal structure from the rest of the page. When a Shadow DOM is set to `closed` mode, it's mostly about encapsulation:
 
-- **Security**: Prevents external JavaScript from accessing or manipulating internal component structure
+- **Isolation**: Makes it harder for page scripts to reach into or tamper with the component's internals. It's a deterrent, not a security boundary — any script that runs first can patch `attachShadow`, which is exactly what the trick below does.
 - **Encapsulation**: Ensures component internals remain private and protected from outside interference
 - **API Contract**: Forces interaction through the component's public API only
 
@@ -86,10 +88,28 @@ test("should interact with shadow DOM elements", async ({ page }) => {
 })
 ```
 
+## Inside an iframe
+
+`addInitScript()` doesn't just run in the top-level page. Playwright also evaluates it whenever a child frame is attached or navigated, in the context of that frame — so one call covers the iframe too. Combine it with `frameLocator()`:
+
+```typescript
+test("should fill a field inside a closed shadow root in an iframe", async ({ page }) => {
+  await forceOpenShadowDOM(page) // also runs in every child frame
+  await page.goto("https://your-app.com/checkout")
+
+  const widget = page.frameLocator('iframe[title="Payment"]')
+
+  // Playwright locators pierce open shadow roots, so no special selectors needed
+  await widget.getByLabel("Cardholder name").fill("Test User")
+  await expect(widget.getByRole("button", { name: "Pay" })).toBeEnabled()
+})
+```
+
 ## Important Considerations
 
 - **Test Environment Only**: This technique should only be used in testing environments. It fundamentally changes how the application behaves.
 - **Timing Matters**: Call `forceOpenShadowDOM()` before navigating to your page, as it needs to inject the script before the page loads.
 - **iFrame Support**: This works within iFrames as well, making it perfect for testing embedded components.
+- **Declarative Shadow DOM isn't covered**: A shadow root declared in HTML with `<template shadowrootmode="closed">` is created by the HTML parser, not by calling `attachShadow()`, so this override never sees it and the root stays closed.
 
 This approach gives you the testing capability you need while respecting that closed Shadow DOM serves legitimate purposes in production code.

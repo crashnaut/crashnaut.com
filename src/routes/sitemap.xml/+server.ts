@@ -14,21 +14,14 @@ export async function GET() {
 }
 
 function generate(posts: Awaited<ReturnType<typeof readPosts>>) {
+  // Static pages change with the newest post, not with every build.
+  const latest = posts[0]
+    ? posts[0].metadata.modifiedAt.split("T")[0]
+    : ISODate(new Date())
   const nodes = [
-    {
-      loc: variables.basePath,
-      lastmod: ISODate(new Date()),
-    },
-    {
-      loc: `${variables.basePath}/blog`,
-      lastmod: posts[0]
-        ? posts[0].metadata.modifiedAt.split("T")[0]
-        : ISODate(new Date()),
-    },
-    {
-      loc: `${variables.basePath}/contact`,
-      lastmod: ISODate(new Date()),
-    },
+    { loc: variables.basePath, lastmod: latest },
+    { loc: `${variables.basePath}/blog`, lastmod: latest },
+    { loc: `${variables.basePath}/contact`, lastmod: latest },
     ...posts.map((post) => ({
       loc: `${variables.basePath}/blog/${post.metadata.slug}`,
       lastmod: ISODate(post.metadata.modified || post.metadata.date),

@@ -11,13 +11,14 @@ import iconDatabase from "../../static/images/languages/database.svg?raw"
 import iconTypescript from "../../static/images/languages/ts.svg?raw"
 import iconText from "../../static/images/languages/text.svg?raw"
 import iconYaml from "../../static/images/languages/yaml.svg?raw"
-import iconCsharp from "../../static/images/languages/csharp.svg?raw"
 import iconSvelte from "../../static/images/languages/svelte.svg?raw"
 import iconMarkdown from "../../static/images/languages/markdown.svg?raw"
 import * as shiki from "shiki"
 import type { BundledLanguage, ThemedToken } from "shiki"
-import pallete from "shiki/themes/rose-pine.mjs"
-import palleteDawn from "shiki/themes/rose-pine-dawn.mjs"
+import {
+  crashnautDark as pallete,
+  crashnautLight as palleteDawn,
+} from "./syntax-theme"
 import { codeGroup } from "./code-block"
 import { customBlock } from "./custom-block"
 import { compareBlock } from "./compare-block"
@@ -36,9 +37,8 @@ marked.use({
 const renderer = new marked.Renderer()
 
 const highlighter = await shiki.getHighlighter({
-  themes: ["rose-pine", "rose-pine-dawn"],
+  themes: [pallete, palleteDawn],
   langs: [
-    "razor",
     "json",
     "typescript",
     "javascript",
@@ -48,18 +48,17 @@ const highlighter = await shiki.getHighlighter({
     "shell",
     "yaml",
     "yml",
-    "cs",
-    "csharp",
     "svelte",
-    "powershell",
     "http",
     "diff",
     "sql",
-    "angular-html",
-    "angular-ts",
     "md",
     "dockerfile",
     "nix",
+    "gherkin",
+    "python",
+    "bash",
+    "toml",
   ],
 })
 
@@ -77,7 +76,6 @@ const langToIcon = {
   yml: iconYaml,
   yaml: iconYaml,
   diff: iconText,
-  cs: iconCsharp,
   sql: iconDatabase,
   svelte: iconSvelte,
   ps: iconShell,
@@ -121,25 +119,15 @@ export function parseFileToHtmlAndMeta(file): {
     const svelteTags = internal ? `data-sveltekit-reload` : ""
     const attributes = [href_attr, title_attr, rel_attr, svelteTags]
 
-    let style = ""
     if (internal) {
       const outgoingSlug = url.parse(link, false).pathname.split("/").pop()
       if (metadata.slug !== outgoingSlug && outgoingSlug !== "blog") {
         metadata.outgoingSlugs.push(outgoingSlug)
       }
-    } else {
-      try {
-        style = `style='--favicon: url(https://v1.indieweb-avatar.11ty.dev/${encodeURIComponent(
-          new URL(link).origin,
-        )})'`
-        attributes.push("data-with-favicon")
-      } catch {
-        // noop
-      }
     }
 
     const attributesString = attributes.filter(Boolean).join(" ")
-    return `<a class="mark mark-hover" ${attributesString} ${style}>${text}</a>`
+    return `<a ${attributesString}>${text}</a>`
   }
 
   renderer.image = (href, _title, text) => {
@@ -223,7 +211,7 @@ export function parseFileToHtmlAndMeta(file): {
     const headingParts = [
       icon,
       fileName ? `<span class="file-name">${fileName}</span>` : undefined,
-      `<button class="copy-code material-symbols-outlined" data-ref="${id}">content_paste</button>`,
+      `<button type="button" class="copy-code" data-ref="${id}" aria-label="Copy code">copy</button>`,
     ].filter(Boolean)
     const heading = headingParts.length
       ? `<div class="code-heading">${headingParts.join(" ")}</div>`
@@ -308,7 +296,7 @@ export function parseFileToHtmlAndMeta(file): {
     return `<code>${source}</code>`
   }
   renderer.blockquote = (source) => {
-    return `<blockquote><span class="material-symbols-outlined">format_quote</span>${source}</blockquote>`
+    return `<blockquote>${source}</blockquote>`
   }
 
   renderer.heading = (text, level, rawtext) => {
@@ -329,17 +317,16 @@ export function parseFileToHtmlAndMeta(file): {
 
     return `
 		<h${level} id="${fragment}">
-		  <a href="#${fragment}" class="anchor mark-hover" tabindex="-1">${headingText}</a>
-		  <span class="material-symbols-outlined">
-		  link
-		  </span>
+		  <a href="#${fragment}" class="anchor">${headingText}</a>
 		</h${level}>`
   }
 
-  const html = marked(
-    content.replace(/^\t+/gm, (match) => match.split("\t").join("  ")),
-    { renderer },
-  ) as string
+  const html = (
+    marked(
+      content.replace(/^\t+/gm, (match) => match.split("\t").join("  ")),
+      { renderer },
+    ) as string
+  ).replace(/^\s*<h1>[\s\S]*?<\/h1>/, "")
   return { html, metadata, assetsSrc }
 }
 
@@ -370,11 +357,12 @@ function extractFrontmatter(markdown): {
 } {
   const result = frontmatter<{
     tags: string | string[]
-    translations?: Record<string, string>
   }>(markdown)
-  if (typeof result.attributes.tags === "string") {
-    result.attributes.tags = result.attributes.tags
-      .split(",")
+  const rawTags = result.attributes.tags
+  if (typeof rawTags === "string" || Array.isArray(rawTags)) {
+    result.attributes.tags = (
+      Array.isArray(rawTags) ? rawTags.map(String) : rawTags.split(",")
+    )
       .map((a) =>
         a ? a.trim().charAt(0).toUpperCase() + a.trim().slice(1) : a,
       )
@@ -388,23 +376,14 @@ function extractFrontmatter(markdown): {
         if (a.toLowerCase() === "ci") {
           return "CI"
         }
-        if (a.toLowerCase() === "ngrx") {
-          return "NgRx"
+        if (a.toLowerCase() === "iframes") {
+          return "iFrames"
         }
         return a
       })
+      .filter(Boolean)
   } else {
     result.attributes.tags = []
-  }
-  if (Array.isArray(result.attributes.translations)) {
-    for (const translation of result.attributes.translations) {
-      const translationsMap = {
-        es: "Español",
-        ru: "Russian",
-      }
-      translation.language =
-        translationsMap[translation.language] ?? translation.language
-    }
   }
   return { metadata: result.attributes, content: result.body }
 }
