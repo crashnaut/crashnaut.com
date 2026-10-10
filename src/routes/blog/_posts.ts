@@ -1,12 +1,12 @@
 import * as fs from "fs"
-import { ISODate } from "$lib/formatters"
-import { variables } from "$lib/variables"
+import { ISODate } from "#lib/formatters.ts"
+import { variables } from "#lib/variables.ts"
 import {
   parseFileToHtmlAndMeta,
   sortByDate,
   traverseFolder,
-} from "$lib/markdown"
-import type { Post, PostMetadata } from "$lib/models"
+} from "#lib/markdown.ts"
+import type { Post, PostMetadata } from "#lib/models.ts"
 
 const blogPath = "blog"
 const WORDS_PER_MINUTE = 230

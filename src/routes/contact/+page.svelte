@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Seo from "$lib/Seo.svelte"
-  import Mark from "$lib/brand/Mark.svelte"
-  import { site } from "$lib/seo"
+  import Seo from "#lib/Seo.svelte"
+  import Mark from "#lib/brand/Mark.svelte"
+  import { site } from "#lib/seo.ts"
 
   const steps = [
     {

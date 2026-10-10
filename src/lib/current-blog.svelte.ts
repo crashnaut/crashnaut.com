@@ -31,8 +31,8 @@ function createBlog() {
         ? `?${queryParams.toString()}`
         : "?"
       goto(queryParamsString, {
-        noScroll: true,
-        replaceState: true,
+        reset: false,
+        replace: true,
       })
     },
     reset: () => {

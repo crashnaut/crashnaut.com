@@ -1,9 +1,9 @@
 <script lang="ts">
-  import Seo from "$lib/Seo.svelte"
-  import { personJsonLd, site, websiteJsonLd } from "$lib/seo"
-  import { humanDate } from "$lib/formatters"
-  import WorkWithMe from "$lib/WorkWithMe.svelte"
-  import PostRow from "$lib/PostRow.svelte"
+  import Seo from "#lib/Seo.svelte"
+  import { personJsonLd, site, websiteJsonLd } from "#lib/seo.ts"
+  import { humanDate } from "#lib/formatters.ts"
+  import WorkWithMe from "#lib/WorkWithMe.svelte"
+  import PostRow from "#lib/PostRow.svelte"
 
   const { data } = $props()
 

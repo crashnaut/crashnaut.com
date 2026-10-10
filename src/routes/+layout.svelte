@@ -1,16 +1,16 @@
 <script lang="ts">
   import { onMount, tick } from "svelte"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
   import { afterNavigate, onNavigate } from "$app/navigation"
-  import { variables } from "$lib/variables"
-  import { site } from "$lib/seo"
-  import { theme } from "$lib/theme.store"
-  import Mark from "$lib/brand/Mark.svelte"
+  import { variables } from "#lib/variables.ts"
+  import { site } from "#lib/seo.ts"
+  import { theme } from "#lib/theme.store.ts"
+  import Mark from "#lib/brand/Mark.svelte"
   import "./layout.css"
 
   let { children } = $props()
 
-  const path = $derived($page.url.pathname)
+  const path = $derived(page.url.pathname)
   const year = new Date().getFullYear()
 
   onMount(() => {
@@ -23,8 +23,10 @@
     gtag("config", variables.gtag_id, { send_page_view: false })
   })
 
+  // Shallow navigations (search/tag filters updating the URL) neither animate
+  // nor count as page views.
   onNavigate((navigation) => {
-    if (!document.startViewTransition) return
+    if (navigation.shallow || !document.startViewTransition) return
     return new Promise((resolve) => {
       document.startViewTransition(async () => {
         resolve()
@@ -33,8 +35,8 @@
     })
   })
 
-  afterNavigate(({ to }) => {
-    if (variables.gtag_id && typeof gtag === "function" && to) {
+  afterNavigate(({ to, shallow }) => {
+    if (variables.gtag_id && typeof gtag === "function" && to && !shallow) {
       gtag("event", "page_view", {
         page_title: document.title,
         page_location: location.href,
