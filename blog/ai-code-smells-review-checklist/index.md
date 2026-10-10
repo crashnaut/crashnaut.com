@@ -18,18 +18,57 @@ After reviewing a lot of AI-assisted pull requests, the same patterns keep showi
 Here are the nine.
 
 <figure class="diagram">
-<svg viewBox="0 0 720 254" role="img" aria-label="The nine AI code smells as a three by three grid: Abstraction Tax, Defensive Wall, Rename Alias, Comment Echo, Complexity Mismatch, Hallucinated API, Test Mannequin, Catch-All Handler, Polite Rewrite">
-  <rect class="d-box" x="10" y="10" width="225" height="70" rx="6"/><circle cx="38" cy="45" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="38" y="49" text-anchor="middle">1</text><text class="d-text" x="60" y="49">Abstraction Tax</text>
-  <rect class="d-box" x="247" y="10" width="225" height="70" rx="6"/><circle cx="275" cy="45" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="275" y="49" text-anchor="middle">2</text><text class="d-text" x="297" y="49">Defensive Wall</text>
-  <rect class="d-box" x="484" y="10" width="225" height="70" rx="6"/><circle cx="512" cy="45" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="512" y="49" text-anchor="middle">3</text><text class="d-text" x="534" y="49">Rename Alias</text>
-  <rect class="d-box" x="10" y="92" width="225" height="70" rx="6"/><circle cx="38" cy="127" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="38" y="131" text-anchor="middle">4</text><text class="d-text" x="60" y="131">Comment Echo</text>
-  <rect class="d-box" x="247" y="92" width="225" height="70" rx="6"/><circle cx="275" cy="127" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="275" y="131" text-anchor="middle">5</text><text class="d-text" x="297" y="131">Complexity Mismatch</text>
-  <rect class="d-box" x="484" y="92" width="225" height="70" rx="6"/><circle cx="512" cy="127" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="512" y="131" text-anchor="middle">6</text><text class="d-text" x="534" y="131">Hallucinated API</text>
-  <rect class="d-box" x="10" y="174" width="225" height="70" rx="6"/><circle cx="38" cy="209" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="38" y="213" text-anchor="middle">7</text><text class="d-text" x="60" y="213">Test Mannequin</text>
-  <rect class="d-box" x="247" y="174" width="225" height="70" rx="6"/><circle cx="275" cy="209" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="275" y="213" text-anchor="middle">8</text><text class="d-text" x="297" y="213">Catch-All Handler</text>
-  <rect class="d-box" x="484" y="174" width="225" height="70" rx="6"/><circle cx="512" cy="209" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="512" y="213" text-anchor="middle">9</text><text class="d-text" x="534" y="213">Polite Rewrite</text>
+<svg viewBox="0 0 720 400" role="img" aria-label="Triage map of the nine AI code smells. Across: what catches each one, from tsc or lint, to grep, to a test, to only a human reviewer. Up: the damage if it ships, from noise to a silent production failure. tsc or lint catches the Hallucinated API and the Defensive Wall; grep finds the Abstraction Tax and the Rename Alias; nothing here is caught by a test; only a human catches the Comment Echo, Complexity Mismatch, Polite Rewrite, Test Mannequin and Catch-All Handler. The last two sit in the red hazard zone: high damage and only a human can catch them.">
+  <rect class="d-box-red" x="500" y="40" width="212" height="86" rx="4"/>
+  <text class="d-edge" x="606" y="30" text-anchor="middle">HAZARD ZONE</text>
+  <rect class="d-panel" x="110" y="40" width="602" height="290" rx="4"/>
+  <path class="d-line" stroke-dasharray="3 5" d="M272,40 L272,330 M404,40 L404,330 M500,40 L500,330"/>
+  <text class="d-text" x="191" y="350" text-anchor="middle">tsc / lint</text>
+  <text class="d-text" x="338" y="350" text-anchor="middle">grep</text>
+  <text class="d-text" x="452" y="350" text-anchor="middle">a test</text>
+  <text class="d-text" x="606" y="350" text-anchor="middle">only a human</text>
+  <path class="d-line" d="M110,368 L704,368"/>
+  <path class="d-arrow" d="M712,368 l-8,-4 l0,8 z"/>
+  <text class="d-text-sm" x="411" y="388" text-anchor="middle">What catches it, cheapest first</text>
+  <path class="d-line" d="M24,330 L24,48"/>
+  <path class="d-arrow" d="M24,40 l-4,8 l8,0 z"/>
+  <text class="d-text-sm" x="36" y="185" text-anchor="middle" transform="rotate(-90 36 185)">Damage if it ships</text>
+  <text class="d-text-sm" x="102" y="58" text-anchor="end">silent prod</text>
+  <text class="d-text-sm" x="102" y="72" text-anchor="end">failure</text>
+  <text class="d-text-sm" x="102" y="326" text-anchor="end">noise</text>
+  <text class="d-text-sm" x="452" y="192" text-anchor="middle">none land</text>
+  <text class="d-text-sm" x="452" y="206" text-anchor="middle">here: 7 is</text>
+  <text class="d-text-sm" x="452" y="220" text-anchor="middle">the test</text>
+  <circle class="d-node" cx="130" cy="156" r="11"/>
+  <text class="d-text" x="130" y="160" text-anchor="middle">6</text>
+  <text class="d-text" x="148" y="160">Hallucinated API</text>
+  <circle class="d-node" cx="130" cy="208" r="11"/>
+  <text class="d-text" x="130" y="212" text-anchor="middle">2</text>
+  <text class="d-text" x="148" y="212">Defensive Wall</text>
+  <circle class="d-node" cx="292" cy="266" r="11"/>
+  <text class="d-text" x="292" y="270" text-anchor="middle">1</text>
+  <text class="d-text" x="310" y="270">Abstraction Tax</text>
+  <circle class="d-node" cx="292" cy="301" r="11"/>
+  <text class="d-text" x="292" y="305" text-anchor="middle">3</text>
+  <text class="d-text" x="310" y="305">Rename Alias</text>
+  <circle class="d-node-red" cx="520" cy="54" r="11"/>
+  <text class="d-on-fill" x="520" y="58" text-anchor="middle">8</text>
+  <text class="d-text" x="538" y="58">Catch-All Handler</text>
+  <text class="d-text-sm" x="538" y="72">lint: only empty catch {}</text>
+  <circle class="d-node-red" cx="520" cy="98" r="11"/>
+  <text class="d-on-fill" x="520" y="102" text-anchor="middle">7</text>
+  <text class="d-text" x="538" y="102">Test Mannequin</text>
+  <circle class="d-node" cx="520" cy="185" r="11"/>
+  <text class="d-text" x="520" y="189" text-anchor="middle">9</text>
+  <text class="d-text" x="538" y="189">Polite Rewrite</text>
+  <circle class="d-node" cx="520" cy="220" r="11"/>
+  <text class="d-text" x="520" y="224" text-anchor="middle">5</text>
+  <text class="d-text" x="538" y="224">Complexity Mismatch</text>
+  <circle class="d-node" cx="520" cy="313" r="11"/>
+  <text class="d-text" x="520" y="317" text-anchor="middle">4</text>
+  <text class="d-text" x="538" y="317">Comment Echo</text>
 </svg>
-<figcaption>The nine smells at a glance: the checklist to run during review.</figcaption>
+<figcaption>Where each smell gets caught, and what it costs if nothing catches it. Review time belongs in the red corner: only a human spots these, and they fail silently in production. Placement assumes a TypeScript codebase with ESLint.</figcaption>
 </figure>
 
 ## 1. The Abstraction Tax
