@@ -18,4 +18,4 @@ claude mcp add --transport http --scope project atlassian https://mcp.atlassian.
 2. Scope file-specific rules with `.cursor/rules/*.mdc` (`globs:`) or `.claude/rules/*.md` (`paths:`).
 3. Add skills as `.claude/skills/<name>/SKILL.md`; set `disable-model-invocation: true` on anything that pushes.
 4. Add the Atlassian MCP server at project scope, then run `/mcp` to sign in with OAuth.
-5. Put write-capable MCP tools behind a prompt: `"permissions": { "ask": ["mcp__atlassian"] }`.
+5. In `.claude/settings.json`, `allow` the read tools (`mcp__atlassian__get*`, `list*`, `search*`) and `ask` on the writes (`create*`, `edit*`, `update*`, `transition*`, `addOrEdit*`).

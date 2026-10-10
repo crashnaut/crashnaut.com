@@ -114,6 +114,81 @@ Take four on/off flags. Exhaustive testing is `2⁴ = 16` runs. Pairwise needs f
 
 Pick any two flags (say B and D) and all four combinations (off/off, off/on, on/off, on/on) appear somewhere in those five rows. That holds for all six pairs. Five is also the floor: no four-row set covers every pair for four flags. The gap widens fast: ten on/off flags is 1,024 exhaustive runs, but every pair can be covered in as few as six.
 
+<figure class="diagram">
+<svg viewBox="0 0 720 300" role="img" aria-label="Pairwise coverage grid for four flags. Six columns, one per flag pair from A and B to C and D, each with four on/off cells. Every one of the 24 cells is covered by at least one of the five pairwise runs: off/off by run 1 every time, and each on/on cell by two runs.">
+  <rect class="d-panel" x="508" y="10" width="96" height="240" rx="6"/>
+  <text class="d-edge" x="556" y="264" text-anchor="middle">the B, D example</text>
+  <text class="d-text" x="172" y="40" text-anchor="middle">A × B</text>
+  <text class="d-text" x="268" y="40" text-anchor="middle">A × C</text>
+  <text class="d-text" x="364" y="40" text-anchor="middle">A × D</text>
+  <text class="d-text" x="460" y="40" text-anchor="middle">B × C</text>
+  <text class="d-text" x="556" y="40" text-anchor="middle">B × D</text>
+  <text class="d-text" x="652" y="40" text-anchor="middle">C × D</text>
+  <text class="d-text-sm" x="114" y="40" text-anchor="end">pair</text>
+  <text class="d-text-sm" x="114" y="82" text-anchor="end">off / off</text>
+  <rect class="d-box-green" x="130" y="58" width="84" height="38" rx="4" data-pair="AB" data-values="off/off" data-runs="1"/>
+  <text class="d-text" x="172" y="82" text-anchor="middle">run 1</text>
+  <rect class="d-box-green" x="226" y="58" width="84" height="38" rx="4" data-pair="AC" data-values="off/off" data-runs="1"/>
+  <text class="d-text" x="268" y="82" text-anchor="middle">run 1</text>
+  <rect class="d-box-green" x="322" y="58" width="84" height="38" rx="4" data-pair="AD" data-values="off/off" data-runs="1"/>
+  <text class="d-text" x="364" y="82" text-anchor="middle">run 1</text>
+  <rect class="d-box-green" x="418" y="58" width="84" height="38" rx="4" data-pair="BC" data-values="off/off" data-runs="1"/>
+  <text class="d-text" x="460" y="82" text-anchor="middle">run 1</text>
+  <rect class="d-box-green" x="514" y="58" width="84" height="38" rx="4" data-pair="BD" data-values="off/off" data-runs="1"/>
+  <text class="d-text" x="556" y="82" text-anchor="middle">run 1</text>
+  <rect class="d-box-green" x="610" y="58" width="84" height="38" rx="4" data-pair="CD" data-values="off/off" data-runs="1"/>
+  <text class="d-text" x="652" y="82" text-anchor="middle">run 1</text>
+  <text class="d-text-sm" x="114" y="130" text-anchor="end">off / on</text>
+  <rect class="d-box-green" x="130" y="106" width="84" height="38" rx="4" data-pair="AB" data-values="off/on" data-runs="2"/>
+  <text class="d-text" x="172" y="130" text-anchor="middle">run 2</text>
+  <rect class="d-box-green" x="226" y="106" width="84" height="38" rx="4" data-pair="AC" data-values="off/on" data-runs="2"/>
+  <text class="d-text" x="268" y="130" text-anchor="middle">run 2</text>
+  <rect class="d-box-green" x="322" y="106" width="84" height="38" rx="4" data-pair="AD" data-values="off/on" data-runs="2"/>
+  <text class="d-text" x="364" y="130" text-anchor="middle">run 2</text>
+  <rect class="d-box-green" x="418" y="106" width="84" height="38" rx="4" data-pair="BC" data-values="off/on" data-runs="3"/>
+  <text class="d-text" x="460" y="130" text-anchor="middle">run 3</text>
+  <rect class="d-box-green" x="514" y="106" width="84" height="38" rx="4" data-pair="BD" data-values="off/on" data-runs="3"/>
+  <text class="d-text" x="556" y="130" text-anchor="middle">run 3</text>
+  <rect class="d-box-green" x="610" y="106" width="84" height="38" rx="4" data-pair="CD" data-values="off/on" data-runs="4"/>
+  <text class="d-text" x="652" y="130" text-anchor="middle">run 4</text>
+  <text class="d-text-sm" x="114" y="178" text-anchor="end">on / off</text>
+  <rect class="d-box-green" x="130" y="154" width="84" height="38" rx="4" data-pair="AB" data-values="on/off" data-runs="3"/>
+  <text class="d-text" x="172" y="178" text-anchor="middle">run 3</text>
+  <rect class="d-box-green" x="226" y="154" width="84" height="38" rx="4" data-pair="AC" data-values="on/off" data-runs="4"/>
+  <text class="d-text" x="268" y="178" text-anchor="middle">run 4</text>
+  <rect class="d-box-green" x="322" y="154" width="84" height="38" rx="4" data-pair="AD" data-values="on/off" data-runs="5"/>
+  <text class="d-text" x="364" y="178" text-anchor="middle">run 5</text>
+  <rect class="d-box-green" x="418" y="154" width="84" height="38" rx="4" data-pair="BC" data-values="on/off" data-runs="4"/>
+  <text class="d-text" x="460" y="178" text-anchor="middle">run 4</text>
+  <rect class="d-box-green" x="514" y="154" width="84" height="38" rx="4" data-pair="BD" data-values="on/off" data-runs="5"/>
+  <text class="d-text" x="556" y="178" text-anchor="middle">run 5</text>
+  <rect class="d-box-green" x="610" y="154" width="84" height="38" rx="4" data-pair="CD" data-values="on/off" data-runs="5"/>
+  <text class="d-text" x="652" y="178" text-anchor="middle">run 5</text>
+  <text class="d-text-sm" x="114" y="226" text-anchor="end">on / on</text>
+  <rect class="d-box-green" x="130" y="202" width="84" height="38" rx="4" data-pair="AB" data-values="on/on" data-runs="4,5"/>
+  <text class="d-text" x="172" y="226" text-anchor="middle">run 4, 5</text>
+  <rect class="d-box-green" x="226" y="202" width="84" height="38" rx="4" data-pair="AC" data-values="on/on" data-runs="3,5"/>
+  <text class="d-text" x="268" y="226" text-anchor="middle">run 3, 5</text>
+  <rect class="d-box-green" x="322" y="202" width="84" height="38" rx="4" data-pair="AD" data-values="on/on" data-runs="3,4"/>
+  <text class="d-text" x="364" y="226" text-anchor="middle">run 3, 4</text>
+  <rect class="d-box-green" x="418" y="202" width="84" height="38" rx="4" data-pair="BC" data-values="on/on" data-runs="2,5"/>
+  <text class="d-text" x="460" y="226" text-anchor="middle">run 2, 5</text>
+  <rect class="d-box-green" x="514" y="202" width="84" height="38" rx="4" data-pair="BD" data-values="on/on" data-runs="2,4"/>
+  <text class="d-text" x="556" y="226" text-anchor="middle">run 2, 4</text>
+  <rect class="d-box-green" x="610" y="202" width="84" height="38" rx="4" data-pair="CD" data-values="on/on" data-runs="2,3"/>
+  <text class="d-text" x="652" y="226" text-anchor="middle">run 2, 3</text>
+  <text class="d-text" x="360" y="290" text-anchor="middle">24 of 24 cells covered by 5 runs. Exhaustive testing would take 16.</text>
+</svg>
+<figcaption>Every pair of flags, every on/off combination, and the run from the table above that covers it. No cell is empty, and the on/on cells get covered twice for free.</figcaption>
+</figure>
+
+:::bar-chart log[Test runs needed: exhaustive vs pairwise (log scale)]
+4 flags, exhaustive | 16 | bad
+4 flags, pairwise | 5 | good
+10 flags, exhaustive | 1024 | bad
+10 flags, pairwise | 6 | good
+:::
+
 You don't build these tables by hand. Tools like [Microsoft PICT](https://github.com/microsoft/pict) take a list of parameters and values (flags, environments, roles) and generate the pairwise set for you, including constraints like "flag C only exists when flag A is on."
 
 ## What actually helps, from the QA seat
@@ -122,16 +197,16 @@ Jerome's prescription (fewer flags, branches over toggles, small reversible rele
 
 <figure class="diagram">
 <svg viewBox="0 0 620 470" role="img" aria-label="A decision flowchart for whether something should become a feature flag">
-  <defs>
-    <marker id="ffah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
-      <path d="M0,0 L7,3 L0,6 Z" class="d-arrow"/>
-    </marker>
-  </defs>
-  <path class="d-line" d="M200,66 L200,88" marker-end="url(#ffah)"/>
-  <path class="d-line" d="M330,140 L372,140" marker-end="url(#ffah)"/>
-  <path class="d-line" d="M200,192 L200,238" marker-end="url(#ffah)"/>
-  <path class="d-line" d="M330,290 L372,290" marker-end="url(#ffah)"/>
-  <path class="d-line" d="M200,342 L200,386" marker-end="url(#ffah)"/>
+  <path class="d-line" d="M200,66 L200,82"/>
+  <path class="d-arrow" d="M200,90 l-4,-8 l8,0 z"/>
+  <path class="d-line" d="M330,140 L364,140"/>
+  <path class="d-arrow" d="M372,140 l-8,-4 l0,8 z"/>
+  <path class="d-line" d="M200,192 L200,232"/>
+  <path class="d-arrow" d="M200,240 l-4,-8 l8,0 z"/>
+  <path class="d-line" d="M330,290 L364,290"/>
+  <path class="d-arrow" d="M372,290 l-8,-4 l0,8 z"/>
+  <path class="d-line" d="M200,342 L200,380"/>
+  <path class="d-arrow" d="M200,388 l-4,-8 l8,0 z"/>
   <text class="d-edge" x="348" y="132">yes</text>
   <text class="d-edge" x="210" y="218">no</text>
   <text class="d-edge" x="348" y="282">no</text>

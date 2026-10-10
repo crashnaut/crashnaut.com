@@ -99,10 +99,107 @@ test("compare blocks render as HTML, not raw delimiters", async ({
   expect(html).not.toContain(":::compare")
 })
 
+test("diagrams follow the house rules (docs/STYLE.md §3)", async ({
+  request,
+}) => {
+  const posts = (await sitemapPaths(request)).filter((p) =>
+    p.startsWith("/blog/"),
+  )
+  const problems: string[] = []
+  let diagrams = 0
+  for (const path of posts) {
+    const html = await (await request.get(path)).text()
+    for (const [figure] of html.matchAll(
+      /<figure class="diagram">[\s\S]*?<\/figure>/g,
+    )) {
+      diagrams++
+      const svg = figure.match(/<svg[^>]*>/)?.[0] ?? ""
+      const where = `${path} diagram ${diagrams}`
+      if (!svg) problems.push(`${where}: no <svg>`)
+      if (!svg.includes('role="img"')) problems.push(`${where}: no role="img"`)
+      if (!/aria-label="[^"]{10,}"/.test(svg))
+        problems.push(`${where}: no aria-label`)
+      if (!/<figcaption>[^<]+/.test(figure))
+        problems.push(`${where}: no figcaption`)
+      if (/<(marker|style|script|foreignObject)\b/.test(figure))
+        problems.push(
+          `${where}: uses <marker>, <style>, <script> or <foreignObject>`,
+        )
+      if (/(fill|stroke)="(#|hsl|rgb)|style="|hsla?\(|rgba?\(/.test(figure))
+        problems.push(`${where}: hard-coded colour`)
+    }
+  }
+  expect(diagrams).toBeGreaterThan(10)
+  expect(problems).toEqual([])
+})
+
 test("unpublished posts redirect instead of 404ing", async ({ request }) => {
   // firebase.json redirects; the preview server just needs to not serve them
   const res = await request.get("/blog/llms-unkept-promise-to-sdets", {
     maxRedirects: 0,
   })
   expect(res.status()).not.toBe(200)
+})
+
+test("pairwise grid matches the post's own pairwise table", async ({
+  request,
+}) => {
+  const html = await (
+    await request.get("/blog/the-feature-flag-nightmare")
+  ).text()
+  const table = html.match(/<table>[\s\S]*?Flag A[\s\S]*?<\/table>/)?.[0]
+  if (!table) throw new Error("pairwise table not found")
+  const runs = [
+    ...table.matchAll(/<tr>\s*<td>(\d+)<\/td>([\s\S]*?)<\/tr>/g),
+  ].map(([, run, cells]) => ({
+    run,
+    values: [...cells.matchAll(/<td>(on|off)<\/td>/g)].map(([, v]) => v),
+  }))
+  expect(runs).toHaveLength(5)
+
+  const cells = [
+    ...html.matchAll(
+      /data-pair="([A-D])([A-D])" data-values="(on|off)\/(on|off)" data-runs="([\d,]+)"/g,
+    ),
+  ]
+  expect(cells).toHaveLength(24)
+  for (const [, a, b, va, vb, marked] of cells) {
+    const i = "ABCD".indexOf(a)
+    const j = "ABCD".indexOf(b)
+    const covering = runs
+      .filter((r) => r.values[i] === va && r.values[j] === vb)
+      .map((r) => r.run)
+    expect(covering.length, `${a}${b} ${va}/${vb} is covered`).toBeGreaterThan(
+      0,
+    )
+    expect(marked, `${a}${b} ${va}/${vb}`).toBe(covering.join(","))
+  }
+})
+
+test("each new diagram sits under its section heading", async ({ request }) => {
+  const expected: [string, string][] = [
+    ["/blog/the-feature-flag-nightmare", "Why automation doesn"],
+    ["/blog/cross-repo-playwright-ci", "The Solution"],
+    [
+      "/blog/playwright-interacting-with-closed-shadow-dom-in-iframes",
+      "Important Considerations",
+    ],
+    ["/blog/playwright-page-factory-composition", "When to use"],
+    [
+      "/blog/test-database-isolation-function-vs-class",
+      "Two isolation levels, chosen per test",
+    ],
+  ]
+  for (const [path, heading] of expected) {
+    const html = await (await request.get(path)).text()
+    const match = new RegExp(
+      `<h([23])[^>]*>(?:(?!</h[23]>)[\\s\\S])*${heading}[\\s\\S]*?</h\\1>`,
+    ).exec(html)
+    if (!match) throw new Error(`${path} has no "${heading}" heading`)
+    const section =
+      html.slice(match.index + match[0].length).split(/<h[23][\s>]/)[0] ?? ""
+    expect(section, `${path}: diagram under "${heading}"`).toContain(
+      '<figure class="diagram">',
+    )
+  }
 })

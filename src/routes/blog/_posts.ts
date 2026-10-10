@@ -7,6 +7,7 @@ import {
   traverseFolder,
 } from "#lib/markdown.ts"
 import type { Post, PostMetadata } from "#lib/models.ts"
+import { postSignals } from "#lib/post-signals.ts"
 
 const blogPath = "blog"
 const WORDS_PER_MINUTE = 230
@@ -39,7 +40,7 @@ export async function readPosts(): Promise<Post[]> {
       }
       const tldrPath = files.find((f) => f.file === "tldr.md")?.path
 
-      const { html, metadata } = parseFileToHtmlAndMeta(postPath)
+      const { html, markdown, metadata } = parseFileToHtmlAndMeta(postPath)
       const { html: tldr } = tldrPath
         ? parseFileToHtmlAndMeta(tldrPath)
         : { html: null }
@@ -50,6 +51,7 @@ export async function readPosts(): Promise<Post[]> {
       const updated = metadata.updated as string | Date | undefined
       const publishedAt = toISO(metadata.date)
       const modifiedAt = updated ? toISO(updated) : publishedAt
+      const minutes = readingMinutes(html)
 
       const postMetadata: PostMetadata = {
         title: metadata.title as string,
@@ -63,11 +65,18 @@ export async function readPosts(): Promise<Post[]> {
         tags: metadata.tags,
         banner: ogImageFor(slug),
         canonical: `${variables.basePath}/blog/${slug}`,
-        readingMinutes: readingMinutes(html),
+        readingMinutes: minutes,
         outgoingLinks: [],
         incomingLinks: [],
         toc: metadata.toc,
         outgoingSlugs: metadata.outgoingSlugs,
+        signals: postSignals({
+          slug,
+          tags: metadata.tags,
+          html,
+          markdown,
+          readingMinutes: minutes,
+        }),
       }
 
       return { html, tldr, metadata: postMetadata }

@@ -108,6 +108,48 @@ await onDashboard.topNavBar.clickProducts()
 const onProducts = await pageFactory.productsPage({ skipGoto: true })
 ```
 
+<figure class="diagram">
+<svg viewBox="0 0 720 290" role="img" aria-label="Browser URL over time in two lanes. Both start with dashboardPage() on /dashboard, then topNavBar.clickProducts() moves the browser to /products. In lane 1, productsPage({ skipGoto: true }) leaves the browser where it is and the test passes. In lane 2, productsPage() calls goto on /products again: an extra page load that resets the state the test was about to check.">
+  <text class="d-edge" x="24" y="22">LANE 1 · WITH skipGoto</text>
+  <text class="d-edge" x="24" y="48" text-anchor="start">dashboardPage()</text>
+  <path class="d-line" d="M28,53 L28,66"/>
+  <text class="d-edge" x="230" y="48" text-anchor="middle">topNavBar.clickProducts()</text>
+  <path class="d-line" d="M230,53 L230,66"/>
+  <text class="d-edge" x="470" y="48" text-anchor="middle">productsPage({ skipGoto: true })</text>
+  <path class="d-line" d="M470,53 L470,66"/>
+  <rect class="d-box" x="24" y="66" width="206" height="32" rx="4"/>
+  <text class="d-text" x="127" y="87" text-anchor="middle">/dashboard</text>
+  <rect class="d-box-green" x="230" y="66" width="410" height="32" rx="4"/>
+  <text class="d-text" x="350" y="87" text-anchor="middle">/products</text>
+  <text class="d-text-sm" x="470" y="116" text-anchor="middle">stays put: no second load</text>
+  <circle class="d-node-green" cx="680" cy="82" r="22"/>
+  <text class="d-on-fill" x="680" y="86" text-anchor="middle">PASS</text>
+  <text class="d-edge" x="24" y="150">LANE 2 · WITHOUT skipGoto</text>
+  <text class="d-edge" x="24" y="176" text-anchor="start">dashboardPage()</text>
+  <path class="d-line" d="M28,181 L28,194"/>
+  <text class="d-edge" x="230" y="176" text-anchor="middle">topNavBar.clickProducts()</text>
+  <path class="d-line" d="M230,181 L230,194"/>
+  <text class="d-edge" x="470" y="176" text-anchor="middle">productsPage()</text>
+  <path class="d-line" d="M470,181 L470,194"/>
+  <rect class="d-box" x="24" y="194" width="206" height="32" rx="4"/>
+  <text class="d-text" x="127" y="215" text-anchor="middle">/dashboard</text>
+  <rect class="d-box" x="230" y="194" width="240" height="32" rx="4"/>
+  <text class="d-text" x="350" y="215" text-anchor="middle">/products</text>
+  <rect class="d-box-red" x="470" y="194" width="70" height="32" rx="4"/>
+  <text class="d-text-sm" x="505" y="214" text-anchor="middle">goto()</text>
+  <rect class="d-box" x="540" y="194" width="100" height="32" rx="4"/>
+  <text class="d-text" x="590" y="215" text-anchor="middle">/products</text>
+  <text class="d-text-sm" x="505" y="244" text-anchor="middle">extra load</text>
+  <text class="d-text-sm" x="590" y="244" text-anchor="middle">state reset</text>
+  <circle class="d-node-red" cx="680" cy="210" r="22"/>
+  <text class="d-on-fill" x="680" y="214" text-anchor="middle">✕</text>
+  <path class="d-line" d="M24,276 L640,276"/>
+  <path class="d-arrow" d="M648,276 l-8,-4 l0,8 z"/>
+  <text class="d-text-sm" x="680" y="280" text-anchor="middle">time</text>
+</svg>
+<figcaption>The address bar during one test. The click already moved the browser, so a second <code>goto</code> only costs a reload and throws away the state you got there with.</figcaption>
+</figure>
+
 ## Composition: components inside page objects
 
 A page object represents a route or feature (`ProductsPage`, `LoginPage`). A component represents a reusable region (`TopNavBar`, a modal, a sidebar panel).

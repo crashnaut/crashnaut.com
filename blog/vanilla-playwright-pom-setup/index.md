@@ -14,40 +14,52 @@ Not every team needs BDD. If only engineers write your tests, the Cucumber/Gherk
 The whole thing in one picture: specs and page objects both meet at a single `pageFactory`. The factory owns navigation and hands the right page object back to the spec.
 
 <figure class="diagram">
-<svg viewBox="0 0 720 430" role="img" aria-label="Two panels. Page objects on the right point to a central pageFactory, which points to the test specs on the left.">
-  <defs>
-    <marker id="vfa" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
-      <path d="M0,0 L11,6 L0,12 Z" class="d-flow-head"/>
-    </marker>
-  </defs>
-  <rect class="d-panel" x="8" y="8" width="246" height="414" rx="8"/>
-  <rect class="d-panel" x="266" y="8" width="446" height="414" rx="8"/>
-  <text class="d-title" x="131" y="44" text-anchor="middle">Tests</text>
-  <text class="d-title" x="489" y="44" text-anchor="middle">Code</text>
+<svg viewBox="0 0 720 400" role="img" aria-label="Three spec files call only the pageFactory. The factory navigates and builds each page object. A hazard band underneath marks the assertion boundary: expect() is allowed in specs and not in page objects.">
+  <text class="d-title" x="117" y="36" text-anchor="middle">Specs</text>
+  <text class="d-title" x="360" y="36" text-anchor="middle">Factory</text>
+  <text class="d-title" x="603" y="36" text-anchor="middle">Page objects</text>
 
-  <path class="d-flow" d="M296,203 L223,121" marker-end="url(#vfa)"/>
-  <path class="d-flow" d="M296,215 L223,215" marker-end="url(#vfa)"/>
-  <path class="d-flow" d="M296,227 L223,309" marker-end="url(#vfa)"/>
-  <path class="d-flow" d="M538,121 L430,203" marker-end="url(#vfa)"/>
-  <path class="d-flow" d="M538,215 L430,215" marker-end="url(#vfa)"/>
-  <path class="d-flow" d="M538,309 L430,227" marker-end="url(#vfa)"/>
+  <rect class="d-box" x="24" y="64" width="186" height="44" rx="5"/>
+  <text class="d-text" x="117" y="91" text-anchor="middle">login.spec.ts</text>
+  <rect class="d-box" x="24" y="134" width="186" height="44" rx="5"/>
+  <text class="d-text" x="117" y="161" text-anchor="middle">products.spec.ts</text>
+  <rect class="d-box" x="24" y="204" width="186" height="44" rx="5"/>
+  <text class="d-text" x="117" y="231" text-anchor="middle">smoke.spec.ts</text>
 
-  <rect class="d-fill" x="39" y="98" width="184" height="46" rx="5"/>
-  <text class="d-on-fill" x="131" y="126" text-anchor="middle">login.spec.ts</text>
-  <rect class="d-fill" x="39" y="192" width="184" height="46" rx="5"/>
-  <text class="d-on-fill" x="131" y="220" text-anchor="middle">products.spec.ts</text>
-  <rect class="d-fill" x="39" y="286" width="184" height="46" rx="5"/>
-  <text class="d-on-fill" x="131" y="314" text-anchor="middle">smoke.spec.ts</text>
+  <path class="d-line" d="M210,86 C240,86 238,140 268,140"/>
+  <path class="d-arrow" d="M276,140 l-8,-4 l0,8 z"/>
+  <path class="d-line" d="M210,156 L268,156"/>
+  <path class="d-arrow" d="M276,156 l-8,-4 l0,8 z"/>
+  <path class="d-line" d="M210,226 C240,226 238,172 268,172"/>
+  <path class="d-arrow" d="M276,172 l-8,-4 l0,8 z"/>
 
-  <rect class="d-fill" x="296" y="188" width="132" height="54" rx="5"/>
-  <text class="d-on-fill" x="362" y="219" text-anchor="middle">pageFactory</text>
+  <rect class="d-fill" x="276" y="116" width="168" height="80" rx="6"/>
+  <text class="d-on-fill" x="360" y="152" text-anchor="middle">pageFactory</text>
+  <text class="d-on-fill" x="360" y="172" text-anchor="middle">goto() + construct</text>
+  <text class="d-text-sm" x="360" y="222" text-anchor="middle">the only door in</text>
 
-  <rect class="d-fill" x="538" y="98" width="150" height="46" rx="5"/>
-  <text class="d-on-fill" x="613" y="126" text-anchor="middle">loginPage</text>
-  <rect class="d-fill" x="538" y="192" width="150" height="46" rx="5"/>
-  <text class="d-on-fill" x="613" y="220" text-anchor="middle">productsPage</text>
-  <rect class="d-fill" x="538" y="286" width="150" height="46" rx="5"/>
-  <text class="d-on-fill" x="613" y="314" text-anchor="middle">cartPage</text>
+  <path class="d-line" d="M444,140 C474,140 472,86 502,86"/>
+  <path class="d-arrow" d="M510,86 l-8,-4 l0,8 z"/>
+  <path class="d-line" d="M444,156 L502,156"/>
+  <path class="d-arrow" d="M510,156 l-8,-4 l0,8 z"/>
+  <path class="d-line" d="M444,172 C474,172 472,226 502,226"/>
+  <path class="d-arrow" d="M510,226 l-8,-4 l0,8 z"/>
+
+  <rect class="d-box-green" x="510" y="64" width="186" height="44" rx="5"/>
+  <text class="d-text" x="603" y="91" text-anchor="middle">loginPage</text>
+  <rect class="d-box-green" x="510" y="134" width="186" height="44" rx="5"/>
+  <text class="d-text" x="603" y="161" text-anchor="middle">productsPage</text>
+  <rect class="d-box-green" x="510" y="204" width="186" height="44" rx="5"/>
+  <text class="d-text" x="603" y="231" text-anchor="middle">cartPage</text>
+
+  <rect class="d-box-amber" x="8" y="282" width="704" height="106" rx="6"/>
+  <path class="d-line" d="M20,294 l10,-10 M44,294 l10,-10 M68,294 l10,-10 M92,294 l10,-10 M116,294 l10,-10 M140,294 l10,-10 M164,294 l10,-10 M188,294 l10,-10 M212,294 l10,-10 M236,294 l10,-10 M260,294 l10,-10 M284,294 l10,-10 M308,294 l10,-10 M332,294 l10,-10 M356,294 l10,-10 M380,294 l10,-10 M404,294 l10,-10 M428,294 l10,-10 M452,294 l10,-10 M476,294 l10,-10 M500,294 l10,-10 M524,294 l10,-10 M548,294 l10,-10 M572,294 l10,-10 M596,294 l10,-10 M620,294 l10,-10 M644,294 l10,-10 M668,294 l10,-10 M692,294 l10,-10"/>
+  <text class="d-title" x="360" y="318" text-anchor="middle">Hazard band: the assertion boundary</text>
+  <rect class="d-box-green" x="24" y="330" width="186" height="42" rx="5"/>
+  <text class="d-text" x="117" y="356" text-anchor="middle">✓ expect() allowed</text>
+  <text class="d-text-sm" x="360" y="356" text-anchor="middle">Law 1: page objects never call expect()</text>
+  <rect class="d-box-red" x="510" y="330" width="186" height="42" rx="5"/>
+  <text class="d-text" x="603" y="356" text-anchor="middle">✕ no expect() here</text>
 </svg>
 <figcaption>Specs depend only on the pageFactory; the factory owns navigation and constructs the right page object.</figcaption>
 </figure>

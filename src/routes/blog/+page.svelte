@@ -3,6 +3,7 @@
   import { goto } from "$app/navigation"
   import Seo from "#lib/Seo.svelte"
   import PostRow from "#lib/PostRow.svelte"
+  import ImpactMap from "#lib/ImpactMap.svelte"
   import { humanDate } from "#lib/formatters.ts"
   import { site } from "#lib/seo.ts"
 
@@ -62,6 +63,10 @@
       pipelines, and the testing strategy behind them.
     </p>
   </header>
+
+  <div class="map-wrap">
+    <ImpactMap map={data.map} />
+  </div>
 
   <div class="filters">
     <label class="search">
@@ -145,6 +150,10 @@
     color: var(--ink-2);
     font-size: 1.1rem;
     max-width: 55ch;
+  }
+
+  .map-wrap {
+    margin-top: 2.5rem;
   }
 
   .filters {
