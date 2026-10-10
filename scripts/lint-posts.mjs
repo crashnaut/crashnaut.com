@@ -101,8 +101,9 @@ function lintPost({ folder, attributes, body, bodyBegin }) {
     .split("\n")
     .map((line, i) => ({ line, number: bodyBegin + i }))
     .filter(({ line }) => line.includes("TODO("))
-  for (const { number } of todoLines) {
-    const message = `contains "TODO(" (line ${number})`
+  if (todoLines.length) {
+    const lines = todoLines.map(({ number }) => number).join(", ")
+    const message = `contains "TODO(" (line${todoLines.length > 1 ? "s" : ""} ${lines})`
     if (TODO_ALLOWLIST.has(folder)) {
       warnings.push(`${message}, allowlisted`)
     } else {
