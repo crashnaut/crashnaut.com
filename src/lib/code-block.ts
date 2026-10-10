@@ -45,7 +45,12 @@ export const codeGroup = {
             const _last = codeLines.pop()
             const text = codeLines.join("\n")
             return {
-              formatted: this.lexer.options.renderer.code(text, lang),
+              formatted: this.lexer.options.renderer.code({
+                type: "code",
+                raw: c,
+                text,
+                lang,
+              }),
               title,
               id: codeBlockId++,
             }

@@ -106,14 +106,15 @@ export function parseFileToHtmlAndMeta(file): {
 
   // const tweetRegexp = /https:\/\/twitter\.com\/[A-Za-z0-9-_]*\/status\/[0-9]+/i;
 
-  renderer.link = (href, title, text) => {
+  renderer.link = ({ href, title, tokens }) => {
+    const text = renderer.parser.parseInline(tokens)
     // if (text === href && tweetRegexp.test(href)) {
     // 	return `::${href}::`;
     // }
 
     const link = href.replace("../", "/blog/").replace("/index.md", "")
     const href_attr = `href="${link}"`
-    const title_attr = title ? `title="${title}"` : ""
+    const title_attr = title ? `title="${escapeHtml(title)}"` : ""
     const internal = link.startsWith("/")
     const rel_attr = internal || link.startsWith("#") ? `` : 'rel="external"'
     const svelteTags = internal ? `data-sveltekit-reload` : ""
@@ -130,7 +131,8 @@ export function parseFileToHtmlAndMeta(file): {
     return `<a ${attributesString}>${text}</a>`
   }
 
-  renderer.image = (href, _title, text) => {
+  renderer.image = ({ href, text: altText }) => {
+    const text = escapeHtml(altText)
     const src = href.startsWith("http")
       ? href
       : `/` +
@@ -158,7 +160,8 @@ export function parseFileToHtmlAndMeta(file): {
 		`
   }
 
-  renderer.paragraph = (text) => {
+  renderer.paragraph = ({ tokens }) => {
+    const text = renderer.parser.parseInline(tokens)
     const trimmed = text.replace("👋", `<span class="wave">👋</span>`).trim()
 
     if (trimmed.startsWith("<figure>")) {
@@ -168,8 +171,8 @@ export function parseFileToHtmlAndMeta(file): {
     return `<p>${trimmed}</p>`
   }
 
-  renderer.code = (source, lang) => {
-    lang = lang || "txt"
+  renderer.code = ({ text: source, lang: infoString }) => {
+    const lang = infoString || "txt"
 
     const lineIndex = lang.indexOf("{")
     const fileIndex =
@@ -292,14 +295,18 @@ export function parseFileToHtmlAndMeta(file): {
     return `<pre id="${id}" aria-hidden="true" tabindex="-1">${heading}${codeblock}</pre>`
   }
 
-  renderer.codespan = (source) => {
-    return `<code>${source}</code>`
+  renderer.codespan = ({ text }) => {
+    return `<code>${escapeHtml(text)}</code>`
   }
-  renderer.blockquote = (source) => {
-    return `<blockquote>${source}</blockquote>`
+  renderer.blockquote = ({ tokens }) => {
+    return `<blockquote>${renderer.parser.parse(tokens)}</blockquote>`
   }
 
-  renderer.heading = (text, level, rawtext) => {
+  renderer.heading = ({ tokens, depth: level }) => {
+    const text = renderer.parser.parseInline(tokens)
+    const rawtext = unescapeHtml(
+      renderer.parser.parseInline(tokens, renderer.parser.textRenderer),
+    )
     const headingText = text.includes("{")
       ? text.substring(0, text.indexOf("{") - 1)
       : text
@@ -307,7 +314,9 @@ export function parseFileToHtmlAndMeta(file): {
     const anchorOverwrite = anchorRegExp.exec(rawtext)
     const fragment = anchorOverwrite
       ? anchorOverwrite[0].substring(2, anchorOverwrite[0].length - 1)
-      : slugify(rawtext)
+      : // marked <15 dropped these characters from heading text; keep
+        // existing anchor ids (and links to them) stable.
+        slugify(rawtext.replace(/[&<>"]/g, ""))
 
     if (!fragment || level === 1) {
       return `<h${level}>${headingText}</h${level}>`
@@ -417,6 +426,25 @@ function slugify(string) {
 
 export function sortByDate(a, b) {
   return new Date(a.metadata.date) < new Date(b.metadata.date) ? 1 : -1
+}
+
+// marked escaped these in its tokenizer before v15; renderers escape now.
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
+function unescapeHtml(value: string) {
+  return value
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&")
 }
 
 function escapeAttr(value: string) {
