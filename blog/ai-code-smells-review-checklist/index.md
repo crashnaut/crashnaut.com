@@ -3,7 +3,7 @@ title: "AI Code Smells: A Review Checklist"
 slug: ai-code-smells-review-checklist
 description: "AI coding assistants fill gaps with plausible-looking code. Nine recurring AI code smells to catch in review, and what to look for when you spot each one."
 author: Mike Sell
-date: 2026-04-23T00:00:00.000Z
+date: 2026-03-12T00:00:00.000Z
 tags: AI, Code Review, Testing
 ---
 

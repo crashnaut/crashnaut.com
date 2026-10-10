@@ -3,7 +3,7 @@ title: "Playwright: Interacting with Closed Shadow DOM in iFrames"
 slug: playwright-interacting-with-closed-shadow-dom-in-iframes
 description: "Force closed shadow roots open with Playwright addInitScript to test web components inside iframes, like embedded payment or ID-verification widgets."
 author: Mike Sell
-date: 2025-10-16T00:00:00.000Z
+date: 2025-11-05T00:00:00.000Z
 tags: Playwright, iframes, Shadow DOM, Web Components
 ---
 

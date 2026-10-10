@@ -3,7 +3,7 @@ title: "Vanilla Playwright with Page Object Model: A Clean Setup"
 slug: vanilla-playwright-pom-setup
 description: "A Playwright Page Object Model layout with no BDD and no BasePage: one pageFactory owns navigation, page objects own interactions, specs read like scripts."
 author: Mike Sell
-date: 2025-11-02T00:00:00.000Z
+date: 2026-01-14T00:00:00.000Z
 tags: Playwright, Page Object Model, TypeScript, Test Architecture
 ---
 
