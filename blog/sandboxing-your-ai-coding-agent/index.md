@@ -14,7 +14,7 @@ The fastest way to work with an AI coding agent is to let it run commands withou
 The container is the security boundary. Anything you didn't mount, the agent can't see or touch. Each layer you add inside that shrinks what a bad command, or a prompt injection hiding in a README, can reach.
 
 <figure class="diagram">
-<svg viewBox="0 0 700 420" role="img" aria-label="Concentric rings: the agent sits inside the workspace, inside a disposable container, inside an egress allowlist; SSH keys, cloud credentials, production credentials and other repos sit outside every ring">
+<svg viewBox="0 0 700 420" role="img" aria-label="Concentric rings: the agent sits inside the workspace, inside a disposable container, inside an egress allowlist; a read-only .gitconfig is bind-mounted into the container wall; SSH keys, cloud credentials, production credentials and other repos sit outside every ring">
   <circle class="d-box-amber" cx="350" cy="205" r="185"/>
   <circle class="d-box" cx="350" cy="205" r="138"/>
   <circle class="d-box-green" cx="350" cy="205" r="90"/>
@@ -26,7 +26,9 @@ The container is the security boundary. Anything you didn't mount, the agent can
   <text class="d-text-sm" x="350" y="104" text-anchor="middle">disposable</text>
   <text class="d-text-sm" x="350" y="140" text-anchor="middle">workspace (rw)</text>
   <text class="d-text-sm" x="350" y="154" text-anchor="middle">this repo only</text>
-  <text class="d-text-sm" x="350" y="276" text-anchor="middle">.gitconfig (ro)</text>
+  <rect class="d-box" x="287" y="329" width="126" height="28" rx="4"/>
+  <text class="d-text-sm" x="350" y="347" text-anchor="middle">.gitconfig (ro)</text>
+  <text class="d-edge" x="350" y="374" text-anchor="middle">bind mount</text>
   <rect class="d-box-red" x="10" y="14" width="150" height="50" rx="4"/>
   <text class="d-text" x="85" y="44" text-anchor="middle">~/.ssh, ~/.aws</text>
   <rect class="d-box-red" x="540" y="14" width="150" height="50" rx="4"/>

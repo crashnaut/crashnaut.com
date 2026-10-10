@@ -154,7 +154,7 @@ allowed-tools: Bash(git diff *)
 `disable-model-invocation: true` means only a person can start it, which is what I want for anything that pushes. `allowed-tools` lets the read-only `git diff` run without a prompt while the skill is active. Nobody has to remember the branch-naming rule, because the skill _is_ the rule.
 
 <figure class="diagram">
-<svg viewBox="0 0 700 200" role="img" aria-label="A skill run in five stages: invoke, load, research and report are read-only, while execute writes to git and the issue tracker">
+<svg viewBox="0 0 700 200" role="img" aria-label="A skill run in five stages: invoke, load, research and report are read-only and run without a prompt, while execute creates the branch, pushes and opens the merge request behind a prompt">
   <rect class="d-box" x="8" y="40" width="124" height="60" rx="4"/>
   <text class="d-text" x="70" y="65" text-anchor="middle">1 Invoke</text>
   <text class="d-text-sm" x="70" y="84" text-anchor="middle">/commit-and-mr</text>
@@ -176,9 +176,9 @@ allowed-tools: Bash(git diff *)
   <path class="d-flow-head" d="M434,70 l -8,-5 l 0,10 z"/>
   <path class="d-flow-head" d="M576,70 l -8,-5 l 0,10 z"/>
   <rect class="d-box-green" x="8" y="124" width="408" height="30" rx="4"/>
-  <text class="d-text-sm" x="212" y="143" text-anchor="middle">read only: fine to run without a prompt</text>
+  <text class="d-text-sm" x="212" y="143" text-anchor="middle">read only: allow rules, no prompt</text>
   <rect class="d-box-red" x="434" y="124" width="124" height="30" rx="4"/>
-  <text class="d-text-sm" x="496" y="143" text-anchor="middle">impact zone</text>
+  <text class="d-text-sm" x="496" y="143" text-anchor="middle">impact zone: ask</text>
   <rect class="d-box-green" x="576" y="124" width="116" height="30" rx="4"/>
   <text class="d-text-sm" x="634" y="143" text-anchor="middle">read only</text>
   <text class="d-text-sm" x="350" y="185" text-anchor="middle">Only stage 4 changes anything other people can see. Keep the prompts there.</text>
@@ -222,7 +222,7 @@ Reach cuts both ways. A connector that can _read_ your issue tracker is low risk
 
 - Project scope, so it's only live in repos that need it
 - OAuth sign-in, scoped and revocable
-- Every call behind a prompt: `"ask": ["mcp__atlassian"]`
+- Reads allowed, writes behind a prompt (the rules below)
 - Read the ticket, not the attachments with customer data
 
 ::dont[Not like this]
@@ -234,7 +234,28 @@ Reach cuts both ways. A connector that can _read_ your issue tracker is low risk
 
 :::
 
-In Claude Code's `permissions` settings, `mcp__atlassian` matches every tool from that server, so the `ask` rule above prompts on each call. Cursor asks for approval before MCP tools by default. Either way the agent's output still needs review, and [the AI code smells checklist](/blog/ai-code-smells-review-checklist) is what I run over its diffs.
+In Claude Code, a bare `"ask": ["mcp__atlassian"]` matches every tool on that server, so it prompts on reads too. Tool-name globs scope the rules instead:
+
+```json:.claude/settings.json
+{
+  "permissions": {
+    "allow": [
+      "mcp__atlassian__get*",
+      "mcp__atlassian__list*",
+      "mcp__atlassian__search*"
+    ],
+    "ask": [
+      "mcp__atlassian__create*",
+      "mcp__atlassian__edit*",
+      "mcp__atlassian__update*",
+      "mcp__atlassian__transition*",
+      "mcp__atlassian__addOrEdit*"
+    ]
+  }
+}
+```
+
+Ask rules are checked before allow rules, and only an allow rule skips the prompt, so a tool on neither list (a delete, an attachment download) still asks. Cursor asks for approval before MCP tools by default. Either way the agent's output still needs review, and [the AI code smells checklist](/blog/ai-code-smells-review-checklist) is what I run over its diffs.
 
 :::tip
 Put each convention where the agent reads it every run: house style in `AGENTS.md`, routine workflows in skills, and ticket access behind an MCP server that asks before it writes.
