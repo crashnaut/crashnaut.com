@@ -30,7 +30,7 @@
     "optimize:image": "node ./scripts/optimize-image-cli.js",
     "optimize:images": "node ./scripts/optimize-images.js",
     "postinstall": "svelte-kit sync",
-    "og": "node ./scripts/og.mjs"
+    "og": "node --experimental-strip-types ./scripts/og.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
