@@ -7,6 +7,9 @@
   import Comments from "#lib/Comments.svelte"
   import Share from "#lib/Share.svelte"
   import WorkWithMe from "#lib/WorkWithMe.svelte"
+  import CrashReport from "#lib/CrashReport.svelte"
+  import ReadingGauge from "#lib/ReadingGauge.svelte"
+  import Sigil from "#lib/brand/Sigil.svelte"
   import { blog } from "#lib/current-blog.svelte.ts"
   import codeBlockLifeCycle from "#lib/code-block-lifecycle.svelte.ts"
   import copyLifeCycle from "#lib/copy-lifecycle.svelte.ts"
@@ -127,6 +130,15 @@
             · {meta.readingMinutes} min read
           </p>
         </div>
+        <ReadingGauge
+          minutes={meta.readingMinutes}
+          needle={meta.signals.gauge}
+        />
+      </div>
+
+      <div class="recorder">
+        <Sigil svg={meta.signals.sigil} size={48} />
+        <CrashReport run={data.run} signals={meta.signals} />
       </div>
 
       {#if meta.tags.length}
@@ -263,6 +275,21 @@
     border-radius: 50%;
     border: 2px solid var(--signal);
     object-fit: cover;
+  }
+
+  .byline > :global(.gauge) {
+    margin-left: 0.25rem;
+  }
+
+  .recorder {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--signal);
+    border-radius: var(--radius);
+    background: var(--surface);
   }
 
   .author {
