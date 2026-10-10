@@ -35,6 +35,7 @@ Markdown extras: `:::tip|note|warning|danger|success`, `:::compare` with
 ## Test
 
 ```bash
+npm run lint:posts          # fit check: description, tags, slug, share card, TODO(, internal links
 npm run build && npm test   # Playwright against the production build, incl. axe checks
 ```
 

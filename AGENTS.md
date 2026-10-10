@@ -73,7 +73,8 @@ never shrink type. US spelling; product names as their vendors write them.
 - [ ] Every slot above is filled.
 - [ ] `drafts/<slug>/qa/fact-check.md` exists; every FIX/SOFTEN is applied or explained.
 - [ ] `drafts/<slug>/qa/design-review.md` exists; every P1/P2 is applied or explained.
-- [ ] `npm run check`, `npm run lint`, and `npm run build && npm test` pass.
+- [ ] `npm run check`, `npm run lint`, `npm run lint:posts`, and
+      `npm run build && npm test` pass.
 - [ ] Share card generated; the post renders on mobile without horizontal scroll.
 - [ ] Mike has read it before it's committed.
 
@@ -102,6 +103,7 @@ never shrink type. US spelling; product names as their vendors write them.
 npm run dev                 # http://localhost:5173
 npm run check               # svelte-check
 npm run lint                # prettier + eslint
+npm run lint:posts          # post fit check (scripts/lint-posts.mjs)
 npm run build && npm test   # production build, then Playwright against it
 npm run g "Title"           # scaffold a draft
 npm run og                  # render share cards for new posts
