@@ -99,6 +99,40 @@ test("compare blocks render as HTML, not raw delimiters", async ({
   expect(html).not.toContain(":::compare")
 })
 
+test("diagrams follow the house rules (docs/STYLE.md §3)", async ({
+  request,
+}) => {
+  const posts = (await sitemapPaths(request)).filter((p) =>
+    p.startsWith("/blog/"),
+  )
+  const problems: string[] = []
+  let diagrams = 0
+  for (const path of posts) {
+    const html = await (await request.get(path)).text()
+    for (const [figure] of html.matchAll(
+      /<figure class="diagram">[\s\S]*?<\/figure>/g,
+    )) {
+      diagrams++
+      const svg = figure.match(/<svg[^>]*>/)?.[0] ?? ""
+      const where = `${path} diagram ${diagrams}`
+      if (!svg) problems.push(`${where}: no <svg>`)
+      if (!svg.includes('role="img"')) problems.push(`${where}: no role="img"`)
+      if (!/aria-label="[^"]{10,}"/.test(svg))
+        problems.push(`${where}: no aria-label`)
+      if (!/<figcaption>[^<]+/.test(figure))
+        problems.push(`${where}: no figcaption`)
+      if (/<(marker|style|script|foreignObject)\b/.test(figure))
+        problems.push(
+          `${where}: uses <marker>, <style>, <script> or <foreignObject>`,
+        )
+      if (/(fill|stroke)="(#|hsl|rgb)|style="|hsla?\(|rgba?\(/.test(figure))
+        problems.push(`${where}: hard-coded colour`)
+    }
+  }
+  expect(diagrams).toBeGreaterThan(10)
+  expect(problems).toEqual([])
+})
+
 test("unpublished posts redirect instead of 404ing", async ({ request }) => {
   // firebase.json redirects; the preview server just needs to not serve them
   const res = await request.get("/blog/llms-unkept-promise-to-sdets", {
