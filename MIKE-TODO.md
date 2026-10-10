@@ -10,8 +10,7 @@ Delete items as you finish them.
       variables → Actions → Variables** and add `GA_MEASUREMENT_ID`. Until it's
       set, builds ship without analytics and CI prints a warning.
 - [ ] **Filter out your own visits.** In GA4, open **Admin → Data streams → Configure
-      tag settings → Define internal traffic** and add your IP, or exclude
-      Goiânia in your reports.
+      tag settings → Define internal traffic** and add your own IP.
 - [ ] **Set up Google Search Console.** Verify crashnaut.com (a DNS TXT record is
       easiest) and submit `https://crashnaut.com/sitemap.xml`. It shows which
       search terms bring people in, which GA alone can't.
@@ -88,8 +87,3 @@ To publish: `npm run g "Title"` → write it in `drafts/` → move the folder to
 - [ ] Upgrade SvelteKit, Vite, vite-plugin-svelte and vitest to current major
       versions in their own PR.
 - [ ] Turn on `"strict": true` in `tsconfig.json` and fix whatever breaks.
-
-## Outside this repo
-
-- [ ] Your logseq Personal graph in Dropbox holds passwords, ID and passport
-      numbers, and bank details in plain text. Move them into a password manager.
