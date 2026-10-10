@@ -17,8 +17,8 @@ interface TokenColor {
 const groups: Group[] = [
   {
     scope: ["comment", "punctuation.definition.comment", "string.comment"],
-    dark: "#6b6f76",
-    light: "#85888e",
+    dark: "#8b9099",
+    light: "#686b71",
   },
   {
     scope: [

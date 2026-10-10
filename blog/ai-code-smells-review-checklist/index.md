@@ -9,11 +9,11 @@ tags: AI, Code Review, Testing
 
 # AI Code Smells: A Review Checklist
 
-AI coding assistants are genuinely good now. They're fast, they're capable, and they'll happily produce a working diff for almost anything you ask. But "working" and "good" aren't the same thing — and the gap between them is where AI quietly creates problems.
+AI coding assistants are genuinely good now, and they'll happily produce a working diff for almost anything you ask. A working diff can still be a bad one, and the gap between the two is where AI quietly creates problems.
 
-The thing to internalize is this: **you own the loop, the AI assists within it.** The assistant doesn't know your system, your team, or your constraints. You do. It fills gaps with code that _looks_ right, and the only thing standing between that and your main branch is review.
+Keep one thing in mind: **you own the loop, and the AI assists within it.** The assistant doesn't know your system or your constraints. You do. It fills gaps with code that _looks_ right, and the only thing standing between that and your main branch is review.
 
-After reviewing a lot of AI-assisted pull requests, the same patterns keep showing up. None of them is automatically a bug — but each is always worth a second look. When you spot one, ask: _was this intentional, or an artifact of how the AI filled in a gap?_
+After reviewing a lot of AI-assisted pull requests, the same patterns keep showing up. None of them is automatically a bug, but each is worth a second look. When you spot one, ask: _was this intentional, or an artifact of how the AI filled in a gap?_
 
 Here are the nine.
 
@@ -29,7 +29,7 @@ Here are the nine.
   <rect class="d-box" x="247" y="174" width="225" height="70" rx="6"/><circle cx="275" cy="209" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="275" y="213" text-anchor="middle">8</text><text class="d-text" x="297" y="213">Catch-All Handler</text>
   <rect class="d-box" x="484" y="174" width="225" height="70" rx="6"/><circle cx="512" cy="209" r="13" fill="hsla(38,92%,45%,1)"/><text class="d-on-fill" x="512" y="213" text-anchor="middle">9</text><text class="d-text" x="534" y="213">Polite Rewrite</text>
 </svg>
-<figcaption>The nine smells at a glance — the checklist to run during review.</figcaption>
+<figcaption>The nine smells at a glance: the checklist to run during review.</figcaption>
 </figure>
 
 ## 1. The Abstraction Tax
@@ -46,48 +46,48 @@ A helper, base class, or utility introduced for logic that's used exactly once. 
 
 ## 3. The Rename Alias
 
-A variable that just holds another variable's value under a new name — `const result = response`, `const userId = uid` — with nothing happening in between. The AI lost track of what it already had.
+A variable that just holds another variable's value under a new name (`const result = response`, `const userId = uid`) with nothing happening in between. The AI lost track of what it already had.
 
 **Look for:** consecutive assignments where the right-hand side is just another local, with no transformation.
 
 ## 4. The Comment Echo
 
-A comment that restates the code in plain English. `// Get the user by UUID` above `const user = getUser(uuid)` tells the reader nothing they can't already see. Good comments explain the _why_ — a constraint, a workaround, a non-obvious invariant — not the _what_.
+A comment that restates the code in plain English. `// Get the user by UUID` above `const user = getUser(uuid)` tells the reader nothing they can't already see. Good comments explain the _why_ (a constraint, a workaround, a non-obvious invariant) rather than the _what_.
 
 **Look for:** comments that could be auto-generated from the function name, or that you could delete without changing anyone's understanding.
 
 ## 5. The Complexity Mismatch
 
-The solution is far bigger than the requirement. A three-line bug fix arrives as a 60-line refactor with a new class, an enum, and two helpers. It may work, but reviewing it is hard, reverting it is harder, and maintaining it is hardest.
+The solution is far bigger than the requirement. A three-line bug fix arrives as a 60-line refactor with a new class, an enum, and two helpers. It may work, but it's harder to review, revert and maintain than the fix you asked for.
 
 **Look for:** diffs much larger than the ticket scope, new types for a single use case, a simple change that suddenly requires reading three new files.
 
 ## 6. The Hallucinated API
 
-A method, attribute, or import that doesn't actually exist. The AI filled in a plausible-sounding name. It looks correct at a glance and then throws at runtime — especially dangerous when the invented name closely resembles a real one.
+A method, attribute, or import that doesn't actually exist. The AI filled in a plausible-sounding name. It looks correct at a glance and then throws at runtime. It's especially dangerous when the invented name closely resembles a real one.
 
 **Look for:** calls on your own classes you don't recognize, imports from unusual paths. Grep it to verify before approving.
 
 ## 7. The Test Mannequin
 
-A test that passes green but verifies nothing. It asserts there were no errors and stops — without checking what was actually created. It looks like coverage and provides none. It will not catch a regression.
+A test that passes green but verifies nothing. It asserts there were no errors and stops, without checking what was actually created. It looks like coverage but won't catch a regression.
 
 **Look for:** tests with a single assertion on the error state and none on the data; mutation tests that never confirm the data changed; query tests that only check the response isn't empty.
 
 ## 8. The Catch-All Handler
 
-`catch (e) {}` swallowing errors with an empty block or a stray `console.log`. The AI silenced a failing path instead of fixing the root cause — so real errors vanish in production and turn into incidents that take hours to trace.
+`catch (e) {}` swallowing errors with an empty block or a stray `console.log`. The AI silenced a failing path instead of fixing the root cause, so real errors vanish in production and turn into incidents that take hours to trace.
 
 **Look for:** empty `catch` blocks, catches that never inspect or rethrow the error, `.catch(() => {})` on promises, error paths that log and continue instead of raising.
 
 ## 9. The Polite Rewrite
 
-You asked for a small change. The AI "helpfully" cleaned up the surrounding code too — renaming variables, restructuring conditionals, extracting methods. The diff is now far wider than the ticket, and every unrelated change is something the reviewer has to fully parse to trust.
+You asked for a small change. The AI "helpfully" cleaned up the surrounding code too: renaming variables, restructuring conditionals, extracting methods. The diff is now far wider than the ticket, and every unrelated change is something the reviewer has to fully parse to trust.
 
 **Look for:** changes to lines you didn't ask to touch. When in doubt, ask the author what each change was for.
 
 ## The habit that prevents most of them
 
-Most of these smells come from the same place: the AI was handed a task with no context and invented its own answer. The fix is upstream of review. Before you ask for an implementation, point the assistant at the best existing example of what you're building — "follow the same structure as this resolver" — and the output starts looking like your codebase instead of a novel interpretation of it.
+Most of these smells come from the same place: the AI was handed a task with no context and invented its own answer. The fix is upstream of review. Before you ask for an implementation, point the assistant at the best existing example of what you're building ("follow the same structure as this resolver") and the output starts looking like your codebase instead of a novel interpretation of it.
 
-Review still matters. But context first, review second, beats reviewing your way out of a mess every time.
+Review still matters, but giving context first saves you from reviewing your way out of a mess.

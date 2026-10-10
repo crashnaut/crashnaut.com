@@ -9,9 +9,9 @@ tags: BDD, Playwright, Page Object Model, Cucumber
 
 ## The Problem with Functional BDD Implementations
 
-I've seen many BDD implementations that start well but become unmaintainable over time. The most common issue? Using functional programming patterns with utility functions instead of proper Page Objects.
+I've seen many BDD implementations that start well but become unmaintainable over time. The most common issue is using functional programming patterns with utility functions instead of proper Page Objects.
 
-Here's what typically happens:
+What typically happens:
 
 - Test utilities become a scattered mess of functions
 - Duplicated logic across different step definitions
@@ -21,7 +21,7 @@ Here's what typically happens:
 
 ## The Solution: BDD + POM
 
-The answer is simple: combine the readability of BDD/Gherkin with the maintainability of the Page Object Model.
+If your team needs Gherkin, combine it with the Page Object Model so the code behind the scenarios stays maintainable.
 
 ### Feature Files (Gherkin)
 
@@ -56,7 +56,7 @@ export class LoginPage extends BasePage {
 ```
 
 :::note
-This example extends a `BasePage` for shared helpers like `fillInput`. My newer setup drops the base class entirely in favor of composition — small component objects and plain util functions — because inheritance trees get tangled as a suite grows. The BDD layer works the same either way; see [Vanilla Playwright with Page Object Model](/blog/vanilla-playwright-pom-setup) for the no-`BasePage` version.
+This example extends a `BasePage` for shared helpers like `fillInput`. My newer setup drops the base class entirely in favor of composition (small component objects and plain util functions), because inheritance trees get tangled as a suite grows. The BDD layer works the same either way; see [Vanilla Playwright with Page Object Model](/blog/vanilla-playwright-pom-setup) for the no-`BasePage` version.
 :::
 
 ### Step Definitions (The Glue)
@@ -100,7 +100,7 @@ const homePage = await pageFactory(page).homePage()
 const loginPage = pageFactory(page).getPage(LoginPage)
 ```
 
-Cleaner API, less boilerplate.
+It's a cleaner API with less boilerplate.
 
 ### No Assertions in Page Objects
 
@@ -136,7 +136,7 @@ Two modes of testing:
 
 - Starts your app inside the container
 - Tests against `localhost:3000`
-- Perfect for validating changes before merge
+- Useful for validating changes before merge
 
 ### Remote Mode (Environment Testing)
 
@@ -159,13 +159,15 @@ pnpm docker:test:dev
 
 Three GitHub Actions workflows:
 
-1. **PR Workflow** - Every pull request
-2. **Dev Workflow** - After deployments
-3. **Smoke Workflow** - Every 6 hours against all environments
+1. PR workflow: every pull request
+2. Dev workflow: after deployments
+3. Smoke workflow: every 6 hours against all environments
 
-All running in Docker for consistency.
+All three run in Docker for consistency.
 
 ## Benefits of This Approach
+
+If your team needs Gherkin, this is what each group gets from it.
 
 ### For Product/BA
 
@@ -198,7 +200,7 @@ I've created a complete boilerplate with:
 - GitHub Actions workflows
 - Comprehensive documentation
 
-**Get it here:** [GitHub - crashnaut/playwright-pom-boilerplate](https://github.com/crashnaut/playwright-pom-boilerplate)
+**Get it here:** [GitHub: crashnaut/playwright-pom-boilerplate](https://github.com/crashnaut/playwright-pom-boilerplate)
 
 <!-- TODO(mike): as of 2026-10 the public repo has no playwright-bdd dependency, no features/ folder and no `bddgen` script (package.json only has playwright test scripts + docker). Either push the BDD version to the repo or reword "I've created a complete boilerplate with: Playwright BDD..." and the `pnpm bddgen` step below (same in tldr.md). -->
 
@@ -221,18 +223,18 @@ pnpm bddgen
 pnpm test
 ```
 
-That's it. Five minutes from clone to running tests.
+That's the whole setup, about five minutes from clone to running tests.
 
 ## When to Use BDD vs Plain POM
 
-**Use BDD when:**
+Use BDD if your team needs Gherkin, for example when you're:
 
 - Collaborating with non-technical stakeholders
-- Need living documentation
-- Want tests readable by Product/BA
-- Multiple people write scenarios
+- Needing living documentation
+- Wanting tests readable by Product/BA
+- Having multiple people write scenarios
 
-**Use plain POM when:**
+Use plain POM when:
 
 - Pure technical testing
 - Don't need Gherkin scenarios
@@ -265,6 +267,6 @@ The "works on my machine" problem is real. Docker ensures consistency.
 
 ## Wrapping Up
 
-BDD doesn't have to mean unmaintainable test code. By combining Gherkin with proper Page Objects, you get the best of both worlds: readable tests that stakeholders understand, and maintainable code that scales with your application.
+BDD doesn't have to mean unmaintainable test code. If your team needs Gherkin, putting proper Page Objects behind it keeps the scenarios readable for stakeholders and the code underneath maintainable as the application grows.
 
-If only engineers write your tests, the same architecture works without the Gherkin layer — I covered that in [Vanilla Playwright with Page Object Model](/blog/vanilla-playwright-pom-setup).
+If only engineers write your tests, the same architecture works without the Gherkin layer. I covered that in [Vanilla Playwright with Page Object Model](/blog/vanilla-playwright-pom-setup).

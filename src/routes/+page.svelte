@@ -11,8 +11,8 @@
     {
       id: "01",
       name: "Test automation architecture",
-      stack: "Playwright · Cypress · BDD",
-      body: "Suites your team can read, extend and trust: page objects that stay small, data factories instead of hardcoded fixtures, and no sleeps.",
+      stack: "Playwright · TypeScript · pytest · GraphQL",
+      body: "Suites your team can read and extend: fixtures instead of setup scripts, data factories instead of hardcoded IDs, and no sleeps.",
     },
     {
       id: "02",

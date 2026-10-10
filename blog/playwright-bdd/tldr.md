@@ -1,8 +1,8 @@
 ## Quick Guide
 
-**Problem:** BDD implementations become unmaintainable with functional utilities instead of Page Objects.
+Problem: BDD implementations become unmaintainable with functional utilities instead of Page Objects.
 
-**Solution:** Combine Gherkin with Page Object Model.
+Fix: if your team needs Gherkin, combine it with the Page Object Model.
 
 ### Clone & Setup
 
@@ -35,4 +35,4 @@ pnpm test      # Run tests
 pnpm docker:test:local  # Docker testing
 ```
 
-**When to use:** BDD for stakeholder collaboration, [plain POM](/blog/vanilla-playwright-pom-setup) for technical-only testing.
+When to use it: BDD if your team needs Gherkin for stakeholder collaboration, [plain POM](/blog/vanilla-playwright-pom-setup) for technical-only testing.

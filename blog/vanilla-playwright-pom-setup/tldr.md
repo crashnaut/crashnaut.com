@@ -4,7 +4,7 @@ Vanilla Playwright + Page Object Model, no BDD, no `BasePage`, no separate navig
 
 **The one rule:** assertions live in specs; interactions live in page objects. Specs depend only on `pageFactory`; the factory owns navigation and constructs page objects.
 
-**Layout:**
+Layout:
 
 ```
 test/
@@ -18,7 +18,7 @@ test/
 ├── test-data/  └── utils/
 ```
 
-**pageFactory owns navigation** (`skipGoto` to reuse a page). No `navigationPage.ts`:
+pageFactory owns navigation (`skipGoto` to reuse a page). No `navigationPage.ts`:
 
 ```typescript
 // waitForPageToLoad = a small util that waits for your app's "ready" signal
@@ -40,7 +40,7 @@ class PageFactory {
 export const pageFactory = (page: Page): PageFactory => new PageFactory(page)
 ```
 
-**Page objects: composition, no `BasePage`.** `get*` returns a Locator, `click*`/`fill*`/`waitFor*` act:
+Page objects use composition, no `BasePage`. `get*` returns a Locator, `click*`/`fill*`/`waitFor*` act:
 
 ```typescript
 export class ProductsPage {
@@ -56,7 +56,7 @@ export class ProductsPage {
 }
 ```
 
-**User-facing locators first** (`getByRole` → … → `getByTestId` → `page.locator()` last):
+User-facing locators first (`getByRole` → … → `getByTestId` → `page.locator()` last):
 
 :::compare
 ::do[Reach for first]
@@ -79,7 +79,7 @@ getNavLink(name: string): Locator {
 }
 ```
 
-**Specs read like a manual script** (`onXxxPage` variables, assertions only here):
+Specs read like a manual script (`onXxxPage` variables, assertions only here):
 
 ```typescript
 import { expect, test } from "../../fixtures/test"
@@ -100,7 +100,7 @@ test.describe("Products", { tag: ["@smoke", "@products"] }, () => {
 })
 ```
 
-**Log in once via the API** (like `cy.login()`); UI-login specs import `@playwright/test`:
+Log in once via the API (like `cy.login()`); UI-login specs import `@playwright/test`:
 
 ```typescript
 export const test = base.extend<AuthFixtures>({
@@ -114,9 +114,9 @@ export const test = base.extend<AuthFixtures>({
 })
 ```
 
-**Name smoke tests for what they assert** — "navigate to Products page", not "show products list".
+Name smoke tests for what they assert: "navigate to Products page" rather than "show products list".
 
-**Config — small on purpose:**
+Config, small on purpose:
 
 ```typescript
 export default defineConfig({
@@ -133,6 +133,6 @@ export default defineConfig({
 })
 ```
 
-**Part 2:** [Playwright Page Factory + Composition](/blog/playwright-page-factory-composition) — components and a `pageFactory` fixture for larger suites.
+Part 2: [Playwright Page Factory + Composition](/blog/playwright-page-factory-composition) adds components and a `pageFactory` fixture for larger suites.
 
 Pairs with [Playwright BDD](/blog/playwright-bdd) and [Nix for SDET setup](/blog/nix-flakes-for-sdet-setup).

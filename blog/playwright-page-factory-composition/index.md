@@ -1,7 +1,7 @@
 ---
 title: "Playwright Page Factory + Composition: Scaling a Vanilla POM"
 slug: playwright-page-factory-composition
-description: "Combine a page factory, composition pattern, skipGoto navigation, and a Playwright fixture — so specs stay thin as the suite grows."
+description: "Combine a page factory, composition pattern, skipGoto navigation, and a Playwright fixture, so specs stay thin as the suite grows."
 author: Mike Sell
 date: 2026-10-09T00:00:00.000Z
 tags: Playwright, Page Object Model, TypeScript, Test Architecture
@@ -9,15 +9,15 @@ tags: Playwright, Page Object Model, TypeScript, Test Architecture
 
 # Playwright Page Factory + Composition: Scaling a Vanilla POM
 
-If you already have a vanilla Playwright + Page Object Model setup — one `pageFactory` that owns navigation, page objects that own interactions, assertions only in specs — you have the foundation. The next question, once the suite grows past a handful of smoke tests, is how to keep that discipline without every spec file importing and instantiating the factory by hand.
+If you already have a vanilla Playwright + Page Object Model setup (one `pageFactory` that owns navigation, page objects that own interactions, assertions only in specs), you have the foundation. The next question, once the suite grows past a handful of smoke tests, is how to keep that discipline without every spec file importing and instantiating the factory by hand.
 
 This is Part 2. It picks up where Part 1, [Vanilla Playwright with Page Object Model](/blog/vanilla-playwright-pom-setup), left off. The additions are deliberate and small:
 
-1. **Composition** — shared UI regions (nav bars, modals, sidebars) as components composed inside page objects.
-2. **Conditional navigation** — `skipGoto` when the browser is already on the route.
-3. **Fixture-wrapped factory** — inject `pageFactory` into every test so specs never call `pageFactory(page)` themselves.
+1. Composition: shared UI regions (nav bars, modals, sidebars) as components composed inside page objects.
+2. Conditional navigation: `skipGoto` when the browser is already on the route.
+3. Fixture-wrapped factory: inject `pageFactory` into every test so specs never call `pageFactory(page)` themselves.
 
-None of this requires BDD, `BasePage`, or a second navigation class. It's the same architecture, tightened for scale.
+None of this requires BDD, `BasePage`, or a second navigation class. It's the same architecture with tighter rules for a bigger suite.
 
 ## The problem at scale
 
@@ -34,9 +34,9 @@ test("navigates to products", async ({ page }) => {
 })
 ```
 
-It works. But as you add dozens or hundreds of specs, the repetition adds up: same import, same `(page)` wiring, easy to forget `skipGoto` after an in-app navigation click. The factory is the front door to your POM — it should be as automatic as `page` itself.
+It works, but as you add dozens or hundreds of specs, the repetition adds up: same import, same `(page)` wiring, easy to forget `skipGoto` after an in-app navigation click. The factory is the front door to your POM, so it should be as automatic as `page` itself.
 
-Meanwhile, shared UI like a top navigation bar starts getting copy-pasted across page objects, or worse, accessed directly from specs. That's where **composition** earns its keep.
+Meanwhile, shared UI like a top navigation bar starts getting copy-pasted across page objects, or worse, accessed directly from specs. That's where composition earns its keep.
 
 ## Folder structure (target state)
 
@@ -59,7 +59,7 @@ tests/playwright/
 └── utils/
 ```
 
-**Page objects** map to routes or features. **Components** map to reusable regions that appear on multiple pages. The factory creates page objects only — components are constructed inside page constructors.
+Page objects map to routes or features. Components map to reusable regions that appear on multiple pages. The factory creates page objects only. Components are constructed inside page constructors.
 
 What's still absent on purpose: `navigationPage.ts`, `BasePage`, and a generic `pages/` dump.
 
@@ -98,19 +98,19 @@ Use it when a prior step already put the browser on that URL:
 - Submitted a form that redirected
 - Logged in and landed on the home route
 
-Without `skipGoto`, the factory calls `goto` again — slower, and sometimes resets state you were trying to test.
+Without `skipGoto`, the factory calls `goto` again, which is slower and sometimes resets state you were trying to test.
 
 ```typescript
 const onDashboard = await pageFactory.dashboardPage()
 await onDashboard.topNavBar.clickProducts()
 
-// Browser is already on /products — don't goto again
+// Browser is already on /products, don't goto again
 const onProducts = await pageFactory.productsPage({ skipGoto: true })
 ```
 
 ## Composition: components inside page objects
 
-A **page object** represents a route or feature (`ProductsPage`, `LoginPage`). A **component** represents a reusable region (`TopNavBar`, a modal, a sidebar panel).
+A page object represents a route or feature (`ProductsPage`, `LoginPage`). A component represents a reusable region (`TopNavBar`, a modal, a sidebar panel).
 
 Compose in the page constructor:
 
@@ -128,7 +128,7 @@ export class ProductsPage {
 }
 ```
 
-Specs reach shared UI through the page — never `new TopNavBar(page)` in a spec:
+Specs reach shared UI through the page, never `new TopNavBar(page)` in a spec:
 
 ```typescript
 await onDashboardPage.topNavBar.clickProducts()
@@ -136,10 +136,10 @@ await onDashboardPage.topNavBar.clickProducts()
 
 ### When to extract a component
 
-- The same region appears on **two or more pages** (classic: authenticated top nav).
-- A single page object file is getting unwieldy — split by visible region, not arbitrary layers.
+- The same region appears on two or more pages (classic: authenticated top nav).
+- A single page object file is getting unwieldy. Split it by visible region rather than arbitrary layers.
 
-Do **not** extract components for markup that only appears on one page. That's premature abstraction.
+Don't extract components for markup that only appears on one page. That's premature abstraction.
 
 ### Scoping locators inside components
 
@@ -161,9 +161,9 @@ export class HeaderComponent {
 }
 ```
 
-Real apps fight back. When icon-font glyphs pollute accessible names in a header, page-level `getByRole` + `filter({ has: getByText(...) })` inside the component is fine — with a comment explaining why.
+Real apps fight back. When icon-font glyphs pollute accessible names in a header, page-level `getByRole` + `filter({ has: getByText(...) })` inside the component is fine, with a comment explaining why.
 
-Components follow the same laws as page objects: **no `expect()`**, `get*` / `click*` / `fill*` prefixes, locators live inside the component.
+Components follow the same laws as page objects: no `expect()`, `get*` / `click*` / `fill*` prefixes, locators live inside the component.
 
 ## Wrap the factory in a Playwright fixture
 
@@ -189,7 +189,7 @@ export const test = base.extend<TestFixtures>({
 export { expect } from "@playwright/test"
 ```
 
-Note the import alias: `pageFactory as createPageFactory`. The fixture key and the factory function share a name — aliasing keeps the fixture file unambiguous.
+Note the import alias: `pageFactory as createPageFactory`. The fixture key and the factory function share a name, and aliasing keeps the fixture file unambiguous.
 
 Specs destructure `{ pageFactory }` and never import `pageFactory` directly:
 
@@ -227,7 +227,7 @@ test("lands on analytics after nav click", async ({ page, pageFactory }) => {
 
 ### Pairing with API login
 
-If your default fixture also logs in via API (the Playwright equivalent of `cy.login()`), UI-login specs opt out in the describe block — but still get `pageFactory`:
+If your default fixture also logs in via API (the Playwright equivalent of `cy.login()`), UI-login specs opt out in the describe block but still get `pageFactory`:
 
 ```typescript
 import { testUser } from "../data/users" // credentials come from env, not the spec
@@ -274,11 +274,11 @@ Reserve factory methods for routes you `goto` directly. Sub-views reached only t
 
 ## The laws (unchanged, still worth repeating)
 
-1. **Assertions only in `*.spec.ts`.** Page objects and components never call `expect()`.
-2. **Interactions and waits in page objects / components.** Specs read like manual scripts.
-3. **Navigate via `pageFactory.xxxPage()`** — through the fixture, not raw `page.goto()` in specs.
-4. **User-facing locators first** — `getByRole` before CSS; `page.locator()` last.
-5. **Don't hide whole journeys** in opaque helpers; thin factory navigation is the allowed shortcut.
+1. Assertions only in `*.spec.ts`. Page objects and components never call `expect()`.
+2. Interactions and waits in page objects / components. Specs read like manual scripts.
+3. Navigate via `pageFactory.xxxPage()` through the fixture, not raw `page.goto()` in specs.
+4. User-facing locators first: `getByRole` before CSS; `page.locator()` last.
+5. Don't hide whole flows in opaque helpers; thin factory navigation is the allowed shortcut.
 
 ## This vs what you usually inherit
 
@@ -301,6 +301,6 @@ Reserve factory methods for routes you `goto` directly. Sub-views reached only t
 
 ## Wrapping up
 
-Page factory + composition is not a different architecture — it's the same vanilla POM with clearer boundaries as the suite grows. The factory stays the single front door. Components absorb shared UI. `skipGoto` respects navigation you've already done. The fixture removes boilerplate so every new spec starts with `{ pageFactory }` and reads like a script.
+Page factory + composition is the same vanilla POM with clearer boundaries as the suite grows. The factory stays the single front door. Components absorb shared UI. `skipGoto` respects navigation you've already done. The fixture removes boilerplate so every new spec starts with `{ pageFactory }` and reads like a script.
 
 If you're setting up from scratch, start with [Vanilla Playwright with Page Object Model](/blog/vanilla-playwright-pom-setup). If you're scaling an existing suite, add the fixture first, then extract components when you see the same region on a second page.

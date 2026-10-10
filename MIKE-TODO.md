@@ -52,6 +52,33 @@ Each one has a `<!-- TODO(mike) -->` comment in the markdown.
 - [ ] Two numbers nobody has verified: "five minutes from clone to running tests"
       and "~2GB" of disk.
 
+## Check the seven new posts (published on `feat/publish-drafts`)
+
+They were finished from your drafts by agents following `docs/STYLE.md`, and every API
+was checked against current docs, but **none of the code samples has been run**. Read
+each one and correct anything that doesn't sound like you.
+
+- [ ] `the-golden-rule-of-mocking`: TypeScript, Vitest, MSW 3 and stripe-node, plus a
+      pytest + `responses` version. Run the snippets once.
+- [ ] `anatomy-of-an-integration-test` (now includes the "questions before you write"
+      draft): check that the pytest fixture names (`load_assets`, `execute`,
+      `db_defaults`) match your real suites.
+- [ ] `test-database-isolation-function-vs-class`: Neo4j database names can't contain
+      underscores, so `test_8a2f3c9d` is now `test-8a2f3c9d`. Check your real fixture.
+- [ ] `coverage-is-a-health-signal`: the charts are labelled as illustrative. Swap in
+      real numbers if you have them.
+- [ ] `ephemeral-preview-environments-slot-based-deploys`: confirm that AWS SSM
+      Parameter Store is the slot store you used, and that the pool is 7 exclusive
+      slots plus 1 shared. The workflow is untested.
+- [ ] `mcp-servers-rules-and-skills-for-qa` (merged MCP + agent-skills drafts): the
+      `commit-and-mr` skill is presented as the one you use most. Confirm that.
+- [ ] `sandboxing-your-ai-coding-agent`: `my-agent-image` is a placeholder. The
+      devcontainer, `settings.json` and `sandbox.json` examples are untested.
+- [ ] Two headings were renamed during the copy-edit, so their anchor links changed:
+      "The bottom line" (feature-flag post) and "The Bottom Line" (cross-repo post).
+- [ ] All seven are dated 2026-10-10. If you'd rather release them over a few weeks,
+      move some back to `drafts/` and publish one a week.
+
 ## Pulled posts (now in `drafts/`, old URLs redirect to `/blog`)
 
 - [ ] `drafts/testing-web3-using-synpress`: check it against current Synpress
@@ -68,20 +95,30 @@ Each one has a `<!-- TODO(mike) -->` comment in the markdown.
 
 ## What to write next (in order)
 
-1. Ship the nearly finished drafts: `the-golden-rule-of-mocking` (swap the
-   geocoding example for Stripe), `coverage-is-a-health-signal`,
-   `test-database-isolation-function-vs-class`, and
-   `anatomy-of-an-integration-test` (make the example "create a payment", and
-   fold in `questions-to-ask-before-writing-a-test`).
+1. ~~Ship the nearly finished drafts~~ (done on `feat/publish-drafts`: mocking,
+   anatomy + questions, DB isolation, coverage, preview environments, MCP + agent
+   skills, sandboxing). Read each one and correct anything that doesn't sound like you.
 2. How to Test Idempotency in Payment APIs (retries, duplicate webhooks,
    idempotency keys)
 3. Never Use Floats for Money: Testing Rounding and Currency Precision
-4. Testing Stripe Webhooks in CI (Stripe CLI, signed payloads, test clocks)
-5. Testing Time in FinTech: Cutoffs, Business Days, Time Zones and DST
-6. Ledger Reconciliation Testing
-7. Run Playwright in Docker Against Your Local App
-8. Test Data for FinTech: Factories, Stripe/Plaid Sandboxes, PCI
-9. Contract Testing Payment Integrations with Pact
+4. AI guardrails for test teams: a starter pack of Cursor rules, `CLAUDE.md` /
+   `AGENTS.md`, permission settings and review checklists you can copy. (You said you
+   lack docs here, so this doubles as your own reference.)
+5. Testing GraphQL APIs: schema contract checks, resolver-level tests vs end-to-end,
+   and N+1 detection (TypeScript first, with a pytest version)
+6. Testing Stripe Webhooks in CI (Stripe CLI, signed payloads, test clocks)
+7. Testing graph data in Neo4j: isolating test data, Cypher assertions, and why
+   graph fixtures leak
+8. pytest for TypeScript people: fixtures, scopes and parametrize, mapped to their
+   Playwright Test equivalents
+9. Testing Time in FinTech: Cutoffs, Business Days, Time Zones and DST
+10. Ledger Reconciliation Testing
+11. Run Playwright in Docker Against Your Local App
+12. Test Data for FinTech: Factories, Stripe/Plaid Sandboxes, PCI
+13. Contract Testing Payment Integrations with Pact
+
+Your primary language is TypeScript. Python/pytest, GraphQL and Neo4j are trends worth
+covering (see `docs/STYLE.md` §4). BDD is no longer recommended as a default.
 
 To publish: `npm run g "Title"` → write it in `drafts/` → move the folder to
 `blog/` → `npm run og` → `npm run lint:posts` → commit the post and the PNG.
