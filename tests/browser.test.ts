@@ -1,7 +1,12 @@
 import { test, expect } from "@playwright/test"
 import AxeBuilder from "@axe-core/playwright"
 
-const pages = ["/", "/blog", "/contact", "/blog/the-feature-flag-nightmare"]
+import { readdirSync } from "fs"
+
+const posts = readdirSync("blog", { withFileTypes: true })
+  .filter((d) => d.isDirectory())
+  .map((d) => `/blog/${d.name}`)
+const pages = ["/", "/blog", "/contact", ...posts]
 
 for (const scheme of ["light", "dark"] as const) {
   test.describe(`${scheme} theme`, () => {

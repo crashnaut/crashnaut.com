@@ -19,7 +19,7 @@ Whatever the reason, GitHub Actions doesn't make this obvious. Most examples ass
 
 ## The Solution
 
-The key insight: GitHub Actions can check out multiple repositories in a single workflow. This means your application's CI can:
+GitHub Actions can check out multiple repositories in a single workflow. This means your application's CI can:
 
 1. Check out the application code (the PR)
 2. Check out your test repository
@@ -34,20 +34,20 @@ Before you start, you'll need:
 
 - An application repository (where PRs happen)
 - A test repository with Playwright tests
-- A fine-grained Personal Access Token with read-only access to the test repository (or a GitHub App — see below)
+- A fine-grained Personal Access Token with read-only access to the test repository (or a GitHub App, see below)
 
 ## Step 1: Create a Least-Privilege Token
 
-The workflow needs permission to read your private test repository — and nothing else. Don't use a classic token with the `repo` scope for this: that grants full control of _every_ private repo you can access, sitting in a CI secret.
+The workflow needs permission to read your private test repository, and nothing else. Don't use a classic token with the `repo` scope for this: that grants full control of _every_ private repo you can access, sitting in a CI secret.
 
 Use a fine-grained Personal Access Token instead:
 
 1. Go to GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
 2. Click "Generate new token"
 3. Give it a descriptive name like `Playwright Tests Access` and set an expiration
-4. Set **Resource owner** to the account or org that owns the test repo
-5. Under **Repository access**, choose "Only select repositories" and pick the test repository
-6. Under **Repository permissions**, set **Contents** to **Read-only** (Metadata read-only is added automatically)
+4. Set "Resource owner" to the account or org that owns the test repo
+5. Under "Repository access", choose "Only select repositories" and pick the test repository
+6. Under "Repository permissions", set "Contents" to "Read-only" (Metadata read-only is added automatically)
 7. Generate and copy the token
 
 If the test repo belongs to an organization, an org owner may need to allow or approve fine-grained tokens first.
@@ -184,9 +184,9 @@ npm install --save-dev wait-on
 
 ### Tests can't find the application
 
-**Problem:** Tests fail with connection errors.
+Problem: tests fail with connection errors.
 
-**Solution:** Check that:
+Check that:
 
 - Your dev server actually starts on port 3000 (or update the port)
 - The `wait-on` timeout is long enough (default: 60 seconds)
@@ -194,9 +194,9 @@ npm install --save-dev wait-on
 
 ### Token authentication fails
 
-**Problem:** "fatal: could not read Username" or similar errors.
+Problem: "fatal: could not read Username" or similar errors.
 
-**Solution:** Make sure:
+Make sure:
 
 - The fine-grained token includes the test repository and has **Contents: Read-only**
 - If the repo is org-owned, the org allows (and has approved) fine-grained tokens
@@ -205,9 +205,9 @@ npm install --save-dev wait-on
 
 ### Tests pass locally but fail in CI
 
-**Problem:** Tests work on your machine but fail in GitHub Actions.
+Problem: tests work on your machine but fail in GitHub Actions.
 
-**Solution:** Common causes:
+Common causes:
 
 - Different BASE_URL (check your local `.env`)
 - Missing test dependencies (run `npx playwright install --with-deps`)
@@ -257,13 +257,13 @@ This workflow tests against `localhost`. To test against deployed preview enviro
 
 You'll need to integrate this with your deployment system (Vercel, Netlify, etc.) to get the preview URL.
 
-## The Bottom Line
+## Recap
 
-Separating test repositories from application code is straightforward with GitHub Actions' multi-repository checkout. The key is:
+Separating test repositories from application code is straightforward with GitHub Actions' multi-repository checkout. What matters:
 
 1. Use a least-privilege token (fine-grained PAT or GitHub App) for the private test repo
 2. Check out both repos in the same workflow
 3. Install dependencies for both
 4. Use environment variables for configuration
 
-This pattern scales well and keeps your test code organized separately without sacrificing CI integration.
+Your test code lives in its own repo and still runs on every PR.

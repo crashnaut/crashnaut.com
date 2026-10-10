@@ -9,7 +9,7 @@ tags: Nix, Developer Environment, CI
 
 ## The Quick Setup
 
-I've created a [Nix Flakes repository](https://github.com/crashnaut/nix) for reproducible SDET environments across Mac, Linux, and Windows (WSL2). Here's how to get started:
+I've created a [Nix Flakes repository](https://github.com/crashnaut/nix) for reproducible SDET environments across Mac, Linux, and Windows (WSL2). To get started:
 
 ### Step 1: Install Nix (2 minutes)
 
@@ -58,16 +58,16 @@ nix run home-manager/master -- switch --flake .#your-username@your-hostname
 
 :::
 
-Done! All your tools are now installed and configured.
+All your tools are now installed and configured.
 
 ## What's Included
 
 ### Development Tools
 
 - Git, GitHub CLI, Vim, GPG
-- **Node.js 22 (LTS)** with pnpm package manager
-- **OrbStack** (fast, lightweight Docker alternative - Mac only)
-- **Postman** for poking at APIs
+- Node.js 22 (LTS) with pnpm package manager
+- OrbStack (fast, lightweight Docker alternative, Mac only)
+- Postman for poking at APIs
 - Language toolchains ready to add
 
 <!-- TODO(mike): as of 2026-10 the crashnaut/nix flakes don't list nodejs or pnpm (and there is no Firefox/Obsidian either) — add nodejs_22 + pnpm to the flakes, or drop the Node/pnpm claims here and in tldr.md. -->
@@ -81,7 +81,7 @@ Done! All your tools are now installed and configured.
 
 ### Personal Apps
 
-The repo also installs a few GUI apps I use day to day (browser, chat, notes). They're personal picks, not SDET requirements — strip them out of `flake.nix` before you apply it.
+The repo also installs a few GUI apps I use day to day (browser, chat, notes). They're personal picks rather than SDET requirements, so strip them out of `flake.nix` before you apply it.
 
 ## Daily Workflow
 
@@ -159,7 +159,7 @@ COPY . .
 CMD ["nix", "develop", "--command", "npm", "test"]
 ```
 
-`nix develop` on its own opens an interactive shell, which goes nowhere in a `RUN` step — always pass `--command`.
+`nix develop` on its own opens an interactive shell, which goes nowhere in a `RUN` step, so always pass `--command`.
 
 ### Multi-Platform Testing
 
@@ -179,9 +179,9 @@ nix run <platform-command>
 
 Check out the [repository](https://github.com/crashnaut/nix) for platform-specific configurations:
 
-- [🍎 Mac Setup](https://github.com/crashnaut/nix/tree/main/mac)
-- [🐧 Linux Setup](https://github.com/crashnaut/nix/tree/main/linux)
-- [🪟 Windows Setup](https://github.com/crashnaut/nix/tree/main/windows)
+- [Mac Setup](https://github.com/crashnaut/nix/tree/main/mac)
+- [Linux Setup](https://github.com/crashnaut/nix/tree/main/linux)
+- [Windows Setup](https://github.com/crashnaut/nix/tree/main/windows)
 
 Each includes detailed READMEs with troubleshooting guides.
 
@@ -194,8 +194,8 @@ No. Nix installs to `/nix` separately. Uninstall anytime with `/nix/nix-installe
 ~2GB initially. Use `nix-collect-garbage` to clean old generations.
 
 **Works with Docker?**  
-Yes! OrbStack is included on Mac (faster and lighter than Docker Desktop). Linux uses native Docker.
+Yes. OrbStack is included on Mac (faster and lighter than Docker Desktop). Linux uses native Docker.
 
 ---
 
-**Questions?** Open an issue on [GitHub](https://github.com/crashnaut/nix) or check the [Nix docs](https://nixos.org/manual/nix/stable/).
+Questions? Open an issue on [GitHub](https://github.com/crashnaut/nix) or check the [Nix docs](https://nixos.org/manual/nix/stable/).

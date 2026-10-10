@@ -1,6 +1,6 @@
 // Stacked "do / don't" comparison block (green above red by default when both are used).
 //
-// Usage in markdown — one column, two columns, or either colour alone:
+// Usage in markdown (one column, two columns, or either colour alone):
 //
 //   :::compare
 //   ::do[Pull a real record]

@@ -2,9 +2,9 @@
 
 Keep Playwright tests in their own repo and still run them on every app PR: GitHub Actions can check out **two repositories in one workflow**.
 
-**The flow:** check out the PR → check out the test repo into `tests/` → start the app → run Playwright against `BASE_URL`.
+The flow: check out the PR → check out the test repo into `tests/` → start the app → run Playwright against `BASE_URL`.
 
-**Token:** use a **fine-grained PAT** scoped to the test repo with **Contents: Read-only** (or a GitHub App via `actions/create-github-app-token`). Not a classic `repo`-scope token.
+Token: use a fine-grained PAT scoped to the test repo with Contents: Read-only (or a GitHub App via `actions/create-github-app-token`). Don't use a classic `repo`-scope token.
 
 ```yaml
 - uses: actions/checkout@v7
@@ -32,6 +32,6 @@ Keep Playwright tests in their own repo and still run them on every app PR: GitH
     BASE_URL: http://localhost:3000
 ```
 
-**Config:** read `baseURL` from `process.env.BASE_URL` so the same suite runs against localhost or a deployed preview.
+Config: read `baseURL` from `process.env.BASE_URL` so the same suite runs against localhost or a deployed preview.
 
-**When to bother:** large suites, separate test ownership, or one suite shared across apps. Small suite? Keep it in the app repo.
+When to bother: large suites, separate test ownership, or one suite shared across apps. For a small suite, keep it in the app repo.

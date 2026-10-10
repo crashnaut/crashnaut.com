@@ -50,10 +50,10 @@ nix run home-manager/master -- switch --flake .#your-username@your-hostname
 
 ## What You Get
 
-- **Dev Tools**: Git, Node.js 22, pnpm, OrbStack (Mac), Vim, GPG, Postman
-- **CLI Utils**: `ripgrep`, `bat`, `fd`, `htop`, `jq`
-- **Personal GUI apps** (browser, chat, notes): optional, remove what you don't need
-- **Ready for**: Playwright E2E testing with all dependencies
+- Dev tools: Git, Node.js 22, pnpm, OrbStack (Mac), Vim, GPG, Postman
+- CLI utils: `ripgrep`, `bat`, `fd`, `htop`, `jq`
+- Personal GUI apps (browser, chat, notes): optional, remove what you don't need
+- Ready for Playwright E2E testing with all dependencies
 
 ## Update & Rollback
 
@@ -77,9 +77,9 @@ home-manager switch --flake .
 
 ## Key Benefits
 
-✅ 5-minute setup on any machine  
-✅ Reproducible environments  
-✅ Atomic updates with rollback  
-✅ Version controlled configuration
+- 5-minute setup on any machine
+- Reproducible environments
+- Atomic updates with rollback
+- Version controlled configuration
 
-**Repo**: [github.com/crashnaut/nix](https://github.com/crashnaut/nix)
+Repo: [github.com/crashnaut/nix](https://github.com/crashnaut/nix)

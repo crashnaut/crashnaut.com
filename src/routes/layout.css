@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────────
-   Crashnaut — "crash test lab" design system
+   Crashnaut: "crash test lab" design system
    Signal yellow + ink, hazard stripes, test-report telemetry.
    ───────────────────────────────────────────────────────────── */
 @import "./light.theme.css";
@@ -57,7 +57,7 @@ html.light {
   --surface-2: #ebebe6;
   --ink: #141414;
   --ink-2: #45453f;
-  --ink-3: #6f6f68;
+  --ink-3: #62625c;
   --line: #d8d8d1;
   --signal-text: #7a5a00;
   --mark: hsla(47, 100%, 49%, 0.45);
@@ -458,6 +458,18 @@ time {
 .prose li > ul,
 .prose li > ol {
   margin-top: 0.4em;
+}
+
+.prose li:has(> .task-mark),
+.prose li:has(> p > .task-mark) {
+  list-style: none;
+  margin-left: -1.35em;
+}
+
+.task-mark {
+  font-family: var(--mono-font);
+  color: var(--signal-text);
+  margin-right: 0.15em;
 }
 
 .prose ul > li::marker {

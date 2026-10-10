@@ -225,7 +225,7 @@ export function parseFileToHtmlAndMeta(file: string): {
 
     function generateHTMLFromTokens(tokens: ThemedToken[][]): string {
       const codeClass = linesHighlight.length ? "dim" : ""
-      let html = `<code class="${shikiLang} ${codeClass}">`
+      let html = `<code class="${shikiLang} ${codeClass}" tabindex="0">`
 
       tokens.forEach((token, line) => {
         const lineClass = [
@@ -284,8 +284,12 @@ export function parseFileToHtmlAndMeta(file: string): {
       theme: pallete,
     })
     const codeblock = generateHTMLFromTokens(tokens.tokens)
-    return `<pre id="${id}" aria-hidden="true" tabindex="-1">${heading}${codeblock}</pre>`
+    return `<pre id="${id}">${heading}${codeblock}</pre>`
   }
+
+  // Task-list items render as plain marks: disabled, unlabelled checkboxes fail axe.
+  renderer.checkbox = ({ checked }) =>
+    `<span class="task-mark" role="img" aria-label="${checked ? "done" : "to do"}">${checked ? "☑" : "☐"}</span> `
 
   renderer.codespan = ({ text }) => {
     return `<code>${escapeHtml(text)}</code>`

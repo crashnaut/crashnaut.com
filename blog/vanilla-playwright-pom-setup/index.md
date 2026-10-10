@@ -9,9 +9,9 @@ tags: Playwright, Page Object Model, TypeScript, Test Architecture
 
 # Vanilla Playwright with Page Object Model: A Clean Setup
 
-Not every team needs BDD. If only engineers write your tests, the Cucumber/Gherkin layer is overhead you can skip — you keep the same Page Object Model underneath, just without the translation step. (If you _do_ want the Gherkin layer, I wrote about that in [Playwright BDD](/blog/playwright-bdd); both setups share this same architecture.)
+Not every team needs BDD. If only engineers write your tests, the Cucumber/Gherkin layer is overhead you can skip. You keep the same Page Object Model underneath, just without the translation step. (If you _do_ want the Gherkin layer, I wrote about that in [Playwright BDD](/blog/playwright-bdd); both setups share this same architecture.)
 
-Here's the whole thing in one picture: specs and page objects both meet at a single `pageFactory` — the factory owns navigation and hands the right page object back to the spec.
+The whole thing in one picture: specs and page objects both meet at a single `pageFactory`. The factory owns navigation and hands the right page object back to the spec.
 
 <figure class="diagram">
 <svg viewBox="0 0 720 430" role="img" aria-label="Two panels. Page objects on the right point to a central pageFactory, which points to the test specs on the left.">
@@ -79,15 +79,15 @@ Two things are deliberately _absent_: there's no generic `pages/` dump (page obj
 
 Everything hangs off a single principle: **assertions live in specs; interactions live in page objects.** The full set of laws are all corollaries of that boundary:
 
-1. **Assertions stay in `*.spec.ts`.** Page objects never call `expect()`.
-2. **Interactions and waits stay in page objects.** Specs read like a manual script.
-3. **User-facing locators first.** `getByRole` before CSS, XPath last.
-4. **Don't hide multi-step journeys** behind opaque helpers — thin factory navigation is the only allowed shortcut.
-5. **Avoid explicit `timeout:`** on waits and assertions; use the config defaults.
+1. Assertions stay in `*.spec.ts`. Page objects never call `expect()`.
+2. Interactions and waits stay in page objects. Specs read like a manual script.
+3. User-facing locators first. `getByRole` before CSS, XPath last.
+4. Don't hide multi-step flows behind opaque helpers. Thin factory navigation is the only allowed shortcut.
+5. Avoid explicit `timeout:` on waits and assertions; use the config defaults.
 
 ## pageFactory owns navigation
 
-One class constructs page objects _and_ handles `goto()`. No separate navigation helper, no `BasePage.navigate()`. Each method navigates, waits for load, and returns the page object — and takes a `skipGoto` flag for when you've already arrived (e.g. you clicked a nav link to get there).
+One class constructs page objects _and_ handles `goto()`. No separate navigation helper, no `BasePage.navigate()`. Each method navigates, waits for load, and returns the page object. It also takes a `skipGoto` flag for when you've already arrived (e.g. you clicked a nav link to get there).
 
 ```typescript
 import type { Page } from "@playwright/test"
@@ -135,11 +135,11 @@ export async function waitForPageToLoad(page: Page): Promise<void> {
 }
 ```
 
-In a spec, navigation is always `await pageFactory(page).somePage()` — never a raw `page.goto()`.
+In a spec, navigation is always `await pageFactory(page).somePage()`, never a raw `page.goto()`.
 
 ## Page objects: composition, not inheritance
 
-There is no `BasePage`. Page objects hold a `page` reference, expose locators and actions, and pull shared behavior from plain util functions and small component objects (like a top nav bar) rather than from a class hierarchy. Inheritance trees get tangled fast; composition stays flat.
+There is no `BasePage`. Page objects hold a `page` reference, expose locators and actions, and pull shared behavior from plain util functions and small component objects (like a top nav bar) rather than from a class hierarchy. (Inheritance trees get tangled fast.)
 
 ```typescript
 export class ProductsPage {
@@ -177,7 +177,7 @@ This is where most flaky suites are won or lost. Playwright's locator priority i
 - `getByTestId` when `getByRole` already works
   :::
 
-Real UIs fight back, and the page object is exactly where you absorb that. When icon-font glyphs pollute an accessible name and break a plain `getByRole('link', { name })`, combine a role query with a text filter — and leave a comment so the next person knows why:
+Real UIs fight back, and the page object is exactly where you absorb that. When icon-font glyphs pollute an accessible name and break a plain `getByRole('link', { name })`, combine a role query with a text filter, and leave a comment so the next person knows why:
 
 ```typescript
 // Icon-font noise in the header breaks a plain name match.
@@ -216,7 +216,7 @@ Note the `skipGoto: true`: the click already landed us on the page, so the facto
 
 ## Log in once, via the API
 
-Logging in through the UI before every test is slow and turns an auth hiccup into a hundred red specs. So the default path logs in through the API — the Playwright equivalent of Cypress's `cy.login()` — by extending the base `test` with an auth fixture:
+Logging in through the UI before every test is slow and turns an auth hiccup into a hundred red specs. So the default path logs in through the API (the Playwright equivalent of Cypress's `cy.login()`) by extending the base `test` with an auth fixture:
 
 ```typescript
 export const test = base.extend<AuthFixtures>({
@@ -230,23 +230,23 @@ export const test = base.extend<AuthFixtures>({
 })
 ```
 
-`loginViaApi` does the unglamorous real-world work: GET the login page, scrape the CSRF token, POST the credentials, and you've got a session — no UI, no waiting. Specs that genuinely test the login form import `@playwright/test` directly instead, and the handful that test API login itself opt out with `test.use({ apiLogin: false })`.
+`loginViaApi` does the unglamorous real-world work: GET the login page, scrape the CSRF token, POST the credentials, and you've got a session without touching the UI. Specs that genuinely test the login form import `@playwright/test` directly instead, and the handful that test API login itself opt out with `test.use({ apiLogin: false })`.
 
 ## Smoke tests: name them for what they actually assert
 
-Smoke specs are read-only "did the page load?" checks. The trap is letting the title promise more than the assertions deliver — a green "should show products list" that only checks a heading is a lie waiting to mislead someone during an incident.
+Smoke specs are read-only "did the page load?" checks. The trap is letting the title promise more than the assertions deliver. A green "should show products list" that only checks a heading is a lie waiting to mislead someone during an incident.
 
 :::compare
 ::do[Name fits the assertion]
 
-- "should navigate to Products page" — checks the landmark buttons
+- "should navigate to Products page" (checks the landmark buttons)
 - "should show Cart heading from Cart tab"
   ::dont[Name oversells]
-- "should show products list" — implies table rows it never checks
-- "should complete checkout" — implies an action and an output
+- "should show products list" (implies table rows it never checks)
+- "should complete checkout" (implies an action and an output)
   :::
 
-When the same flow must hold for several user variants (regions, roles), don't copy-paste specs — loop over a parameterized list of cases and tag each with its variant, so one spec body covers them all.
+When the same flow must hold for several user variants (regions, roles), don't copy-paste specs. Loop over a parameterized list of cases and tag each with its variant, so one spec body covers them all.
 
 ## Configuration, honestly
 
@@ -267,7 +267,7 @@ export default defineConfig({
 })
 ```
 
-Trace-on for local runs is the quiet hero here — when something fails on your machine, the trace viewer already has the whole story.
+Trace-on for local runs is the quiet hero here: when something fails on your machine, the trace viewer already has the whole story.
 
 ## This setup vs the one you usually inherit
 
@@ -287,12 +287,12 @@ Trace-on for local runs is the quiet hero here — when something fails on your 
 
 ## Wrapping up
 
-Vanilla Playwright with a disciplined POM gives you fast, readable, maintainable E2E tests without a BDD layer. The architecture is almost entirely about boundaries: navigation in the factory, interactions in page objects, assertions in specs, accessible locators throughout. Hold those lines and the suite stays pleasant to work in as it grows.
+Vanilla Playwright with a disciplined POM gives you E2E tests that are quick to read and change, without a BDD layer. The architecture is almost entirely about boundaries: navigation in the factory, interactions in page objects, assertions in specs, accessible locators throughout. Hold those lines and the suite stays pleasant to work in as it grows.
 
-**Part 2:** once the suite grows past a handful of specs, [Playwright Page Factory + Composition](/blog/playwright-page-factory-composition) builds on this setup — shared UI as composed components, and a `pageFactory` fixture so specs never wire the factory by hand.
+**Part 2:** once the suite grows past a handful of specs, [Playwright Page Factory + Composition](/blog/playwright-page-factory-composition) builds on this setup with shared UI as composed components, and a `pageFactory` fixture so specs never wire the factory by hand.
 
-For a runnable starting point, see [crashnaut/playwright-pom-boilerplate](https://github.com/crashnaut/playwright-pom-boilerplate) on GitHub — it's a simpler, earlier version of this layout.
+For a runnable starting point, see [crashnaut/playwright-pom-boilerplate](https://github.com/crashnaut/playwright-pom-boilerplate) on GitHub. It's a simpler, earlier version of this layout.
 
 <!-- TODO(mike): the boilerplate repo still ships tests/page-objects/base/basePage.ts and has no skipGoto/GotoOptions — update it to match this post (or reword the line above). -->
 
-If you want the whole environment — Node, pnpm, browsers — set up in one go, I covered that in [Nix Flakes for SDET Setup](/blog/nix-flakes-for-sdet-setup).
+If you want the whole environment (Node, pnpm, browsers) set up in one go, I covered that in [Nix Flakes for SDET Setup](/blog/nix-flakes-for-sdet-setup).
