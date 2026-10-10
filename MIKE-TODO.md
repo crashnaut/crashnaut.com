@@ -3,6 +3,16 @@
 Left over from the October 2026 audit and redesign (branch `feat/crashnaut-identity`).
 Delete items as you finish them.
 
+Related docs:
+
+- [`docs/AUDIT-2026-10.md`](docs/AUDIT-2026-10.md): the full audit, covering code,
+  UI/UX, per-post verdicts, ranked drafts and what to write next, with each item marked
+  done or still to do.
+- [`docs/EDITORIAL-PLAYBOOK.md`](docs/EDITORIAL-PLAYBOOK.md): how to produce posts
+  (pipeline, fixed slots, voice, and the research / fact-check / design-review prompts).
+- Private brown-bag study notes, with the original prompts verbatim, are kept outside
+  this repo.
+
 ## Setup (accounts and secrets)
 
 - [ ] **Turn on analytics.** Create a GA4 property for crashnaut.com and copy the
@@ -81,6 +91,15 @@ Each one has a `<!-- TODO(mike) -->` comment in the markdown.
 
 To publish: `npm run g "Title"` → write it in `drafts/` → move the folder to
 `blog/` → `npm run og` → commit the PNG it creates.
+
+## Process (from the editorial playbook)
+
+- [ ] Add an `AGENTS.md`/`CLAUDE.md` with the ground rules, sourcing rules and definition
+      of done from `docs/EDITORIAL-PLAYBOOK.md`.
+- [ ] Build `scripts/lint-posts.mjs`, a "fit check" for posts that fails on: missing or
+      too-long descriptions, no tags, a missing share card, or `TODO(` in published posts.
+- [ ] Run the fact-check prompt on every post before you publish it, and on the two
+      pulled posts before you decide whether to fix or delete them.
 
 ## Later (code)
 
