@@ -6,6 +6,13 @@ import path from "path"
 import { fileURLToPath } from "url"
 import frontmatter from "front-matter"
 import { chromium } from "@playwright/test"
+// Same module the site uses, so a post's card sigil matches its page sigil.
+// Node 22.18+ strips the types itself.
+import {
+  sectionWordCounts,
+  sigilModel,
+  sigilSvg,
+} from "../src/lib/post-signals.ts"
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 const force = process.argv.includes("--force")
@@ -37,11 +44,22 @@ h1 { margin-top: 22px; font-family: Archivo; font-weight: 800; font-variation-se
 .foot { margin-top: 30px; font-family: Plex Mono; font-size: 22px; color: #b9b9b2; }
 .hazard { position: absolute; left: 0; right: 0; bottom: 0; height: 26px; background: repeating-linear-gradient(-45deg, #f8c400 0 22px, #141414 22px 44px); }
 .big-mark { position: absolute; right: -150px; top: 60px; opacity: .07; }
+.sigil { position: absolute; right: 72px; top: 52px; }
 `
 
-function card({ telemetry, title, foot, size }) {
+// hard-coded colours are fine here: the card is a PNG, not themed CSS.
+// These are the dark-theme values of --signal, --logo-ink, --bg and --fail.
+const OG_PALETTE = {
+  face: "#f8c400",
+  ink: "#ecece8",
+  ring: "#0f1012",
+  impact: "#cc3239",
+}
+
+function card({ telemetry, title, foot, size, sigil = "" }) {
   return `<!doctype html><html><head><style>${css} h1 { font-size: ${size}px; }</style></head><body>
 <div class="grid"></div><div class="big-mark">${mark(460)}</div>
+${sigil ? `<div class="sigil">${sigil}</div>` : ""}
 <div class="wrap">
   <div class="brand">${mark(48)}<span>crashnaut</span></div>
   <div class="tele"><span class="dot"></span>${telemetry}</div>
@@ -72,6 +90,7 @@ const posts = fs
       date: new Date(attributes.date),
       tags,
       minutes,
+      sectionWords: sectionWordCounts(body),
     }
   })
   .sort((a, b) => a.date - b.date)
@@ -112,6 +131,11 @@ for (const p of posts) {
       title: p.title,
       foot: `crashnaut.com/blog · Mike Sell`,
       size: titleSize(p.title),
+      sigil: sigilSvg(
+        sigilModel(p.slug, p.tags, p.sectionWords),
+        OG_PALETTE,
+        150,
+      ),
     }),
     file,
   )

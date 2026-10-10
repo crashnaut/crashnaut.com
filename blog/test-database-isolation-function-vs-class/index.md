@@ -53,6 +53,44 @@ Both extremes are wrong. Stop picking one strategy for the whole suite, give you
 
 **Function-scoped, for anything that writes.** Every mutation test gets a brand-new database, created before the test and dropped after it. `function` is pytest's default scope. Nothing is shared, so a write can't leak and the tests can run in any order, or in parallel.
 
+<figure class="diagram">
+<svg viewBox="0 0 720 262" role="img" aria-label="Gantt chart of one test run. The read-only tests R1, R2 and R3 share a single class-scoped database, created and seeded before R1 and dropped after R3. The write tests W1 and W2 each get their own short-lived database, created just before the test and dropped right after it.">
+  <text class="d-edge" x="320" y="36" text-anchor="middle">TestOrderQueries</text>
+  <text class="d-edge" x="590" y="36" text-anchor="middle">TestOrderMutations</text>
+  <text class="d-text" x="156" y="73" text-anchor="end">tests</text>
+  <rect class="d-box" x="196" y="50" width="80" height="36" rx="4"/>
+  <text class="d-text" x="236" y="73" text-anchor="middle">R1</text>
+  <rect class="d-box" x="280" y="50" width="80" height="36" rx="4"/>
+  <text class="d-text" x="320" y="73" text-anchor="middle">R2</text>
+  <rect class="d-box" x="364" y="50" width="80" height="36" rx="4"/>
+  <text class="d-text" x="404" y="73" text-anchor="middle">R3</text>
+  <rect class="d-box-amber" x="490" y="50" width="70" height="36" rx="4"/>
+  <text class="d-text" x="525" y="73" text-anchor="middle">W1</text>
+  <rect class="d-box-amber" x="620" y="50" width="70" height="36" rx="4"/>
+  <text class="d-text" x="655" y="73" text-anchor="middle">W2</text>
+  <text class="d-text" x="156" y="123" text-anchor="end">class scope</text>
+  <text class="d-text-sm" x="156" y="138" text-anchor="end">read-only tests</text>
+  <rect class="d-box-green" x="170" y="110" width="296" height="30" rx="4"/>
+  <text class="d-text" x="318" y="130" text-anchor="middle">one DB, seeded once, shared</text>
+  <text class="d-text-sm" x="170" y="156" text-anchor="start">create + seed</text>
+  <text class="d-text-sm" x="466" y="156" text-anchor="end">drop</text>
+  <text class="d-text" x="156" y="187" text-anchor="end">function scope</text>
+  <text class="d-text-sm" x="156" y="202" text-anchor="end">anything that writes</text>
+  <rect class="d-box-green" x="470" y="174" width="110" height="30" rx="4"/>
+  <text class="d-text-sm" x="525" y="193" text-anchor="middle">fresh DB</text>
+  <text class="d-text-sm" x="470" y="220" text-anchor="start">create</text>
+  <text class="d-text-sm" x="580" y="220" text-anchor="end">drop</text>
+  <rect class="d-box-green" x="600" y="174" width="110" height="30" rx="4"/>
+  <text class="d-text-sm" x="655" y="193" text-anchor="middle">fresh DB</text>
+  <text class="d-text-sm" x="600" y="220" text-anchor="start">create</text>
+  <text class="d-text-sm" x="710" y="220" text-anchor="end">drop</text>
+  <path class="d-line" d="M170,240 L700,240"/>
+  <path class="d-arrow" d="M708,240 l-8,-4 l0,8 z"/>
+  <text class="d-text-sm" x="156" y="244" text-anchor="end">time</text>
+</svg>
+<figcaption>One run, two lifetimes. The reads share a database that lives for the whole class; each write gets its own, created just before it and dropped right after.</figcaption>
+</figure>
+
 ```python:tests/test_orders.py
 class TestOrderQueries:
     # read-only: class scope, one shared DB, fast

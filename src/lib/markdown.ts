@@ -94,6 +94,7 @@ export type ParsedMarkdownMetadata = Record<string, unknown> & {
 
 export function parseFileToHtmlAndMeta(file: string): {
   html: string
+  markdown: string
   metadata: ParsedMarkdownMetadata
   assetsSrc: string
 } {
@@ -332,7 +333,7 @@ export function parseFileToHtmlAndMeta(file: string): {
       { renderer },
     ) as string
   ).replace(/^\s*<h1>[\s\S]*?<\/h1>/, "")
-  return { html, metadata, assetsSrc }
+  return { html, markdown: content, metadata, assetsSrc }
 }
 
 export function* traverseFolder(

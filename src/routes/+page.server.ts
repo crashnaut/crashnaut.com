@@ -12,6 +12,9 @@ export async function load() {
       date: p.metadata.date,
       tags: p.metadata.tags,
       readingMinutes: p.metadata.readingMinutes,
+      sigil: p.metadata.signals.sigil,
+      ribbon: p.metadata.signals.ribbon,
+      ribbonLabel: p.metadata.signals.ribbonLabel,
     })),
   }
 }

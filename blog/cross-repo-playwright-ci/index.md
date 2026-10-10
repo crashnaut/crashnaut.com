@@ -28,6 +28,60 @@ GitHub Actions can check out multiple repositories in a single workflow. This me
 
 This is simpler than it sounds.
 
+<figure class="diagram">
+<svg viewBox="0 0 720 350" role="img" aria-label="An Actions runner holds two checkouts. ./ is the app at the pull request's head SHA, fetched with the default token. ./tests is the private test repo, fetched with a fine-grained PAT that has Contents: read and crosses the trust boundary to the test repo only. A red cross marks every other private repo, which a classic repo-scope token would reach. Playwright runs from ./tests with BASE_URL pointing at the app on localhost:3000.">
+  <rect class="d-box-amber" x="236" y="20" width="116" height="310" rx="4"/>
+  <path class="d-line" d="M240,36 l8,-8 M340,36 l8,-8 M240,58 l8,-8 M340,58 l8,-8 M240,80 l8,-8 M340,80 l8,-8 M240,102 l8,-8 M340,102 l8,-8 M240,124 l8,-8 M340,124 l8,-8 M240,146 l8,-8 M340,146 l8,-8 M240,168 l8,-8 M340,168 l8,-8 M240,190 l8,-8 M340,190 l8,-8 M240,212 l8,-8 M340,212 l8,-8 M240,234 l8,-8 M340,234 l8,-8 M240,256 l8,-8 M340,256 l8,-8 M240,278 l8,-8 M340,278 l8,-8 M240,300 l8,-8 M340,300 l8,-8 M240,322 l8,-8 M340,322 l8,-8"/>
+  <text class="d-edge" x="294" y="318" text-anchor="middle">TRUST BOUNDARY</text>
+
+  <rect class="d-box" x="16" y="46" width="200" height="50" rx="5"/>
+  <text class="d-text" x="116" y="68" text-anchor="middle">your app repo</text>
+  <text class="d-text-sm" x="116" y="85" text-anchor="middle">the pull request</text>
+  <rect class="d-box-green" x="16" y="143" width="200" height="50" rx="5"/>
+  <text class="d-text" x="116" y="165" text-anchor="middle">your test repo</text>
+  <text class="d-text-sm" x="116" y="182" text-anchor="middle">private</text>
+  <rect class="d-box-red" x="16" y="250" width="200" height="50" rx="5"/>
+  <text class="d-text" x="116" y="272" text-anchor="middle">every other</text>
+  <text class="d-text" x="116" y="289" text-anchor="middle">private repo</text>
+  <text class="d-text-sm" x="116" y="322" text-anchor="middle">a classic repo-scope token reaches these</text>
+
+  <path class="d-line" d="M216,71 C300,71 300,101 382,101"/>
+  <path class="d-arrow" d="M390,101 l-8,-4 l0,8 z"/>
+  <text class="d-edge" x="294" y="58" text-anchor="middle">default token</text>
+
+  <path class="d-flow" d="M216,168 L380,168"/>
+  <path class="d-flow-head" d="M390,168 l-10,-5 l0,10 z"/>
+  <circle class="d-node" cx="272" cy="168" r="10"/>
+  <path class="d-arrow" d="M282,164 h34 v8 h-6 v6 h-5 v-6 h-5 v6 h-5 v-6 h-13 z"/>
+  <text class="d-edge" x="294" y="132" text-anchor="middle">fine-grained PAT</text>
+  <text class="d-edge" x="294" y="146" text-anchor="middle">Contents: read</text>
+
+  <path class="d-line" stroke-dasharray="4 4" d="M268,178 L218,256"/>
+  <circle class="d-node-red" cx="243" cy="217" r="10"/>
+  <text class="d-on-fill" x="243" y="221" text-anchor="middle">✕</text>
+
+  <rect class="d-panel" x="372" y="20" width="332" height="310" rx="6"/>
+  <text class="d-title" x="538" y="52" text-anchor="middle">Actions runner</text>
+  <rect class="d-box" x="390" y="78" width="298" height="46" rx="5"/>
+  <text class="d-text" x="539" y="98" text-anchor="middle">./  the app</text>
+  <text class="d-text-sm" x="539" y="115" text-anchor="middle">checked out at the PR's head SHA</text>
+  <rect class="d-box-green" x="390" y="145" width="298" height="46" rx="5"/>
+  <text class="d-text" x="539" y="165" text-anchor="middle">./tests  the test repo</text>
+  <text class="d-text-sm" x="539" y="182" text-anchor="middle">private, read-only access</text>
+
+  <rect class="d-box" x="390" y="226" width="130" height="50" rx="5"/>
+  <text class="d-text" x="455" y="247" text-anchor="middle">npm run dev</text>
+  <text class="d-text-sm" x="455" y="264" text-anchor="middle">in ./</text>
+  <rect class="d-box" x="558" y="226" width="130" height="50" rx="5"/>
+  <text class="d-text" x="623" y="247" text-anchor="middle">playwright test</text>
+  <text class="d-text-sm" x="623" y="264" text-anchor="middle">in ./tests</text>
+  <path class="d-line" d="M558,251 L528,251"/>
+  <path class="d-arrow" d="M520,251 l8,-4 l0,8 z"/>
+  <text class="d-edge" x="539" y="304" text-anchor="middle">BASE_URL=http://localhost:3000</text>
+</svg>
+<figcaption>Two checkouts on one runner. The token crosses the boundary to the test repo and nowhere else, which is the whole point of fine-grained over classic.</figcaption>
+</figure>
+
 ## Prerequisites
 
 Before you start, you'll need:

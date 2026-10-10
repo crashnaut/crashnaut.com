@@ -1,4 +1,8 @@
 <script lang="ts">
+  import Sigil from "#lib/brand/Sigil.svelte"
+  import PostRibbon from "#lib/PostRibbon.svelte"
+  import type { RibbonSegment } from "#lib/post-signals.ts"
+
   let {
     run,
     slug,
@@ -7,6 +11,9 @@
     date,
     tags = [],
     readingMinutes,
+    sigil,
+    ribbon,
+    ribbonLabel,
   }: {
     run: number
     slug: string
@@ -15,34 +22,53 @@
     date: string
     tags?: string[]
     readingMinutes: number
+    sigil: string
+    ribbon: RibbonSegment[]
+    ribbonLabel: string
   } = $props()
 </script>
 
 <li class="row">
-  <a href={`/blog/${slug}`} class="hit">
-    <p class="telemetry meta">
-      <span class="status-dot" aria-hidden="true"></span>
-      <b>Run {String(run).padStart(3, "0")}</b>
-      <span>{date}</span>
-      <span>{readingMinutes} min read</span>
-    </p>
-    <h3>{title}</h3>
-    <p class="desc">{description}</p>
-  </a>
-  {#if tags.length}
-    <ul class="tags" aria-label="Tags">
-      {#each tags.slice(0, 4) as tag}
-        <li class="tag">{tag}</li>
-      {/each}
-    </ul>
-  {/if}
+  <Sigil svg={sigil} size={30} />
+  <div class="body">
+    <a href={`/blog/${slug}`} class="hit">
+      <p class="telemetry meta">
+        <span class="status-dot" aria-hidden="true"></span>
+        <b>Run {String(run).padStart(3, "0")}</b>
+        <span>{date}</span>
+        <span>{readingMinutes} min read</span>
+      </p>
+      <h3>{title}</h3>
+      <p class="desc">{description}</p>
+    </a>
+    <PostRibbon segments={ribbon} label={ribbonLabel} />
+    {#if tags.length}
+      <ul class="tags" aria-label="Tags">
+        {#each tags.slice(0, 4) as tag}
+          <li class="tag">{tag}</li>
+        {/each}
+      </ul>
+    {/if}
+  </div>
 </li>
 
 <style>
   .row {
     position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0 0.9rem;
+    align-items: start;
     padding: 1.25rem 0 1.35rem;
     border-bottom: 1px solid var(--line);
+  }
+
+  .row > :global(.sigil) {
+    margin-top: 0.1rem;
+  }
+
+  .body > :global(* + *) {
+    margin-top: 0.75rem;
   }
 
   .hit {
@@ -83,6 +109,5 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
-    margin-top: 0.75rem;
   }
 </style>
