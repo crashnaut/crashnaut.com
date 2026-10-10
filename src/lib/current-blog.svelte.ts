@@ -19,10 +19,12 @@ function createBlog() {
       }
     },
     toggleTldr: () => {
-      blog.state = blog.state === "tldr" ? "detailed" : "tldr"
+      const current = blog
+      if (!current) return
+      current.state = current.state === "tldr" ? "detailed" : "tldr"
 
       const queryParams = new URLSearchParams(location.search)
-      if (blog.state === "tldr") {
+      if (current.state === "tldr") {
         queryParams.set("tldr", "true")
       } else {
         queryParams.delete("tldr")

@@ -53,7 +53,7 @@
       // storage blocked: theme still switches for this visit
     }
     const animate =
-      document.startViewTransition &&
+      typeof document.startViewTransition === "function" &&
       !window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
     if (!animate) {

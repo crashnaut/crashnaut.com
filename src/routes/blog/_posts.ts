@@ -33,7 +33,10 @@ export async function readPosts(): Promise<Post[]> {
 
   const postsSorted = Object.values(directories)
     .map((files) => {
-      const postPath = files.find((f) => f.file === "index.md").path
+      const postPath = files.find((f) => f.file === "index.md")?.path
+      if (!postPath) {
+        throw new Error(`[posts] ${files[0].path}: folder has no index.md`)
+      }
       const tldrPath = files.find((f) => f.file === "tldr.md")?.path
 
       const { html, metadata } = parseFileToHtmlAndMeta(postPath)

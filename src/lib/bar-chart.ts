@@ -11,18 +11,33 @@
 // good (green), bad (red), neutral (grey), accent. Bars are scaled to the
 // largest value in the chart. The [title] is optional.
 
+import type { RendererExtension, TokenizerExtension, Tokens } from "marked"
+
+interface BarRow {
+  label: string
+  value: number
+  color: string
+}
+
+interface BarChartToken extends Tokens.Generic {
+  type: "barChart"
+  title: string
+  log: boolean
+  rows: BarRow[]
+}
+
 const startReg = /^:::bar-chart(\s+log)?(?:\[(.*?)\])?\s*$/
 const endReg = /^:::$/
 const rowReg =
   /^(.+?)\s*\|\s*([\d.]+)\s*(?:\|\s*(good|bad|neutral|accent|amber|info))?\s*$/
 
-export const barChart = {
+export const barChart: TokenizerExtension & RendererExtension = {
   name: "barChart",
   level: "block",
-  start(this, src: string) {
+  start(src) {
     return src.match(/(^|[\r\n]):::bar-chart/)?.index
   },
-  tokenizer(this, src: string, _tokens) {
+  tokenizer(src): BarChartToken | undefined {
     const lines = src.split(/\n/)
     const m0 = startReg.exec(lines[0])
     if (!m0) return
@@ -36,7 +51,7 @@ export const barChart = {
     }
     if (end === -1) return
 
-    const rows: { label: string; value: number; color: string }[] = []
+    const rows: BarRow[] = []
     for (const line of lines.slice(1, end)) {
       const m = rowReg.exec(line.trim())
       if (m)
@@ -56,7 +71,8 @@ export const barChart = {
       tokens: [],
     }
   },
-  renderer(this, token) {
+  renderer(generic) {
+    const token = generic as BarChartToken
     const max = Math.max(...token.rows.map((r) => r.value), 0) || 1
     const logMax = Math.log(max) || 1
     const rows = token.rows

@@ -62,7 +62,7 @@ const highlighter = await shiki.createHighlighter({
   ],
 })
 
-const langToIcon = {
+const langToIcon: Record<string, string> = {
   bash: iconShell,
   sh: iconShell,
   html: iconCodePurple,
@@ -92,7 +92,7 @@ export type ParsedMarkdownMetadata = Record<string, unknown> & {
   tags: string[]
 }
 
-export function parseFileToHtmlAndMeta(file): {
+export function parseFileToHtmlAndMeta(file: string): {
   html: string
   metadata: ParsedMarkdownMetadata
   assetsSrc: string
@@ -121,7 +121,8 @@ export function parseFileToHtmlAndMeta(file): {
     const attributes = [href_attr, title_attr, rel_attr, svelteTags]
 
     if (internal) {
-      const outgoingSlug = url.parse(link, false).pathname.split("/").pop()
+      const outgoingSlug =
+        (url.parse(link, false).pathname ?? "").split("/").pop() ?? ""
       if (metadata.slug !== outgoingSlug && outgoingSlug !== "blog") {
         metadata.outgoingSlugs.push(outgoingSlug)
       }
@@ -200,7 +201,7 @@ export function parseFileToHtmlAndMeta(file): {
     while ((curMatch = lineNumberRegExp.exec(lang))) {
       const parts = curMatch[1].split(",")
       parts.forEach((p) => {
-        let [min, max]: [number, number] = p.trim().split("-").map(Number)
+        let [min, max] = p.trim().split("-").map(Number)
         max = max || min
         while (min <= max) {
           linesHighlight.push(min++)
@@ -265,17 +266,8 @@ export function parseFileToHtmlAndMeta(file): {
       html += "</code>"
       return html
 
-      function replaceColorToCSSVariable(color: string) {
-        const scopeColors = pallete.tokenColors
-          .filter((p) => p.scope)
-          .map((tc) => {
-            return {
-              scope: (Array.isArray(tc.scope) ? tc.scope : [tc.scope]).map(
-                (c) => c.replace(/\./g, "-"),
-              ),
-              color: tc.settings.foreground,
-            }
-          })
+      function replaceColorToCSSVariable(color: string | undefined) {
+        const scopeColors = themeScopeColors(pallete)
 
         const key = scopeColors.find(
           (c) => c.color?.toLowerCase() === color?.toLowerCase(),
@@ -360,7 +352,7 @@ export function* traverseFolder(
   }
 }
 
-function extractFrontmatter(markdown): {
+function extractFrontmatter(markdown: string): {
   content: string
   metadata: Record<string, unknown>
 } {
@@ -397,7 +389,7 @@ function extractFrontmatter(markdown): {
   return { metadata: result.attributes, content: result.body }
 }
 
-function slugify(string) {
+function slugify(string: string) {
   const a = "àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœøṕŕßśșțùúüûǘẃẍÿź·/_,:;"
   const b = "aaaaaaaaceeeeghiiiimnnnooooooprssstuuuuuwxyz------"
   const p = new RegExp(a.split("").join("|"), "g")
@@ -424,7 +416,10 @@ function slugify(string) {
     .replace(/-+$/, "") // Trim - from end of text
 }
 
-export function sortByDate(a, b) {
+export function sortByDate(
+  a: { metadata: { date: string } },
+  b: { metadata: { date: string } },
+) {
   return new Date(a.metadata.date) < new Date(b.metadata.date) ? 1 : -1
 }
 
@@ -455,17 +450,23 @@ function escapeAttr(value: string) {
     .replace(/>/g, "&gt;")
 }
 
-function createStyle(scope: string, theme) {
-  const scopeColors = theme.tokenColors
-    .filter((p) => p.scope)
-    .map((tc) => {
-      return {
-        scope: (Array.isArray(tc.scope) ? tc.scope : [tc.scope]).map((c) =>
-          c.replace(/\./g, "-"),
-        ),
-        color: tc.settings.foreground,
-      }
-    })
+type SyntaxTheme = typeof pallete
+
+function themeScopeColors(theme: SyntaxTheme) {
+  return theme.tokenColors.flatMap((tc) =>
+    tc.scope
+      ? [
+          {
+            scope: tc.scope.map((c) => c.replace(/\./g, "-")),
+            color: tc.settings.foreground,
+          },
+        ]
+      : [],
+  )
+}
+
+function createStyle(scope: string, theme: SyntaxTheme) {
+  const scopeColors = themeScopeColors(theme)
 
   let style = `html.${scope} {`
 

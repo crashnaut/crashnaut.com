@@ -58,7 +58,9 @@
     }
   }
 
-  const showUpdated = $derived(meta.modified && meta.modified !== meta.date)
+  const updatedDate = $derived(
+    meta.modified && meta.modified !== meta.date ? meta.modified : null,
+  )
 </script>
 
 <Seo
@@ -117,9 +119,9 @@
           <p class="author">Mike Sell</p>
           <p class="telemetry">
             <time datetime={meta.publishedAt}>{humanDate(meta.date)}</time>
-            {#if showUpdated}
+            {#if updatedDate}
               · updated <time datetime={meta.modifiedAt}
-                >{humanDate(meta.modified)}</time
+                >{humanDate(updatedDate)}</time
               >
             {/if}
             · {meta.readingMinutes} min read
