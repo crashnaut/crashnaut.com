@@ -1,6 +1,6 @@
-import { UTCDate } from "$lib/formatters"
-import { site } from "$lib/seo"
-import { variables } from "$lib/variables"
+import { UTCDate } from "#lib/formatters.ts"
+import { site } from "#lib/seo.ts"
+import { variables } from "#lib/variables.ts"
 import { readPosts } from "../_posts"
 
 export const prerender = true

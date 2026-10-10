@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { page } from "$app/stores"
-  import Seo from "$lib/Seo.svelte"
+  import { page } from "$app/state"
+  import Seo from "#lib/Seo.svelte"
 
-  const notFound = $derived($page.status === 404)
+  const notFound = $derived(page.status === 404)
 </script>
 
 <Seo
@@ -16,15 +16,15 @@
 <div class="container narrow page">
   <p class="telemetry">
     <span class="dot" aria-hidden="true"></span>
-    Test failed · status {$page.status}
+    Test failed · status {page.status}
   </p>
   <h1>{notFound ? "This page didn't survive impact." : "Something broke."}</h1>
   <pre><code
-      >expect(page).toHaveURL(<span class="s">"{$page.url.pathname}"</span>)
+      >expect(page).toHaveURL(<span class="s">"{page.url.pathname}"</span>)
 <span class="f"
         >✕ {notFound
           ? "Received: 404 Not Found"
-          : `Received: ${$page.status} ${$page.error?.message ?? ""}`}</span
+          : `Received: ${page.status} ${page.error?.message ?? ""}`}</span
       ></code
     ></pre>
   <p>

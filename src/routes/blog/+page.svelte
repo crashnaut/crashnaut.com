@@ -1,13 +1,13 @@
 <script lang="ts">
   import { onMount } from "svelte"
-  import { replaceState } from "$app/navigation"
-  import Seo from "$lib/Seo.svelte"
-  import PostRow from "$lib/PostRow.svelte"
-  import { humanDate } from "$lib/formatters"
-  import { site } from "$lib/seo"
+  import { goto } from "$app/navigation"
+  import Seo from "#lib/Seo.svelte"
+  import PostRow from "#lib/PostRow.svelte"
+  import { humanDate } from "#lib/formatters.ts"
+  import { site } from "#lib/seo.ts"
 
   const { data } = $props()
-  const { posts, tags } = data
+  const { posts, tags } = $derived(data)
 
   let query = $state("")
   let activeTag = $state<string | null>(null)
@@ -34,7 +34,10 @@
     const params = new URLSearchParams()
     if (query) params.set("q", query)
     if (activeTag) params.set("tag", activeTag)
-    replaceState(params.size ? `?${params}` : location.pathname, {})
+    goto(params.size ? `?${params}` : location.pathname, {
+      shallow: true,
+      replace: true,
+    })
   }
 
   function toggleTag(tag: string) {

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { site } from "$lib/seo"
-  import Mark from "$lib/brand/Mark.svelte"
+  import { site } from "#lib/seo.ts"
+  import Mark from "#lib/brand/Mark.svelte"
 
   let { context = "post" }: { context?: "post" | "page" } = $props()
 </script>

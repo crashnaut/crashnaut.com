@@ -10,7 +10,7 @@ export default function codeBlockLifeCycle(trigger?: () => unknown) {
     }
   })
 
-  function codeTabClick(e: PointerEvent) {
+  function codeTabClick(e: Event) {
     if (e.target instanceof HTMLElement) {
       const target = e.target
       if (target.classList.contains("active")) {
@@ -18,19 +18,18 @@ export default function codeBlockLifeCycle(trigger?: () => unknown) {
       }
       const id = target.getAttribute("data-id")
       const code = document.querySelector(`.code-group-code[data-id="${id}"]`)
-      if (code instanceof HTMLElement) {
-        const currentVisible = code.parentElement.querySelector(
+      const group = code?.parentElement
+      if (code instanceof HTMLElement && group) {
+        const currentVisible = group.querySelector(
           `.code-group-code:not([hidden])`,
         )
-        const currentActive = code.parentElement.querySelector(
-          `.code-group-tab.active`,
-        )
+        const currentActive = group.querySelector(`.code-group-tab.active`)
 
         code.removeAttribute("hidden")
         target.classList.add("active")
 
-        currentVisible.setAttribute("hidden", "")
-        currentActive.classList.remove("active")
+        currentVisible?.setAttribute("hidden", "")
+        currentActive?.classList.remove("active")
       }
     }
   }

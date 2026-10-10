@@ -1,27 +1,47 @@
+import path from "path"
 import { sveltekit } from "@sveltejs/kit/vite"
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte"
+import adapter from "@sveltejs/adapter-static"
 import { defineConfig } from "vitest/config"
-import VitePluginRestart from "vite-plugin-restart"
-import svgLoader from "vite-svg-loader"
 
-export default defineConfig(({ mode }) => {
-  return {
-    plugins: [
-      sveltekit(),
-      svgLoader(),
-      VitePluginRestart({
-        restart: ["./blog/**", "!*.webp"],
+const blogDir = path.resolve("blog")
+
+/**
+ * Posts are parsed once and cached (src/routes/blog/_posts.ts), so restart the
+ * dev server when anything under blog/ changes.
+ * @type {import("vite").Plugin}
+ */
+const restartOnPostChange = {
+  name: "restart-on-post-change",
+  apply: "serve",
+  configureServer(server) {
+    server.watcher.add(blogDir)
+    const restart = (/** @type {string} */ file) => {
+      if (file.startsWith(blogDir) && !file.endsWith(".webp")) server.restart()
+    }
+    server.watcher.on("add", restart)
+    server.watcher.on("change", restart)
+    server.watcher.on("unlink", restart)
+  },
+}
+
+export default defineConfig({
+  plugins: [
+    sveltekit({
+      preprocess: vitePreprocess(),
+      adapter: adapter({
+        fallback: "404.html",
       }),
-    ],
-    server: {
-      fs: {
-        allow: [".."],
-      },
+    }),
+    restartOnPostChange,
+  ],
+  server: {
+    fs: {
+      allow: [".."],
     },
-    test: {
-      include: ["src/**/*.test.ts"],
-    },
-    resolve: {
-      conditions: mode === "test" ? ["browser"] : [],
-    },
-  }
+  },
+  test: {
+    include: ["src/**/*.test.ts"],
+    passWithNoTests: true,
+  },
 })

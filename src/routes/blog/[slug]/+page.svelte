@@ -1,15 +1,15 @@
 <script lang="ts">
   import { onMount, tick } from "svelte"
-  import { page } from "$app/stores"
-  import { humanDate } from "$lib/formatters"
-  import Seo from "$lib/Seo.svelte"
-  import { blogPostingJsonLd, breadcrumbJsonLd, site } from "$lib/seo"
-  import Comments from "$lib/Comments.svelte"
-  import Share from "$lib/Share.svelte"
-  import WorkWithMe from "$lib/WorkWithMe.svelte"
-  import { blog } from "$lib/current-blog.svelte"
-  import codeBlockLifeCycle from "$lib/code-block-lifecycle.svelte"
-  import copyLifeCycle from "$lib/copy-lifecycle.svelte"
+  import { page } from "$app/state"
+  import { humanDate } from "#lib/formatters.ts"
+  import Seo from "#lib/Seo.svelte"
+  import { blogPostingJsonLd, breadcrumbJsonLd, site } from "#lib/seo.ts"
+  import Comments from "#lib/Comments.svelte"
+  import Share from "#lib/Share.svelte"
+  import WorkWithMe from "#lib/WorkWithMe.svelte"
+  import { blog } from "#lib/current-blog.svelte.ts"
+  import codeBlockLifeCycle from "#lib/code-block-lifecycle.svelte.ts"
+  import copyLifeCycle from "#lib/copy-lifecycle.svelte.ts"
 
   const { data } = $props()
   const post = $derived(data.post)
@@ -25,7 +25,7 @@
   let prose: HTMLElement | null = $state(null)
 
   onMount(() => {
-    const wantsTldr = post.tldr && $page.url.searchParams.get("tldr") === "true"
+    const wantsTldr = post.tldr && page.url.searchParams.get("tldr") === "true"
     blog.loadBlog(
       meta.title,
       wantsTldr ? "tldr" : post.tldr ? "detailed" : "single",
@@ -58,7 +58,9 @@
     }
   }
 
-  const showUpdated = $derived(meta.modified && meta.modified !== meta.date)
+  const updatedDate = $derived(
+    meta.modified && meta.modified !== meta.date ? meta.modified : null,
+  )
 </script>
 
 <Seo
@@ -117,9 +119,9 @@
           <p class="author">Mike Sell</p>
           <p class="telemetry">
             <time datetime={meta.publishedAt}>{humanDate(meta.date)}</time>
-            {#if showUpdated}
+            {#if updatedDate}
               · updated <time datetime={meta.modifiedAt}
-                >{humanDate(meta.modified)}</time
+                >{humanDate(updatedDate)}</time
               >
             {/if}
             · {meta.readingMinutes} min read

@@ -36,7 +36,7 @@ marked.use({
 })
 const renderer = new marked.Renderer()
 
-const highlighter = await shiki.getHighlighter({
+const highlighter = await shiki.createHighlighter({
   themes: [pallete, palleteDawn],
   langs: [
     "json",
@@ -62,7 +62,7 @@ const highlighter = await shiki.getHighlighter({
   ],
 })
 
-const langToIcon = {
+const langToIcon: Record<string, string> = {
   bash: iconShell,
   sh: iconShell,
   html: iconCodePurple,
@@ -92,7 +92,7 @@ export type ParsedMarkdownMetadata = Record<string, unknown> & {
   tags: string[]
 }
 
-export function parseFileToHtmlAndMeta(file): {
+export function parseFileToHtmlAndMeta(file: string): {
   html: string
   metadata: ParsedMarkdownMetadata
   assetsSrc: string
@@ -106,21 +106,23 @@ export function parseFileToHtmlAndMeta(file): {
 
   // const tweetRegexp = /https:\/\/twitter\.com\/[A-Za-z0-9-_]*\/status\/[0-9]+/i;
 
-  renderer.link = (href, title, text) => {
+  renderer.link = ({ href, title, tokens }) => {
+    const text = renderer.parser.parseInline(tokens)
     // if (text === href && tweetRegexp.test(href)) {
     // 	return `::${href}::`;
     // }
 
     const link = href.replace("../", "/blog/").replace("/index.md", "")
     const href_attr = `href="${link}"`
-    const title_attr = title ? `title="${title}"` : ""
+    const title_attr = title ? `title="${escapeHtml(title)}"` : ""
     const internal = link.startsWith("/")
     const rel_attr = internal || link.startsWith("#") ? `` : 'rel="external"'
     const svelteTags = internal ? `data-sveltekit-reload` : ""
     const attributes = [href_attr, title_attr, rel_attr, svelteTags]
 
     if (internal) {
-      const outgoingSlug = url.parse(link, false).pathname.split("/").pop()
+      const outgoingSlug =
+        (url.parse(link, false).pathname ?? "").split("/").pop() ?? ""
       if (metadata.slug !== outgoingSlug && outgoingSlug !== "blog") {
         metadata.outgoingSlugs.push(outgoingSlug)
       }
@@ -130,7 +132,8 @@ export function parseFileToHtmlAndMeta(file): {
     return `<a ${attributesString}>${text}</a>`
   }
 
-  renderer.image = (href, _title, text) => {
+  renderer.image = ({ href, text: altText }) => {
+    const text = escapeHtml(altText)
     const src = href.startsWith("http")
       ? href
       : `/` +
@@ -158,7 +161,8 @@ export function parseFileToHtmlAndMeta(file): {
 		`
   }
 
-  renderer.paragraph = (text) => {
+  renderer.paragraph = ({ tokens }) => {
+    const text = renderer.parser.parseInline(tokens)
     const trimmed = text.replace("👋", `<span class="wave">👋</span>`).trim()
 
     if (trimmed.startsWith("<figure>")) {
@@ -168,8 +172,8 @@ export function parseFileToHtmlAndMeta(file): {
     return `<p>${trimmed}</p>`
   }
 
-  renderer.code = (source, lang) => {
-    lang = lang || "txt"
+  renderer.code = ({ text: source, lang: infoString }) => {
+    const lang = infoString || "txt"
 
     const lineIndex = lang.indexOf("{")
     const fileIndex =
@@ -197,7 +201,7 @@ export function parseFileToHtmlAndMeta(file): {
     while ((curMatch = lineNumberRegExp.exec(lang))) {
       const parts = curMatch[1].split(",")
       parts.forEach((p) => {
-        let [min, max]: [number, number] = p.trim().split("-").map(Number)
+        let [min, max] = p.trim().split("-").map(Number)
         max = max || min
         while (min <= max) {
           linesHighlight.push(min++)
@@ -262,17 +266,8 @@ export function parseFileToHtmlAndMeta(file): {
       html += "</code>"
       return html
 
-      function replaceColorToCSSVariable(color: string) {
-        const scopeColors = pallete.tokenColors
-          .filter((p) => p.scope)
-          .map((tc) => {
-            return {
-              scope: (Array.isArray(tc.scope) ? tc.scope : [tc.scope]).map(
-                (c) => c.replace(/\./g, "-"),
-              ),
-              color: tc.settings.foreground,
-            }
-          })
+      function replaceColorToCSSVariable(color: string | undefined) {
+        const scopeColors = themeScopeColors(pallete)
 
         const key = scopeColors.find(
           (c) => c.color?.toLowerCase() === color?.toLowerCase(),
@@ -292,14 +287,18 @@ export function parseFileToHtmlAndMeta(file): {
     return `<pre id="${id}" aria-hidden="true" tabindex="-1">${heading}${codeblock}</pre>`
   }
 
-  renderer.codespan = (source) => {
-    return `<code>${source}</code>`
+  renderer.codespan = ({ text }) => {
+    return `<code>${escapeHtml(text)}</code>`
   }
-  renderer.blockquote = (source) => {
-    return `<blockquote>${source}</blockquote>`
+  renderer.blockquote = ({ tokens }) => {
+    return `<blockquote>${renderer.parser.parse(tokens)}</blockquote>`
   }
 
-  renderer.heading = (text, level, rawtext) => {
+  renderer.heading = ({ tokens, depth: level }) => {
+    const text = renderer.parser.parseInline(tokens)
+    const rawtext = unescapeHtml(
+      renderer.parser.parseInline(tokens, renderer.parser.textRenderer),
+    )
     const headingText = text.includes("{")
       ? text.substring(0, text.indexOf("{") - 1)
       : text
@@ -307,7 +306,9 @@ export function parseFileToHtmlAndMeta(file): {
     const anchorOverwrite = anchorRegExp.exec(rawtext)
     const fragment = anchorOverwrite
       ? anchorOverwrite[0].substring(2, anchorOverwrite[0].length - 1)
-      : slugify(rawtext)
+      : // marked <15 dropped these characters from heading text; keep
+        // existing anchor ids (and links to them) stable.
+        slugify(rawtext.replace(/[&<>"]/g, ""))
 
     if (!fragment || level === 1) {
       return `<h${level}>${headingText}</h${level}>`
@@ -351,7 +352,7 @@ export function* traverseFolder(
   }
 }
 
-function extractFrontmatter(markdown): {
+function extractFrontmatter(markdown: string): {
   content: string
   metadata: Record<string, unknown>
 } {
@@ -388,7 +389,7 @@ function extractFrontmatter(markdown): {
   return { metadata: result.attributes, content: result.body }
 }
 
-function slugify(string) {
+function slugify(string: string) {
   const a = "àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœøṕŕßśșțùúüûǘẃẍÿź·/_,:;"
   const b = "aaaaaaaaceeeeghiiiimnnnooooooprssstuuuuuwxyz------"
   const p = new RegExp(a.split("").join("|"), "g")
@@ -415,8 +416,30 @@ function slugify(string) {
     .replace(/-+$/, "") // Trim - from end of text
 }
 
-export function sortByDate(a, b) {
+export function sortByDate(
+  a: { metadata: { date: string } },
+  b: { metadata: { date: string } },
+) {
   return new Date(a.metadata.date) < new Date(b.metadata.date) ? 1 : -1
+}
+
+// marked escaped these in its tokenizer before v15; renderers escape now.
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
+function unescapeHtml(value: string) {
+  return value
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&")
 }
 
 function escapeAttr(value: string) {
@@ -427,17 +450,23 @@ function escapeAttr(value: string) {
     .replace(/>/g, "&gt;")
 }
 
-function createStyle(scope: string, theme) {
-  const scopeColors = theme.tokenColors
-    .filter((p) => p.scope)
-    .map((tc) => {
-      return {
-        scope: (Array.isArray(tc.scope) ? tc.scope : [tc.scope]).map((c) =>
-          c.replace(/\./g, "-"),
-        ),
-        color: tc.settings.foreground,
-      }
-    })
+type SyntaxTheme = typeof pallete
+
+function themeScopeColors(theme: SyntaxTheme) {
+  return theme.tokenColors.flatMap((tc) =>
+    tc.scope
+      ? [
+          {
+            scope: tc.scope.map((c) => c.replace(/\./g, "-")),
+            color: tc.settings.foreground,
+          },
+        ]
+      : [],
+  )
+}
+
+function createStyle(scope: string, theme: SyntaxTheme) {
+  const scopeColors = themeScopeColors(theme)
 
   let style = `html.${scope} {`
 

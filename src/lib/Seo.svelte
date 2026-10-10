@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { site } from "$lib/seo"
+  import { site } from "#lib/seo.ts"
 
   type OgType = "website" | "article"
 
