@@ -1,4 +1,7 @@
-import { mkdirSync, writeFileSync } from "fs"
+// `npm run g "Title"`: scaffolds drafts/<slug>/ with every slot from
+// docs/EDITORIAL-PLAYBOOK.md §2 stubbed out. Each stub is a TODO( comment, so
+// `npm run lint:posts` fails if one is published unfilled.
+import { existsSync, mkdirSync, writeFileSync } from "fs"
 
 const slugify = (string) => {
   const a = "àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœøṕŕßśșțùúüûǘẃẍÿź·/_,:;"
@@ -17,26 +20,102 @@ const slugify = (string) => {
     .replace(/-+$/, "") // Trim - from end of text
 }
 
-function createPost(title) {
-  let slug = slugify(title)
-  let path = `./blog/${slug}`
+const yamlString = (s) => JSON.stringify(s)
 
-  mkdirSync(path)
-  mkdirSync(`${path}/images`)
-  writeFileSync(
-    `${path}/index.md`,
-    `---
-title: ${title}
+const indexTemplate = ({ title, slug, date }) => `---
+title: ${yamlString(title)}
 slug: ${slug}
-description: 
-date: ${new Date().toISOString().split("T")[0]}
-tags: 
+# One sentence, 160 characters max. Shown in search results and share cards.
+description: ""
+date: ${date}
+# 2–4 tags, reused from existing ones where possible (comma-separated).
+tags:
 ---
-`,
-  )
 
-  console.log(`Post created at ${path}.md`)
+<!-- TODO(write): Title check. A claim or a searchable how-to, never a topic:
+"How to Test Idempotency in Payment APIs", not "Idempotency". -->
+
+<!-- TODO(write): Opening, 2–4 sentences. The bug or cost, who hits it, and what
+the reader leaves with. No throat-clearing. If the examples aren't TypeScript,
+say which stack they use here. -->
+
+## TODO(write): First section heading
+
+<!-- TODO(write): One idea per H2; the H2s become the table of contents.
+Every factual sentence needs a source fetched while writing (playbook §1). -->
+
+## TODO(write): Second section heading
+
+<!-- TODO(write): Proof. At least one of: runnable code copied from where it
+ran, a real number (say what was measured, on what, how many runs), a diagram,
+or a do/don't block like the one below. Delete whichever you don't use. -->
+
+:::compare
+::do[Do this]
+
+- <!-- TODO(write): what good looks like -->
+
+::dont[Not this]
+
+- <!-- TODO(write): the common mistake -->
+
+:::
+
+## TODO(write): Third section heading
+
+<!-- TODO(write): Body. 900–1,800 words for a tutorial, 700–1,200 for an
+opinion piece. Cut copy to fit. -->
+
+:::tip
+<!-- TODO(write): The takeaway, one sentence. At most one :::tip per post. -->
+:::
+
+## Why it matters for your team
+
+<!-- TODO(write): One sentence tying this to shipping software that moves money:
+payments, ledgers, compliance or release speed. -->
+
+<!-- TODO(write): 2–3 internal links to related posts, e.g.
+[Run Playwright Tests from a Separate Repository in CI](/blog/cross-repo-playwright-ci).
+The site adds the hire-me CTA and related posts automatically. -->
+`
+
+const tldrTemplate = () => `## TL;DR
+
+<!-- TODO(write): Just the code and the steps, for readers who want the answer.
+One line on what it solves, then the minimal runnable snippet and numbered steps. -->
+
+\`\`\`ts
+// TODO(write): the minimal snippet
+\`\`\`
+
+1. <!-- TODO(write): step one -->
+2. <!-- TODO(write): step two -->
+`
+
+function createPost(title) {
+  const slug = slugify(title)
+  const path = `./drafts/${slug}`
+
+  if (existsSync(path)) {
+    console.error(`${path} already exists; pick another title or edit it.`)
+    process.exit(1)
+  }
+
+  // en-CA formats as YYYY-MM-DD in the author's local time zone
+  const date = new Date().toLocaleDateString("en-CA")
+  mkdirSync(`${path}/images`, { recursive: true })
+  writeFileSync(`${path}/index.md`, indexTemplate({ title, slug, date }))
+  writeFileSync(`${path}/tldr.md`, tldrTemplate())
+
+  console.log(`Draft created at ${path}/ (index.md, tldr.md, images/)
+Fill every TODO(write) slot, then follow docs/EDITORIAL-PLAYBOOK.md §4.
+To publish: move the folder to blog/, run \`npm run og\`, then \`npm run lint:posts\`.`)
 }
 
-const [slug] = process.argv.slice(2)
-createPost(slug)
+const title = process.argv.slice(2).join(" ").trim()
+if (!title) {
+  console.error('Usage: npm run g "How to Test Idempotency in Payment APIs"')
+  process.exit(1)
+}
+createPost(title)

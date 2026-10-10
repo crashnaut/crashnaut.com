@@ -11,13 +11,14 @@ import iconDatabase from "../../static/images/languages/database.svg?raw"
 import iconTypescript from "../../static/images/languages/ts.svg?raw"
 import iconText from "../../static/images/languages/text.svg?raw"
 import iconYaml from "../../static/images/languages/yaml.svg?raw"
-import iconCsharp from "../../static/images/languages/csharp.svg?raw"
 import iconSvelte from "../../static/images/languages/svelte.svg?raw"
 import iconMarkdown from "../../static/images/languages/markdown.svg?raw"
 import * as shiki from "shiki"
 import type { BundledLanguage, ThemedToken } from "shiki"
-import pallete from "shiki/themes/rose-pine.mjs"
-import palleteDawn from "shiki/themes/rose-pine-dawn.mjs"
+import {
+  crashnautDark as pallete,
+  crashnautLight as palleteDawn,
+} from "./syntax-theme"
 import { codeGroup } from "./code-block"
 import { customBlock } from "./custom-block"
 import { compareBlock } from "./compare-block"
@@ -35,10 +36,9 @@ marked.use({
 })
 const renderer = new marked.Renderer()
 
-const highlighter = await shiki.getHighlighter({
-  themes: ["rose-pine", "rose-pine-dawn"],
+const highlighter = await shiki.createHighlighter({
+  themes: [pallete, palleteDawn],
   langs: [
-    "razor",
     "json",
     "typescript",
     "javascript",
@@ -48,22 +48,21 @@ const highlighter = await shiki.getHighlighter({
     "shell",
     "yaml",
     "yml",
-    "cs",
-    "csharp",
     "svelte",
-    "powershell",
     "http",
     "diff",
     "sql",
-    "angular-html",
-    "angular-ts",
     "md",
     "dockerfile",
     "nix",
+    "gherkin",
+    "python",
+    "bash",
+    "toml",
   ],
 })
 
-const langToIcon = {
+const langToIcon: Record<string, string> = {
   bash: iconShell,
   sh: iconShell,
   html: iconCodePurple,
@@ -77,7 +76,6 @@ const langToIcon = {
   yml: iconYaml,
   yaml: iconYaml,
   diff: iconText,
-  cs: iconCsharp,
   sql: iconDatabase,
   svelte: iconSvelte,
   ps: iconShell,
@@ -94,7 +92,7 @@ export type ParsedMarkdownMetadata = Record<string, unknown> & {
   tags: string[]
 }
 
-export function parseFileToHtmlAndMeta(file): {
+export function parseFileToHtmlAndMeta(file: string): {
   html: string
   metadata: ParsedMarkdownMetadata
   assetsSrc: string
@@ -108,41 +106,34 @@ export function parseFileToHtmlAndMeta(file): {
 
   // const tweetRegexp = /https:\/\/twitter\.com\/[A-Za-z0-9-_]*\/status\/[0-9]+/i;
 
-  renderer.link = (href, title, text) => {
+  renderer.link = ({ href, title, tokens }) => {
+    const text = renderer.parser.parseInline(tokens)
     // if (text === href && tweetRegexp.test(href)) {
     // 	return `::${href}::`;
     // }
 
     const link = href.replace("../", "/blog/").replace("/index.md", "")
     const href_attr = `href="${link}"`
-    const title_attr = title ? `title="${title}"` : ""
+    const title_attr = title ? `title="${escapeHtml(title)}"` : ""
     const internal = link.startsWith("/")
     const rel_attr = internal || link.startsWith("#") ? `` : 'rel="external"'
     const svelteTags = internal ? `data-sveltekit-reload` : ""
     const attributes = [href_attr, title_attr, rel_attr, svelteTags]
 
-    let style = ""
     if (internal) {
-      const outgoingSlug = url.parse(link, false).pathname.split("/").pop()
+      const outgoingSlug =
+        (url.parse(link, false).pathname ?? "").split("/").pop() ?? ""
       if (metadata.slug !== outgoingSlug && outgoingSlug !== "blog") {
         metadata.outgoingSlugs.push(outgoingSlug)
-      }
-    } else {
-      try {
-        style = `style='--favicon: url(https://v1.indieweb-avatar.11ty.dev/${encodeURIComponent(
-          new URL(link).origin,
-        )})'`
-        attributes.push("data-with-favicon")
-      } catch {
-        // noop
       }
     }
 
     const attributesString = attributes.filter(Boolean).join(" ")
-    return `<a class="mark mark-hover" ${attributesString} ${style}>${text}</a>`
+    return `<a ${attributesString}>${text}</a>`
   }
 
-  renderer.image = (href, _title, text) => {
+  renderer.image = ({ href, text: altText }) => {
+    const text = escapeHtml(altText)
     const src = href.startsWith("http")
       ? href
       : `/` +
@@ -170,7 +161,8 @@ export function parseFileToHtmlAndMeta(file): {
 		`
   }
 
-  renderer.paragraph = (text) => {
+  renderer.paragraph = ({ tokens }) => {
+    const text = renderer.parser.parseInline(tokens)
     const trimmed = text.replace("👋", `<span class="wave">👋</span>`).trim()
 
     if (trimmed.startsWith("<figure>")) {
@@ -180,8 +172,8 @@ export function parseFileToHtmlAndMeta(file): {
     return `<p>${trimmed}</p>`
   }
 
-  renderer.code = (source, lang) => {
-    lang = lang || "txt"
+  renderer.code = ({ text: source, lang: infoString }) => {
+    const lang = infoString || "txt"
 
     const lineIndex = lang.indexOf("{")
     const fileIndex =
@@ -209,7 +201,7 @@ export function parseFileToHtmlAndMeta(file): {
     while ((curMatch = lineNumberRegExp.exec(lang))) {
       const parts = curMatch[1].split(",")
       parts.forEach((p) => {
-        let [min, max]: [number, number] = p.trim().split("-").map(Number)
+        let [min, max] = p.trim().split("-").map(Number)
         max = max || min
         while (min <= max) {
           linesHighlight.push(min++)
@@ -223,7 +215,7 @@ export function parseFileToHtmlAndMeta(file): {
     const headingParts = [
       icon,
       fileName ? `<span class="file-name">${fileName}</span>` : undefined,
-      `<button class="copy-code material-symbols-outlined" data-ref="${id}">content_paste</button>`,
+      `<button type="button" class="copy-code" data-ref="${id}" aria-label="Copy code">copy</button>`,
     ].filter(Boolean)
     const heading = headingParts.length
       ? `<div class="code-heading">${headingParts.join(" ")}</div>`
@@ -274,17 +266,8 @@ export function parseFileToHtmlAndMeta(file): {
       html += "</code>"
       return html
 
-      function replaceColorToCSSVariable(color: string) {
-        const scopeColors = pallete.tokenColors
-          .filter((p) => p.scope)
-          .map((tc) => {
-            return {
-              scope: (Array.isArray(tc.scope) ? tc.scope : [tc.scope]).map(
-                (c) => c.replace(/\./g, "-"),
-              ),
-              color: tc.settings.foreground,
-            }
-          })
+      function replaceColorToCSSVariable(color: string | undefined) {
+        const scopeColors = themeScopeColors(pallete)
 
         const key = scopeColors.find(
           (c) => c.color?.toLowerCase() === color?.toLowerCase(),
@@ -304,14 +287,18 @@ export function parseFileToHtmlAndMeta(file): {
     return `<pre id="${id}" aria-hidden="true" tabindex="-1">${heading}${codeblock}</pre>`
   }
 
-  renderer.codespan = (source) => {
-    return `<code>${source}</code>`
+  renderer.codespan = ({ text }) => {
+    return `<code>${escapeHtml(text)}</code>`
   }
-  renderer.blockquote = (source) => {
-    return `<blockquote><span class="material-symbols-outlined">format_quote</span>${source}</blockquote>`
+  renderer.blockquote = ({ tokens }) => {
+    return `<blockquote>${renderer.parser.parse(tokens)}</blockquote>`
   }
 
-  renderer.heading = (text, level, rawtext) => {
+  renderer.heading = ({ tokens, depth: level }) => {
+    const text = renderer.parser.parseInline(tokens)
+    const rawtext = unescapeHtml(
+      renderer.parser.parseInline(tokens, renderer.parser.textRenderer),
+    )
     const headingText = text.includes("{")
       ? text.substring(0, text.indexOf("{") - 1)
       : text
@@ -319,7 +306,9 @@ export function parseFileToHtmlAndMeta(file): {
     const anchorOverwrite = anchorRegExp.exec(rawtext)
     const fragment = anchorOverwrite
       ? anchorOverwrite[0].substring(2, anchorOverwrite[0].length - 1)
-      : slugify(rawtext)
+      : // marked <15 dropped these characters from heading text; keep
+        // existing anchor ids (and links to them) stable.
+        slugify(rawtext.replace(/[&<>"]/g, ""))
 
     if (!fragment || level === 1) {
       return `<h${level}>${headingText}</h${level}>`
@@ -329,17 +318,16 @@ export function parseFileToHtmlAndMeta(file): {
 
     return `
 		<h${level} id="${fragment}">
-		  <a href="#${fragment}" class="anchor mark-hover" tabindex="-1">${headingText}</a>
-		  <span class="material-symbols-outlined">
-		  link
-		  </span>
+		  <a href="#${fragment}" class="anchor">${headingText}</a>
 		</h${level}>`
   }
 
-  const html = marked(
-    content.replace(/^\t+/gm, (match) => match.split("\t").join("  ")),
-    { renderer },
-  ) as string
+  const html = (
+    marked(
+      content.replace(/^\t+/gm, (match) => match.split("\t").join("  ")),
+      { renderer },
+    ) as string
+  ).replace(/^\s*<h1>[\s\S]*?<\/h1>/, "")
   return { html, metadata, assetsSrc }
 }
 
@@ -364,17 +352,18 @@ export function* traverseFolder(
   }
 }
 
-function extractFrontmatter(markdown): {
+function extractFrontmatter(markdown: string): {
   content: string
   metadata: Record<string, unknown>
 } {
   const result = frontmatter<{
     tags: string | string[]
-    translations?: Record<string, string>
   }>(markdown)
-  if (typeof result.attributes.tags === "string") {
-    result.attributes.tags = result.attributes.tags
-      .split(",")
+  const rawTags = result.attributes.tags
+  if (typeof rawTags === "string" || Array.isArray(rawTags)) {
+    result.attributes.tags = (
+      Array.isArray(rawTags) ? rawTags.map(String) : rawTags.split(",")
+    )
       .map((a) =>
         a ? a.trim().charAt(0).toUpperCase() + a.trim().slice(1) : a,
       )
@@ -388,28 +377,19 @@ function extractFrontmatter(markdown): {
         if (a.toLowerCase() === "ci") {
           return "CI"
         }
-        if (a.toLowerCase() === "ngrx") {
-          return "NgRx"
+        if (a.toLowerCase() === "iframes") {
+          return "iFrames"
         }
         return a
       })
+      .filter(Boolean)
   } else {
     result.attributes.tags = []
-  }
-  if (Array.isArray(result.attributes.translations)) {
-    for (const translation of result.attributes.translations) {
-      const translationsMap = {
-        es: "Español",
-        ru: "Russian",
-      }
-      translation.language =
-        translationsMap[translation.language] ?? translation.language
-    }
   }
   return { metadata: result.attributes, content: result.body }
 }
 
-function slugify(string) {
+function slugify(string: string) {
   const a = "àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœøṕŕßśșțùúüûǘẃẍÿź·/_,:;"
   const b = "aaaaaaaaceeeeghiiiimnnnooooooprssstuuuuuwxyz------"
   const p = new RegExp(a.split("").join("|"), "g")
@@ -436,8 +416,30 @@ function slugify(string) {
     .replace(/-+$/, "") // Trim - from end of text
 }
 
-export function sortByDate(a, b) {
+export function sortByDate(
+  a: { metadata: { date: string } },
+  b: { metadata: { date: string } },
+) {
   return new Date(a.metadata.date) < new Date(b.metadata.date) ? 1 : -1
+}
+
+// marked escaped these in its tokenizer before v15; renderers escape now.
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
+function unescapeHtml(value: string) {
+  return value
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&")
 }
 
 function escapeAttr(value: string) {
@@ -448,17 +450,23 @@ function escapeAttr(value: string) {
     .replace(/>/g, "&gt;")
 }
 
-function createStyle(scope: string, theme) {
-  const scopeColors = theme.tokenColors
-    .filter((p) => p.scope)
-    .map((tc) => {
-      return {
-        scope: (Array.isArray(tc.scope) ? tc.scope : [tc.scope]).map((c) =>
-          c.replace(/\./g, "-"),
-        ),
-        color: tc.settings.foreground,
-      }
-    })
+type SyntaxTheme = typeof pallete
+
+function themeScopeColors(theme: SyntaxTheme) {
+  return theme.tokenColors.flatMap((tc) =>
+    tc.scope
+      ? [
+          {
+            scope: tc.scope.map((c) => c.replace(/\./g, "-")),
+            color: tc.settings.foreground,
+          },
+        ]
+      : [],
+  )
+}
+
+function createStyle(scope: string, theme: SyntaxTheme) {
+  const scopeColors = themeScopeColors(theme)
 
   let style = `html.${scope} {`
 

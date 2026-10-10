@@ -1,54 +1,32 @@
 <script lang="ts">
   import { onMount, tick } from "svelte"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
   import { afterNavigate, onNavigate } from "$app/navigation"
-  import { variables } from "$lib/variables"
-  import Host from "$lib/Host.svelte"
-  import { blog } from "$lib/current-blog.svelte"
-  import { theme } from "$lib/theme.store"
+  import { variables } from "#lib/variables.ts"
+  import { site } from "#lib/seo.ts"
+  import { theme } from "#lib/theme.store.ts"
+  import Mark from "#lib/brand/Mark.svelte"
   import "./layout.css"
-  import Socials from "$lib/Socials.svelte"
-  import Support from "$lib/Support.svelte"
 
   let { children } = $props()
 
-  let segment = $derived($page.url.pathname.substring(1))
-  let support = $state<HTMLElement | null>()
-  let scrollY = $state(0)
+  const path = $derived(page.url.pathname)
+  const year = new Date().getFullYear()
 
   onMount(() => {
-    if (
-      segment.startsWith("blog/") &&
-      typeof kofiWidgetOverlay !== "undefined"
-    ) {
-      kofiWidgetOverlay.draw("crashnaut", {
-        type: "floating-chat",
-        "floating-chat.donateButton.text": "",
-        ...(window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? {
-              "floating-chat.donateButton.background-color": "#fff",
-              "floating-chat.donateButton.text-color": "#111",
-            }
-          : {
-              "floating-chat.donateButton.background-color": "#fff",
-              "floating-chat.donateButton.text-color": "#eee",
-            }),
-      })
-      support = document.querySelector("[id*=kofi-widget-overlay]")
-    }
-
-    if (variables.gtag_id) {
-      const script = document.createElement("script")
-      script.async = true
-      script.src = `https://www.googletagmanager.com/gtag/js?id=${variables.gtag_id}`
-      document.head.appendChild(script)
-      gtag("config", variables.gtag_id)
-    }
+    if (!variables.gtag_id) return
+    const script = document.createElement("script")
+    script.async = true
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${variables.gtag_id}`
+    document.head.appendChild(script)
+    // page views are sent from afterNavigate (including the first load)
+    gtag("config", variables.gtag_id, { send_page_view: false })
   })
 
+  // Shallow navigations (search/tag filters updating the URL) neither animate
+  // nor count as page views.
   onNavigate((navigation) => {
-    if (!document.startViewTransition) return
+    if (navigation.shallow || !document.startViewTransition) return
     return new Promise((resolve) => {
       document.startViewTransition(async () => {
         resolve()
@@ -57,8 +35,8 @@
     })
   })
 
-  afterNavigate(({ to }) => {
-    if (variables.gtag_id && typeof gtag === "function") {
+  afterNavigate(({ to, shallow }) => {
+    if (variables.gtag_id && typeof gtag === "function" && to && !shallow) {
       gtag("event", "page_view", {
         page_title: document.title,
         page_location: location.href,
@@ -67,22 +45,18 @@
     }
   })
 
-  $effect(() => {
-    if (support) {
-      if (segment.startsWith("blog/") && scrollY > 1000) {
-        support.style.display = "block"
-      } else {
-        support.style.display = "none"
-      }
+  function toggleTheme(event: MouseEvent) {
+    const newTheme = $theme === "dark" ? "light" : "dark"
+    try {
+      localStorage.setItem("theme-chosen", "1")
+    } catch {
+      // storage blocked: theme still switches for this visit
     }
-  })
-
-  function toggleTheme(event: MouseEvent, newTheme: string) {
-    const isAppearanceTransition =
-      document.startViewTransition &&
+    const animate =
+      typeof document.startViewTransition === "function" &&
       !window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
-    if (!isAppearanceTransition) {
+    if (!animate) {
       theme.set(newTheme)
       return
     }
@@ -103,9 +77,7 @@
         `circle(${endRadius}px at ${x}px ${y}px)`,
       ]
       document.documentElement.animate(
-        {
-          clipPath: newTheme === "dark" ? [...clipPath].reverse() : clipPath,
-        },
+        { clipPath: newTheme === "dark" ? [...clipPath].reverse() : clipPath },
         {
           duration: 400,
           easing: "ease-out",
@@ -119,219 +91,238 @@
   }
 
   $effect(() => {
-    if (typeof document !== "undefined") {
-      document.documentElement.className = $theme
-    }
+    if ($theme) document.documentElement.className = $theme
   })
 </script>
 
-<svelte:head>
-  <link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossOrigin="anonymous"
-  />
-  {#if segment.startsWith("blog/")}
-    <script
-      async
-      src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"
-    ></script>
-  {/if}
-</svelte:head>
-
-<svelte:window bind:scrollY />
-
 <a class="skip-to-content" href="#main-content">Skip to main content</a>
 
-<header>
-  <div>
-    <h2>
-      <a href="/">Crashnaut</a>
-    </h2>
+<header class="site-header">
+  <div class="container bar">
+    <a class="brand" href="/" aria-label="Crashnaut home">
+      <Mark size={26} />
+      <span class="wordmark">crashnaut</span>
+    </a>
 
-    <nav>
-      <a href="/blog" class:active={segment.startsWith("blog")}>BLOG</a>
-      <a href="/contact" class:active={segment.startsWith("contact")}>CONTACT</a
+    <nav aria-label="Main">
+      <a
+        href="/blog"
+        aria-current={path.startsWith("/blog") ? "page" : undefined}>Blog</a
       >
-      {#if $theme === "dark"}
-        <button
-          type="button"
-          class="theme-switch"
-          title="Switch to light theme"
-          aria-label="Switch to light theme"
-          onclick={(evt) => toggleTheme(evt, "light")}
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">
-            light_mode
-          </span>
-        </button>
-      {:else}
-        <button
-          type="button"
-          class="theme-switch"
-          title="Switch to dark theme"
-          aria-label="Switch to dark theme"
-          onclick={(evt) => toggleTheme(evt, "dark")}
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">
-            dark_mode
-          </span>
-        </button>
-      {/if}
+      <a
+        href="/contact"
+        aria-current={path.startsWith("/contact") ? "page" : undefined}
+        >Work with me</a
+      >
+      <button
+        type="button"
+        class="theme-switch"
+        aria-label={$theme === "dark"
+          ? "Switch to light theme"
+          : "Switch to dark theme"}
+        title={$theme === "dark" ? "Light theme" : "Dark theme"}
+        onclick={toggleTheme}
+      >
+        {#if $theme === "dark"}
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"
+            ><circle cx="12" cy="12" r="4.5" fill="currentColor" /><path
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+            /></svg
+          >
+        {:else}
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"
+            ><path
+              d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"
+              fill="currentColor"
+            /></svg
+          >
+        {/if}
+      </button>
     </nav>
-
-    {#if blog.blog}
-      <div
-        class="current-details title"
-        onclick={() =>
-          navigator.clipboard.writeText(
-            `${window.location.origin}${window.location.pathname}`,
-          )}
-        onkeydown={() =>
-          navigator.clipboard.writeText(
-            `${window.location.origin}${window.location.pathname}`,
-          )}
-        role="button"
-        tabindex="0"
-      >
-        <span class="material-symbols-outlined"> link </span>
-        {blog.blog.title}
-      </div>
-    {/if}
-
-    {#if blog.blog && blog.blog.state !== "single"}
-      <div class="current-details">
-        <button onclick={blog.toggleTldr}
-          >{blog.blog.state === "detailed"
-            ? "Switch to TLDR version"
-            : "Switch to detailed version"}</button
-        >
-      </div>
-    {/if}
   </div>
+  <div class="hazard" aria-hidden="true"></div>
 </header>
 
-<main id="main-content" data-segment={segment}>
+<main id="main-content">
   {@render children?.()}
-  {#if segment && segment !== "contact"}
-    <div class="support-section">
-      <Support />
-    </div>
-  {/if}
 </main>
 
-{#if segment}
-  <footer>
-    <Host />
-    <Socials />
-  </footer>
-{/if}
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="/">
+        <Mark size={22} />
+        <span class="wordmark">crashnaut</span>
+      </a>
+      <p>
+        Test automation and CI/CD for FinTech teams. Written by Mike Sell,
+        senior SDET contractor.
+      </p>
+    </div>
+
+    <nav class="footer-links" aria-label="Footer">
+      <a href="/blog">Blog</a>
+      <a href="/contact">Work with me</a>
+      <a href="/blog/rss.xml">RSS</a>
+      <a href={site.github} rel="external">GitHub</a>
+      <a href={site.linkedin} rel="external">LinkedIn</a>
+    </nav>
+
+    <div class="telemetry build">
+      <span class="status-dot" aria-hidden="true"></span>
+      build
+      {#if variables.hash}
+        <a
+          href="https://github.com/crashnaut/crashnaut.com/commit/{variables.hash}"
+          rel="external">{variables.hash.substring(0, 7)}</a
+        >
+      {:else}
+        local
+      {/if}
+      · {variables.timestamp.toISOString().slice(0, 10)}
+    </div>
+  </div>
+  <p class="container legal">
+    © {year}
+    {site.author}. Professional services through {site.legalEntity.name},
+    registered in Ireland.
+  </p>
+</footer>
 
 <style>
-  header {
+  .site-header {
     position: fixed;
-    top: 0;
-    width: 100%;
-    height: var(--header-height);
-    backdrop-filter: saturate(100%) blur(3px);
-    z-index: 3;
+    inset: 0 0 auto 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px) saturate(140%);
   }
 
-  header > div {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
+  .bar {
+    height: calc(var(--header-height) - 6px);
+    display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
   }
 
-  header > div > *:nth-child(even) {
-    justify-self: right;
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
   }
 
-  header .current-details {
-    margin-top: -1.5em;
-    font-size: 0.8rem;
-  }
-
-  header .current-details.title {
-    cursor: pointer;
-  }
-
-  .theme-switch {
-    color: var(--text-color-light);
-  }
-
-  header * {
-    margin-top: 0;
-  }
-
-  :global(html.light) header {
-    box-shadow: rgb(0 0 0 / 5%) 0px 5px 15px;
-  }
-
-  :global(html.dark) header {
-    box-shadow: rgb(255 255 255 / 5%) 0px 5px 15px;
-  }
-
-  @media (max-width: 480px) {
-    header > div {
-      grid-template-columns: auto auto;
-    }
-
-    header .current-details.title {
-      visibility: hidden;
-    }
-  }
-
-  header h2 > a {
-    text-decoration: none;
-  }
-
-  .support-section {
-    margin-top: var(--spacing-large);
-    padding: var(--spacing) 0;
-    border-top: 1px solid var(--text-color-subtle);
-  }
-
-  footer {
-    position: static;
-    bottom: 0;
-    width: 100%;
-    color: var(--text-color-light);
-    font-size: 0.9rem;
-    text-align: center;
+  .wordmark {
+    font-family: var(--head-font);
+    font-weight: 850;
+    font-size: 1.2rem;
+    letter-spacing: -0.03em;
+    font-variation-settings: "wdth" 125;
+    line-height: 1;
   }
 
   nav {
-    width: 100%;
     display: flex;
-    justify-content: end;
-    gap: 0.6em;
-  }
-
-  nav > *:last-child {
-    margin-left: 0.6em;
+    align-items: center;
+    gap: clamp(0.75rem, 3vw, 1.75rem);
+    font-family: var(--head-font);
+    font-weight: 600;
+    font-size: 0.95rem;
   }
 
   nav a {
-    color: var(--text-color-light);
-    transition: 0.2s ease-in-out;
-    text-decoration: none;
+    color: var(--ink-2);
+    padding-block: 0.25rem;
+    border-bottom: 2px solid transparent;
+    transition:
+      color 0.15s,
+      border-color 0.15s;
   }
 
-  nav a.active,
-  nav a:hover {
-    color: var(--text-color);
+  nav a:hover,
+  nav a[aria-current="page"] {
+    color: var(--ink);
+    border-bottom-color: var(--signal);
+  }
+
+  .theme-switch {
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    color: var(--ink-2);
+    border: 1px solid var(--line);
+  }
+
+  .theme-switch:hover {
+    color: var(--ink);
+    border-color: var(--ink-3);
+  }
+
+  .site-footer {
+    margin-top: 5rem;
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+    padding-block: 2.5rem 1.5rem;
+    font-size: 0.92rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr auto;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .footer-brand p {
+    margin-top: 0.75rem;
+    color: var(--ink-2);
+    max-width: 38ch;
+    line-height: 1.55;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    font-size: 0.92rem;
+  }
+
+  .build {
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
+    white-space: nowrap;
+  }
+
+  .build a {
+    color: var(--ink);
     text-decoration: underline;
-    font-weight: bold;
+    text-decoration-color: var(--line);
   }
 
-  header button {
-    padding: 0;
-    margin: 0;
-    border: none;
+  .legal {
+    margin-top: 2rem;
+    color: var(--ink-3);
+    font-size: 0.8rem;
   }
 
-  .theme-switch > span:first-child {
-    vertical-align: text-top;
+  @media (max-width: 760px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .wordmark {
+      font-size: 1.05rem;
+    }
+    nav {
+      font-size: 0.88rem;
+    }
   }
 </style>

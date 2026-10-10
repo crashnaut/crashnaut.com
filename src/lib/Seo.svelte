@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { site } from "$lib/seo"
+  import { site } from "#lib/seo.ts"
 
   type OgType = "website" | "article"
 
@@ -31,7 +31,7 @@
     schema?: Record<string, unknown> | Record<string, unknown>[]
   } = $props()
 
-  const canonicalUrl = $derived(canonical ?? site.url)
+  const canonicalUrl = $derived(canonical)
   const schemas = $derived(
     schema ? (Array.isArray(schema) ? schema : [schema]) : [],
   )
@@ -44,14 +44,16 @@
     <meta name="keywords" content={keywords} />
   {/if}
   <meta name="author" content={author} />
-  <link rel="canonical" href={canonicalUrl} />
+  {#if canonicalUrl}
+    <link rel="canonical" href={canonicalUrl} />
+  {/if}
 
   <meta property="og:site_name" content={site.name} />
   <meta property="og:locale" content={site.locale} />
   <meta property="og:type" content={type} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:url" content={canonicalUrl ?? site.url} />
   <meta property="og:image" content={image} />
   <meta property="og:image:alt" content={title} />
 

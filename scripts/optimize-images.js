@@ -3,7 +3,7 @@ import { optimizeImage } from "./optimize-image.js"
 
 for (const filepath of getChangedFiles()) {
   try {
-    if (!filepath.includes("blog") && !filepath.includes("bits")) {
+    if (!filepath.includes("blog")) {
       continue
     }
 

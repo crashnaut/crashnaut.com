@@ -1,10 +1,10 @@
 ---
 title: Nix Flakes for SDET Setup
 slug: nix-flakes-for-sdet-setup
-description: A 5-minute guide to set up a reproducible SDET environment using Nix Flakes across Mac, Linux, and Windows.
+description: "Set up a reproducible SDET workstation on macOS, Linux or WSL2 in about five minutes with Nix Flakes, then reuse it in CI with nix develop."
 author: Mike Sell
 date: 2025-10-13T00:00:00.000Z
-tags: Nix
+tags: Nix, Developer Environment, CI
 ---
 
 ## The Quick Setup
@@ -65,9 +65,12 @@ Done! All your tools are now installed and configured.
 ### Development Tools
 
 - Git, GitHub CLI, Vim, GPG
-- **Node.js 20+ (LTS)** with pnpm package manager
+- **Node.js 22 (LTS)** with pnpm package manager
 - **OrbStack** (fast, lightweight Docker alternative - Mac only)
+- **Postman** for poking at APIs
 - Language toolchains ready to add
+
+<!-- TODO(mike): as of 2026-10 the crashnaut/nix flakes don't list nodejs or pnpm (and there is no Firefox/Obsidian either) — add nodejs_22 + pnpm to the flakes, or drop the Node/pnpm claims here and in tldr.md. -->
 
 ### CLI Utilities
 
@@ -76,13 +79,9 @@ Done! All your tools are now installed and configured.
 - Essentials: `curl`, `wget`, `jq`
 - Zsh with Oh My Zsh
 
-### GUI Applications (Mac/Linux)
+### Personal Apps
 
-- **Browsers**: Brave, Firefox
-- **Communication**: Slack, Telegram, WhatsApp
-- **Productivity**: Logseq, Postman, Obsidian
-
-All fully customizable!
+The repo also installs a few GUI apps I use day to day (browser, chat, notes). They're personal picks, not SDET requirements — strip them out of `flake.nix` before you apply it.
 
 ## Daily Workflow
 
@@ -136,19 +135,31 @@ home-manager switch --switch-generation <number>
 
 ### Consistent Test Environments
 
-Use the same `flake.nix` locally and in CI to eliminate environment drift:
+Give your test project its own `flake.nix` with a `devShells` output, then use it locally and in CI to eliminate environment drift:
 
 ```bash
-nix develop  # Same environment everywhere
+nix develop                          # interactive shell, same tools everywhere
+nix develop --command npx playwright test  # non-interactive, for CI
 ```
 
 ### Quick CI/CD Setup
 
 ```dockerfile
 FROM nixos/nix
+# Flakes are still behind an experimental flag
+ENV NIX_CONFIG="experimental-features = nix-command flakes"
+WORKDIR /app
+
+# Build the dev shell once so it's cached in an image layer
 COPY flake.nix flake.lock ./
-RUN nix develop
+RUN nix develop --command true
+
+COPY . .
+# Run your test command inside the dev shell, non-interactively
+CMD ["nix", "develop", "--command", "npm", "test"]
 ```
+
+`nix develop` on its own opens an interactive shell, which goes nowhere in a `RUN` step — always pass `--command`.
 
 ### Multi-Platform Testing
 

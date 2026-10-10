@@ -35,4 +35,4 @@ pnpm test      # Run tests
 pnpm docker:test:local  # Docker testing
 ```
 
-**When to use:** BDD for stakeholder collaboration, Plain POM for technical-only testing.
+**When to use:** BDD for stakeholder collaboration, [plain POM](/blog/vanilla-playwright-pom-setup) for technical-only testing.

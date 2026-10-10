@@ -26,18 +26,37 @@
 // Section order in the file is render order (top to bottom). The optional [title]
 // overrides the default "Do this" / "Don't do this". Each column is full markdown.
 
+import type {
+  RendererExtension,
+  Token,
+  TokenizerExtension,
+  Tokens,
+} from "marked"
+
+interface CompareColumn {
+  kind: string
+  title: string
+  text: string
+  tokens: Token[]
+}
+
+interface CompareToken extends Tokens.Generic {
+  type: "compareBlock"
+  cols: CompareColumn[]
+}
+
 // Allow leading whitespace so authors can indent ::dont / ::: to match list nesting in editors.
 const startReg = /^\s*:::compare\s*$/
 const endReg = /^\s*:::\s*$/
 const sectionReg = /^\s*::(do|dont)(?:\[(.*?)\])?\s*$/
 
-export const compareBlock = {
+export const compareBlock: TokenizerExtension & RendererExtension = {
   name: "compareBlock",
   level: "block",
-  start(this, src: string) {
+  start(src) {
     return src.match(/(^|[\r\n]):::compare/)?.index
   },
-  tokenizer(this, src: string, _tokens) {
+  tokenizer(src): CompareToken | undefined {
     const lines = src.split(/\n/)
     if (!startReg.test(lines[0])) return
 
@@ -53,12 +72,7 @@ export const compareBlock = {
     const body = lines.slice(1, end)
     const raw = lines.slice(0, end + 1).join("\n")
 
-    const cols: {
-      kind: string
-      title: string
-      text: string[]
-      tokens: unknown[]
-    }[] = []
+    const cols: { kind: string; title: string; text: string[] }[] = []
     let cur: (typeof cols)[number] | null = null
     for (const line of body) {
       const m = sectionReg.exec(line)
@@ -67,7 +81,6 @@ export const compareBlock = {
           kind: m[1],
           title: m[2] || (m[1] === "do" ? "Do this" : "Don't do this"),
           text: [],
-          tokens: [],
         }
         cols.push(cur)
       } else if (cur) {
@@ -75,7 +88,7 @@ export const compareBlock = {
       }
     }
 
-    const token = {
+    const token: CompareToken = {
       type: "compareBlock",
       raw,
       cols: cols.map((c) => ({
@@ -91,7 +104,8 @@ export const compareBlock = {
     }
     return token
   },
-  renderer(this, token) {
+  renderer(generic) {
+    const token = generic as CompareToken
     const cols = token.cols
       .map(
         (c) =>

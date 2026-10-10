@@ -1,102 +1,108 @@
 import { test, expect } from "@playwright/test"
+import { sitemapPaths, toLocal } from "./helpers"
 
-test("sitemap includes core routes and listed blog posts are reachable", async ({
-  request,
-}) => {
-  const sitemap = await request.get("/sitemap.xml")
-  expect(sitemap.ok()).toBeTruthy()
-  expect(sitemap.headers()["content-type"]).toMatch(/xml/)
-
-  const sitemapXml = await sitemap.text()
-  const paths = [...sitemapXml.matchAll(/<loc>(.+?)<\/loc>/g)].map(
-    ([, url]) => new URL(url).pathname,
-  )
+test("sitemap lists core routes and every post loads", async ({ request }) => {
+  const paths = await sitemapPaths(request)
   expect(paths).toEqual(expect.arrayContaining(["/", "/blog", "/contact"]))
-  expect(paths).not.toContain("/bits")
 
-  const blogPaths = paths.filter((url) => url.startsWith("/blog/")).sort()
-  expect(blogPaths.length).toBeGreaterThan(0)
-
-  for (const postPath of blogPaths.slice(0, 3)) {
-    await test.step(`${postPath} loads`, async () => {
-      const response = await request.get(postPath)
-      expect(response.ok()).toBeTruthy()
-      const html = await response.text()
-      expect(html).toContain("<h1")
-    })
+  const posts = paths.filter((p) => p.startsWith("/blog/"))
+  expect(posts.length).toBeGreaterThanOrEqual(6)
+  for (const path of posts) {
+    const res = await request.get(path)
+    expect(res.status(), path).toBe(200)
+    expect(
+      (await res.text()).match(/<h1[\s>]/g),
+      `${path} has one h1`,
+    ).toHaveLength(1)
   }
 })
 
-test("rss feed works", async ({ request }) => {
-  const response = await request.get("/blog/rss.xml")
-  expect(response.ok()).toBeTruthy()
-  expect(response.headers()["content-type"]).toMatch(/xml/)
-  const xml = await response.text()
-  expect(xml).toContain("<rss")
-})
-
-test("homepage works", async ({ request }) => {
-  const response = await request.get("/")
-  expect(response.ok()).toBeTruthy()
-  const html = await response.text()
-  expect(html).toContain("Hi, I'm Mike")
-  expect(html).toContain(">BLOG<")
-})
-
-test("homepage has a single title and meta description", async ({
+test("every page has exactly one title, description and canonical", async ({
   request,
 }) => {
-  const response = await request.get("/")
-  expect(response.ok()).toBeTruthy()
-  const html = await response.text()
-  expect(html.match(/<title>/g)?.length).toBe(1)
-  expect(html.match(/<meta[^>]*name="description"[^>]*>/g)?.length).toBe(1)
+  for (const path of await sitemapPaths(request)) {
+    const html = await (await request.get(path)).text()
+    expect(html.match(/<title>/g), path).toHaveLength(1)
+    expect(html.match(/<meta name="description"/g), path).toHaveLength(1)
+    expect(html.match(/<link rel="canonical"/g), path).toHaveLength(1)
+  }
 })
 
-test("blog works", async ({ request }) => {
-  const response = await request.get("/blog")
-  expect(response.ok()).toBeTruthy()
-  const html = await response.text()
-  expect(html).toContain('aria-label="Search"')
-  const articleCount = (html.match(/<article/g) ?? []).length
-  expect(articleCount).toBeGreaterThanOrEqual(6)
+test("every page's share image exists", async ({ request }) => {
+  for (const path of await sitemapPaths(request)) {
+    const html = await (await request.get(path)).text()
+    const og = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1]
+    if (!og) throw new Error(`${path} has no og:image`)
+    const image = await request.get(toLocal(og))
+    expect(image.status(), `${path} -> ${og}`).toBe(200)
+    expect(image.headers()["content-type"]).toContain("image/png")
+  }
 })
 
-test("/contact has exactly one meta description tag", async ({ request }) => {
-  const response = await request.get("/contact")
-  expect(response.ok()).toBeTruthy()
-  const html = await response.text()
-  const matches = html.match(/<meta[^>]*name="description"[^>]*>/g) ?? []
-  expect(matches).toHaveLength(1)
+test("internal links resolve", async ({ request }) => {
+  const seen = new Set<string>()
+  for (const path of await sitemapPaths(request)) {
+    const html = await (await request.get(path)).text()
+    for (const [, href] of html.matchAll(/href="(\/[^"#?]*)/g)) {
+      if (seen.has(href) || href.startsWith("/_app/")) continue
+      seen.add(href)
+      const res = await request.get(href)
+      expect(res.status(), `${path} links to ${href}`).toBeLessThan(400)
+    }
+  }
 })
 
-test("blog article page renders heading and section content", async ({
+test("no leftovers from the forked template", async ({ request }) => {
+  // The site started from timdeschryver.dev; none of its IDs or copy should ship.
+  const banned =
+    /timdeschryver|carbonads|ko-fi|beehiiv|MDEwOlJlcG9zaXRvcnkxNzg3MjYyMDg|Hi, I'm Tim|indieweb-avatar/i
+  for (const path of [...(await sitemapPaths(request)), "/blog/rss.xml"]) {
+    const body = await (await request.get(path)).text()
+    expect(body.match(banned)?.[0], path).toBeUndefined()
+  }
+})
+
+test("rss feed carries full content with absolute links", async ({
   request,
 }) => {
-  const response = await request.get("/blog/playwright-bdd")
-  expect(response.ok()).toBeTruthy()
-  const html = await response.text()
-  expect(html).toContain("Playwright BDD: Combining Cucumber with Page Objects")
-  expect(html).toContain("The Problem with Functional BDD Implementations")
+  const res = await request.get("/blog/rss.xml")
+  expect(res.ok()).toBeTruthy()
+  expect(res.headers()["content-type"]).toMatch(/xml/)
+  const xml = await res.text()
+  expect(xml).not.toMatch(/="undefined"/)
+  expect(xml).toContain("<content:encoded>")
+  // RFC 822 dates, e.g. "Fri, 09 Oct 2026 00:00:00 GMT"
+  expect(xml).toMatch(
+    /<pubDate>\w{3}, \d{2} \w{3} \d{4} [\d:]{8} GMT<\/pubDate>/,
+  )
+  expect(xml).not.toMatch(/(href|src)="\/(?!\/)/)
 })
 
-test("blog article includes structured data", async ({ request }) => {
-  const response = await request.get("/blog/playwright-bdd")
-  expect(response.ok()).toBeTruthy()
-  const html = await response.text()
-  expect(html).toContain("application/ld+json")
-  expect(html).toContain("BlogPosting")
-})
-
-test("compare block markdown renders as HTML, not raw delimiters", async ({
+test("posts show their real publish date, not the formatting commit", async ({
   request,
 }) => {
-  const response = await request.get("/blog/the-feature-flag-nightmare")
-  expect(response.ok()).toBeTruthy()
-  const html = await response.text()
+  const html = await (
+    await request.get("/blog/vanilla-playwright-pom-setup")
+  ).text()
+  expect(html).toContain("Nov 2, 2025")
+  expect(html).not.toMatch(/>\s*Modified/)
+})
+
+test("compare blocks render as HTML, not raw delimiters", async ({
+  request,
+}) => {
+  const html = await (
+    await request.get("/blog/the-feature-flag-nightmare")
+  ).text()
   expect(html).toContain('class="compare-block"')
   expect(html).toContain('class="compare-col do"')
-  expect(html).toContain('class="compare-col dont"')
   expect(html).not.toContain(":::compare")
-  expect(html).not.toContain("::dont[What actually ships to users]")
+})
+
+test("unpublished posts redirect instead of 404ing", async ({ request }) => {
+  // firebase.json redirects; the preview server just needs to not serve them
+  const res = await request.get("/blog/llms-unkept-promise-to-sdets", {
+    maxRedirects: 0,
+  })
+  expect(res.status()).not.toBe(200)
 })

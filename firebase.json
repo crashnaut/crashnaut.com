@@ -26,28 +26,8 @@
         "type": 301
       },
       {
-        "source": "/blog/configuring-angular-oidc-client-with-the-new-functional-apis",
-        "destination": "/blog/configuring-angular-auth-oidc-client-with-the-new-functional-apis",
-        "type": 301
-      },
-      {
-        "source": "/blog/be-proactive-when-you-join-an-existing-angular-project",
-        "destination": "/blog/be-proactive-when-you-join-an-angular-project",
-        "type": 301
-      },
-      {
-        "source": "/blog/i-tried-the-angular-standalone-migration-and-here-is-the-results",
-        "destination": "/blog/i-tried-the-angular-standalone-migration-and-here-is-the-result",
-        "type": 301
-      },
-      {
-        "source": "/twitter",
-        "destination": "https://twitter.com/intent/follow?screen_name=crashnaut",
-        "type": 302
-      },
-      {
         "source": "/linkedin",
-        "destination": "https://www.linkedin.com/in/mike-sell-crashnaut",
+        "destination": "https://www.linkedin.com/in/mikedcsell",
         "type": 302
       },
       {
@@ -56,13 +36,23 @@
         "type": 302
       },
       {
-        "source": "/bluesky",
-        "destination": "https://bsky.app/profile/crashnaut.com",
-        "type": 302
+        "source": "/blog/llms-unkept-promise-to-sdets",
+        "destination": "/blog",
+        "type": 301
       },
       {
-        "source": "/support",
-        "destination": "https://www.paypal.com/donate?hosted_button_id=59M5TFPQJS8SQ",
+        "source": "/blog/testing-web3-using-synpress",
+        "destination": "/blog",
+        "type": 301
+      },
+      {
+        "source": "/work",
+        "destination": "/contact",
+        "type": 301
+      },
+      {
+        "source": "/call",
+        "destination": "https://calendly.com/mikesell404",
         "type": 302
       }
     ],

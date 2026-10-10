@@ -9,13 +9,6 @@ export interface PostLink {
   title: string
 }
 
-export interface PostTranslation {
-  url: string
-  author: string
-  profile: string
-  language: string
-}
-
 export interface PostMetadata {
   title: string
   slug: string
@@ -27,10 +20,10 @@ export interface PostMetadata {
   tags: string[]
   canonical: string
   banner: string
+  readingMinutes: number
   author: string
   outgoingLinks: PostLink[]
   incomingLinks: PostLink[]
-  translations: PostTranslation[]
   toc: TOC[]
   outgoingSlugs?: string[]
 }

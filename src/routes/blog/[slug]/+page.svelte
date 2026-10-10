@@ -1,21 +1,19 @@
 <script lang="ts">
-  import { onMount } from "svelte"
-  import { humanDate } from "$lib/formatters"
-  import Seo from "$lib/Seo.svelte"
-  import { blogPostingJsonLd, breadcrumbJsonLd, site } from "$lib/seo"
-  import Comments from "$lib/Comments.svelte"
-  import { blog } from "$lib/current-blog.svelte"
-  import Share from "$lib/Share.svelte"
-  import Actions from "$lib/Actions.svelte"
-  import codeBlockLifeCycle from "$lib/code-block-lifecycle.svelte"
-  import copyLifeCycle from "$lib/copy-lifecycle.svelte"
-  // import Newsletter from '$lib/Newsletter.svelte';
-  import Ad from "$lib/Ad.svelte"
-  import { browser } from "$app/environment"
-  import { page } from "$app/stores"
+  import { onMount, tick } from "svelte"
+  import { page } from "$app/state"
+  import { humanDate } from "#lib/formatters.ts"
+  import Seo from "#lib/Seo.svelte"
+  import { blogPostingJsonLd, breadcrumbJsonLd, site } from "#lib/seo.ts"
+  import Comments from "#lib/Comments.svelte"
+  import Share from "#lib/Share.svelte"
+  import WorkWithMe from "#lib/WorkWithMe.svelte"
+  import { blog } from "#lib/current-blog.svelte.ts"
+  import codeBlockLifeCycle from "#lib/code-block-lifecycle.svelte.ts"
+  import copyLifeCycle from "#lib/copy-lifecycle.svelte.ts"
 
   const { data } = $props()
-  const { post } = data
+  const post = $derived(data.post)
+  const meta = $derived(data.post.metadata)
 
   const tldr = $derived(() => blog.blog?.state === "tldr")
 
@@ -23,455 +21,402 @@
   codeBlockLifeCycle(tldr)
   copyLifeCycle()
 
+  let activeHeading = $state<string | null>(null)
+  let prose: HTMLElement | null = $state(null)
+
   onMount(() => {
-    const hasTldr = post.tldr && $page.url.searchParams.get("tldr") === "true"
+    const wantsTldr = post.tldr && page.url.searchParams.get("tldr") === "true"
     blog.loadBlog(
-      post.metadata.title,
-      hasTldr ? "tldr" : post.tldr ? "detailed" : "single",
+      meta.title,
+      wantsTldr ? "tldr" : post.tldr ? "detailed" : "single",
     )
     return () => blog.reset()
   })
 
-  let scrollY = $state(0)
-  let header: HTMLElement | null = $state(null)
-  const sideNavsVisible = $derived(
-    () =>
-      scrollY &&
-      header &&
-      header.getBoundingClientRect().bottom + header.offsetHeight - 220 <
-        scrollY,
-  )
-
-  function headerClick(evt: MouseEvent) {
-    gotoHeader(evt.currentTarget as HTMLElement)
-  }
-
-  function tocClick(evt: MouseEvent) {
-    evt.preventDefault()
-    const element = document.querySelector(
-      (evt.currentTarget as HTMLElement).getAttribute("href"),
-    )
-    gotoHeader(element as HTMLElement)
-  }
-
-  function gotoHeader(header: HTMLElement) {
-    const y = header.getBoundingClientRect().top + window.scrollY - 100
-    window.scrollTo({ top: y, behavior: "smooth" })
-  }
-
-  const htmlStyle = `<style> 
-		main {
-			--accent-color: var(--${post.metadata.color ?? "base-color"});
-		}
-
-		main h1, 
-		main h2,  
-		main h3, 
-		main h4,
-		main h5, 
-		main h6 {
-			color: hsla(var(--accent-color), 1);
-		}
-	</style>`
-
-  const headings = $derived(() => {
-    if (!browser) {
-      return []
-    }
-    const hasTldr = post.tldr && $page.url.searchParams.get("tldr") === "true"
-    return hasTldr
-      ? []
-      : ([
-          ...document.querySelectorAll("main > h2,h3"),
-        ].reverse() as HTMLElement[])
-  })
-
+  // Highlight the last section heading scrolled past in the table of contents.
   $effect(() => {
-    headings().forEach((h) => {
-      h.removeEventListener("click", headerClick)
-      h.addEventListener("click", headerClick)
-    })
-    return () => {
-      headings().forEach((h) => {
-        h.removeEventListener("click", headerClick)
-      })
-    }
-  })
-
-  const pres = $derived(() => {
-    return browser ? [...document.querySelectorAll("pre")] : []
-  })
-
-  $effect(() => {
-    pres().forEach((pre) => {
-      pre.removeEventListener("click", copyLinkToCodeBlock)
-      pre.addEventListener("click", copyLinkToCodeBlock)
-    })
-    return () => {
-      pres().forEach((pre) => {
-        pre.removeEventListener("click", copyLinkToCodeBlock)
-      })
-    }
-  })
-
-  let lastHeadingId = $state(null)
-  $effect(() => {
-    if (browser) {
-      if (blog.blog?.state === "tldr" && lastHeadingId) {
-        lastHeadingId = null
-      } else if (blog.blog?.state !== "tldr" && headings()) {
-        const heading = headings().find((h) => h.offsetTop <= scrollY + 110)
-        if (lastHeadingId !== heading?.id) {
-          lastHeadingId = heading?.id
-        }
+    if (!prose || tldr()) return
+    const headings = [...prose.querySelectorAll<HTMLElement>("h2[id], h3[id]")]
+    const update = () => {
+      const line = 120
+      let current: string | null = null
+      for (const h of headings) {
+        if (h.getBoundingClientRect().top <= line) current = h.id
+        else break
       }
+      activeHeading = current
     }
+    update()
+    addEventListener("scroll", update, { passive: true })
+    return () => removeEventListener("scroll", update)
   })
 
-  function copyLinkToCodeBlock(e: PointerEvent) {
-    if (e.ctrlKey && navigator.clipboard && navigator.clipboard.writeText) {
-      const { origin, pathname } = window.location
-      navigator.clipboard.writeText(
-        `${origin}${pathname}#${(e.currentTarget as HTMLElement).id}`,
-      )
+  async function setMode(mode: "tldr" | "detailed") {
+    if (blog.blog?.state !== mode) {
+      blog.toggleTldr()
+      await tick()
     }
   }
+
+  const updatedDate = $derived(
+    meta.modified && meta.modified !== meta.date ? meta.modified : null,
+  )
 </script>
 
 <Seo
-  title={post.metadata.title}
-  description={post.metadata.description}
-  canonical={post.metadata.canonical}
-  image={post.metadata.banner}
+  title={`${meta.title} | Crashnaut`}
+  description={meta.description}
+  canonical={meta.canonical}
+  image={meta.banner}
   type="article"
-  author={post.metadata.author}
-  keywords={post.metadata.tags.join(", ")}
-  publishedTime={post.metadata.publishedAt}
-  modifiedTime={post.metadata.modifiedAt}
-  tags={post.metadata.tags}
+  author={meta.author}
+  keywords={meta.tags.join(", ")}
+  publishedTime={meta.publishedAt}
+  modifiedTime={meta.modifiedAt}
+  tags={meta.tags}
   schema={[
     blogPostingJsonLd({
-      title: post.metadata.title,
-      description: post.metadata.description,
-      url: post.metadata.canonical,
-      image: post.metadata.banner,
-      publishedAt: post.metadata.publishedAt,
-      modifiedAt: post.metadata.modifiedAt,
-      tags: post.metadata.tags,
+      title: meta.title,
+      description: meta.description,
+      url: meta.canonical,
+      image: meta.banner,
+      publishedAt: meta.publishedAt,
+      modifiedAt: meta.modifiedAt,
+      tags: meta.tags,
     }),
     breadcrumbJsonLd([
       { name: "Home", url: site.url },
       { name: "Blog", url: `${site.url}/blog` },
-      { name: post.metadata.title, url: post.metadata.canonical },
+      { name: meta.title, url: meta.canonical },
     ]),
   ]}
 />
 
-<svelte:window bind:scrollY />
+<article>
+  <div class="container post-grid" class:has-toc={meta.toc.length > 2}>
+    <header class="post-head">
+      <p class="telemetry crumbs">
+        <a href="/blog">← Crash log</a>
+        <span aria-hidden="true">/</span>
+        <b>Run {String(data.run).padStart(3, "0")}</b>
+        <span class="status-dot" aria-hidden="true"></span>
+      </p>
 
-<header bind:this={header} style:--post-title="post-title-{post.metadata.slug}">
-  <h1>{post.metadata.title}</h1>
-  <img class="banner" src={post.metadata.banner} alt={post.metadata.title} />
-  <div class="details">
-    <div class="published-at">
-      {#if post.metadata.modified !== post.metadata.date}
-        <time datetime={post.metadata.modifiedAt}>
-          Modified {humanDate(post.metadata.modified)}</time
-        >
+      <h1>{meta.title}</h1>
+      {#if meta.description}
+        <p class="deck">{meta.description}</p>
+      {/if}
+
+      <div class="byline">
+        <img
+          class="avatar"
+          src="/images/mike.webp"
+          alt=""
+          width="44"
+          height="44"
+        />
+        <div>
+          <p class="author">Mike Sell</p>
+          <p class="telemetry">
+            <time datetime={meta.publishedAt}>{humanDate(meta.date)}</time>
+            {#if updatedDate}
+              · updated <time datetime={meta.modifiedAt}
+                >{humanDate(updatedDate)}</time
+              >
+            {/if}
+            · {meta.readingMinutes} min read
+          </p>
+        </div>
+      </div>
+
+      {#if meta.tags.length}
+        <ul class="tags" aria-label="Tags">
+          {#each meta.tags as tag}
+            <li>
+              <a class="tag" href={`/blog?tag=${encodeURIComponent(tag)}`}
+                >{tag}</a
+              >
+            </li>
+          {/each}
+        </ul>
+      {/if}
+
+      {#if post.tldr}
+        <div class="mode" role="group" aria-label="Reading mode">
+          <button
+            type="button"
+            aria-pressed={!tldr()}
+            onclick={() => setMode("detailed")}>Full post</button
+          >
+          <button
+            type="button"
+            aria-pressed={tldr()}
+            onclick={() => setMode("tldr")}>TL;DR · just the code</button
+          >
+        </div>
+      {/if}
+    </header>
+  </div>
+
+  <div
+    class="container post-grid post-body"
+    class:has-toc={meta.toc.length > 2}
+  >
+    <div class="prose" bind:this={prose}>
+      {#if tldr()}
+        {@html post.tldr}
       {:else}
-        <time datetime={post.metadata.publishedAt}
-          >Published {humanDate(post.metadata.date)}</time
-        >
+        {@html post.html}
       {/if}
     </div>
 
-    <div class="logos">
-      {#each post.metadata.logos as logo}
-        <img class="mt-0 logo" src="/images/{logo.src}" alt={logo.alt} />
-      {/each}
-    </div>
-
-    <div class="mt-0 author">
-      <img class="author-img" src="/images/mike.jpg" alt="profile" />
-      <div class="mt-0">
-        <div class="author-name">Mike Sell</div>
-        <div class="author-source mt-0">crashnaut.com</div>
-      </div>
-    </div>
-  </div>
-</header>
-
-<aside class="left-nav" hidden={!sideNavsVisible()}>
-  {#if post.metadata.toc.length > 1}
-    <div class="toc" hidden={blog.blog?.state === "tldr"}>
-      <h3>On this page</h3>
-      <ul>
-        {#each post.metadata.toc as { slug, description, level }}
-          <li
-            class:active={lastHeadingId === slug}
-            style={`--level:${level - 2}`}
-          >
-            <a href={`#${slug}`} onclick={tocClick}>{description}</a>
-          </li>
-        {/each}
-      </ul>
-    </div>
-  {/if}
-
-  <div>
-    <Ad />
+    {#if meta.toc.length > 2}
+      <aside class="toc" aria-label="On this page" hidden={tldr()}>
+        <p class="telemetry">On this page</p>
+        <ol>
+          {#each meta.toc as { slug, description, level }}
+            <li class:sub={level > 2} class:active={activeHeading === slug}>
+              <a href={`#${slug}`}>{description}</a>
+            </li>
+          {/each}
+        </ol>
+      </aside>
+    {/if}
   </div>
 
-  <Share
-    title="Share this post"
-    text={post.metadata.title}
-    url={post.metadata.canonical}
-  />
-</aside>
+  <footer class="container narrow post-foot">
+    <WorkWithMe />
 
-{#if post.tldr}
-  <button class="tldr" onclick={blog.toggleTldr}>
-    👀 {blog.blog?.state === "tldr"
-      ? "I want to read the blog post"
-      : "Just show me the code already"}</button
-  >
-{/if}
+    {#if data.related.length}
+      <section aria-labelledby="related-title" class="related">
+        <p class="telemetry" id="related-title">Keep reading</p>
+        <ul>
+          {#each data.related as r}
+            <li>
+              <a href={`/blog/${r.slug}`}>
+                <span class="title">{r.title}</span>
+                <span class="telemetry">{humanDate(r.date)}</span>
+              </a>
+            </li>
+          {/each}
+        </ul>
+      </section>
+    {/if}
 
-{@html htmlStyle}
+    <div class="share-row">
+      <Share url={meta.canonical} />
+      <a class="telemetry edit" href={meta.edit} rel="external"
+        >Suggest an edit on GitHub</a
+      >
+    </div>
 
-{#if tldr()}
-  {@html post.tldr}
-{:else}
-  {@html post.html}
-
-  {#if post.contributors.length}
-    <h4>A warm thank you to the contributors of this blog post</h4>
-    <ul class="mt-0">
-      {#each post.contributors as [login, name]}
-        <li>
-          <a href={`https://github.com/${login}`} rel="external"
-            >{name ?? login}</a
-          >
-        </li>
-      {/each}
-    </ul>
-  {/if}
-
-  {#if post.metadata.incomingLinks.length}
-    <h4>Incoming links</h4>
-    <ul class="mt-0" data-sveltekit-reload>
-      {#each post.metadata.incomingLinks as link}
-        <li>
-          <a href={`/blog/${link.slug}`} class="mark">{link.title}</a>
-        </li>
-      {/each}
-    </ul>
-  {/if}
-
-  {#if post.metadata.outgoingLinks.length}
-    <h4>Outgoing links</h4>
-    <ul class="mt-0" data-sveltekit-reload>
-      {#each post.metadata.outgoingLinks as link}
-        <li>
-          <a href={`/blog/${link.slug}`} class="mark">{link.title}</a>
-        </li>
-      {/each}
-    </ul>
-  {/if}
-{/if}
-
-<Actions editUrl={post.metadata.edit} />
-
-<!-- <Newsletter beehiivId={post.beehiivId} /> -->
-
-<Share
-  title="Share this post"
-  text={post.metadata.title}
-  url={post.metadata.canonical}
-/>
-
-<Comments />
+    <Comments />
+  </footer>
+</article>
 
 <style>
-  .tldr {
-    background: none;
-    border: none;
-    text-align: center;
-    font-weight: bolder;
-    margin-top: var(--spacing);
-    margin-bottom: var(--spacing);
-  }
-
-  :global(main > p:first-of-type) {
-    margin-top: 0;
-  }
-
-  .left-nav {
-    display: block;
-    position: fixed;
-    padding-top: 2.5em;
-    padding-right: 2.5em;
-    padding-left: 3em;
-    text-align: left;
-    width: 20%;
-    transition: all 0.2s;
-    background-color: var(--background-color-subtle);
-    height: 100%;
-    margin-top: 0;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    overflow: auto;
-  }
-
-  .left-nav > * {
-    display: block;
-    background: none;
-    cursor: pointer;
-    color: var(--text-color-light);
-    margin-top: 3px;
-    margin-bottom: 0;
-  }
-
-  .left-nav > div + div {
-    margin-top: var(--spacing);
-  }
-
-  .toc {
-    max-height: 75vh;
-    margin-top: 0;
-    overflow: auto;
-  }
-
-  @media (max-width: 1799px) {
-    .left-nav {
-      width: 25%;
-    }
-
-    :global(main[data-segment*="blog/"] ~ footer) {
-      padding-left: 25%;
-    }
-  }
-
-  @media (max-width: 1022px) {
-    .left-nav {
-      display: none;
-    }
-
-    :global(main[data-segment*="blog/"] ~ footer) {
-      padding-left: 0;
-    }
-  }
-
-  .toc ul {
-    list-style: none;
-    font-size: 1rem;
-    color: var(--text-color-light-subtle);
-    transition: all 0.25s;
-  }
-
-  .toc ul li.active {
-    color: var(--text-color);
-    font-weight: 600;
-  }
-
-  .toc ul li.active::first-letter {
-    font-size: 1.5rem;
-    line-height: 1;
-    font-weight: 900;
-  }
-
-  .toc ul li:hover {
-    color: var(--text-color);
-    font-weight: 600;
-  }
-
-  .toc ul li {
-    margin-left: calc((var(--level)) * 1em);
-  }
-
-  :global(body > div > main) > header {
-    grid-column: 1 / 4;
-    min-height: 100dvh;
-    min-width: 90%;
-    max-width: 90%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-evenly;
-    text-align: center;
-    margin: 0 auto;
-    padding: 0;
-    font-size: clamp(1rem, 3vw, 6rem);
-  }
-
-  .banner {
-    display: none;
-  }
-
-  .details {
-    display: flex;
-    justify-content: space-between;
-    margin: 0;
-    font-size: 1.5rem;
+  .post-head {
+    max-width: var(--measure);
+    margin-inline: auto;
     width: 100%;
-    align-items: center;
+    padding-top: clamp(2.5rem, 6vw, 4.5rem);
+    padding-bottom: 2rem;
   }
 
-  .author-img,
-  .logo {
-    width: 64px;
-    height: 64px;
+  .post-head > * + * {
+    margin-top: 1rem;
+  }
+
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .crumbs a:hover {
+    color: var(--ink);
+  }
+
+  h1 {
+    font-size: clamp(2rem, 1.3rem + 3vw, 3.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .deck {
+    font-size: clamp(1.08rem, 1rem + 0.4vw, 1.25rem);
+    color: var(--ink-2);
+    line-height: 1.55;
+    max-width: 60ch;
+  }
+
+  .byline {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+  }
+
+  .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid var(--signal);
+    object-fit: cover;
   }
 
   .author {
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .tags {
+    list-style: none;
     display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tags .tag:hover {
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+
+  .mode {
+    display: inline-flex;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .mode button {
+    padding: 0.45rem 0.9rem;
+    font-family: var(--head-font);
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--ink-2);
+  }
+
+  .mode button + button {
+    border-left: 2px solid var(--ink);
+  }
+
+  .mode button[aria-pressed="true"] {
+    background: var(--signal);
+    color: #141414;
+  }
+
+  .post-body {
+    padding-top: 0.5rem;
+  }
+
+  /* header and body share one grid so the title lines up with the text */
+  .post-grid.has-toc {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    gap: 3rem;
+  }
+
+  .toc {
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
+    align-self: start;
+    max-height: calc(100dvh - var(--header-height) - 3rem);
+    overflow: auto;
+    padding-top: 1rem;
+    font-size: 0.88rem;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin-top: 0.75rem;
+    border-left: 2px solid var(--line);
+  }
+
+  .toc li a {
+    display: block;
+    padding: 0.3rem 0 0.3rem 0.85rem;
+    margin-left: -2px;
+    border-left: 2px solid transparent;
+    color: var(--ink-3);
+    line-height: 1.35;
+    transition:
+      color 0.15s,
+      border-color 0.15s;
+  }
+
+  .toc li.sub a {
+    padding-left: 1.6rem;
+    font-size: 0.82rem;
+  }
+
+  .toc li a:hover {
+    color: var(--ink);
+  }
+
+  .toc li.active a {
+    color: var(--ink);
+    font-weight: 600;
+    border-left-color: var(--signal);
+  }
+
+  .post-foot {
+    padding-top: 3.5rem;
+  }
+
+  .post-foot > :global(* + *) {
+    margin-top: 2.5rem;
+  }
+
+  .related ul {
+    list-style: none;
+    margin-top: 0.75rem;
+    border-top: 2px solid var(--ink);
+  }
+
+  .related a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .related .title {
+    font-family: var(--head-font);
+    font-weight: 700;
+  }
+
+  .related a:hover .title {
+    text-decoration: underline;
+    text-decoration-color: var(--signal);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 4px;
+  }
+
+  .related .telemetry {
+    white-space: nowrap;
+  }
+
+  .share-row {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    text-align: left;
-    gap: 0.5em;
+    justify-content: space-between;
+    gap: 1rem;
   }
 
-  .author-name {
-    font-size: 1.3rem;
-  }
-  .author-source {
-    font-size: 0.8rem;
-    transform: translate(3px, -8px);
-    display: none;
+  .edit:hover {
+    color: var(--ink);
   }
 
-  .author-img {
-    width: auto;
-    border-radius: 100%;
-  }
-
-  .details > * {
-    margin-top: 0;
-  }
-
-  .logos {
-    display: flex;
-    gap: 0.6em;
-    display: none;
-  }
-
-  @media screen and (max-width: 1150px) {
-    .details {
-      font-size: 1rem;
+  @media (max-width: 1100px) {
+    .post-grid.has-toc {
+      display: block;
     }
-
-    .author-name {
-      font-size: 1rem;
-    }
-
-    .author-img,
-    .logo {
-      width: 48px;
-      height: 48px;
-    }
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    header {
-      view-transition-name: var(--post-title);
+    .toc {
+      display: none;
     }
   }
 </style>

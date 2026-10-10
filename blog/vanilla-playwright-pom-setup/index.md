@@ -1,10 +1,10 @@
 ---
 title: "Vanilla Playwright with Page Object Model: A Clean Setup"
 slug: vanilla-playwright-pom-setup
-description: "A production-grade Playwright + Page Object Model layout — no BDD, no base-class inheritance, no separate navigation helper. One pageFactory owns navigation, page objects own interactions, and specs read like manual scripts."
+description: "A Playwright Page Object Model layout with no BDD and no BasePage: one pageFactory owns navigation, page objects own interactions, specs read like scripts."
 author: Mike Sell
 date: 2025-11-02T00:00:00.000Z
-tags: playwright
+tags: Playwright, Page Object Model, TypeScript, Test Architecture
 ---
 
 # Vanilla Playwright with Page Object Model: A Clean Setup
@@ -69,11 +69,11 @@ test/
 │   └── pageFactory.ts         # owns goto() + page construction
 ├── fixtures/
 │   └── test.ts                # extended `test` with an auth session
-├── test-data/                 # users, fixtures, parametrised cases
+├── test-data/                 # users, fixtures, parameterized cases
 └── utils/                     # plain helper functions
 ```
 
-Two things are deliberately _absent_: there's no generic `pages/` dump (page objects live in feature folders), and there's no `navigationPage.ts` (the factory handles navigation). Organise by domain, not by file type.
+Two things are deliberately _absent_: there's no generic `pages/` dump (page objects live in feature folders), and there's no `navigationPage.ts` (the factory handles navigation). Organize by domain, not by file type.
 
 ## The layers, and the one rule that matters
 
@@ -90,6 +90,15 @@ Everything hangs off a single principle: **assertions live in specs; interaction
 One class constructs page objects _and_ handles `goto()`. No separate navigation helper, no `BasePage.navigate()`. Each method navigates, waits for load, and returns the page object — and takes a `skipGoto` flag for when you've already arrived (e.g. you clicked a nav link to get there).
 
 ```typescript
+import type { Page } from "@playwright/test"
+import { LoginPage } from "./auth/loginPage"
+import { ProductsPage } from "./products/productsPage"
+import { waitForPageToLoad } from "../utils/waitForPageToLoad"
+
+export interface GotoOptions {
+  skipGoto?: boolean
+}
+
 class PageFactory {
   constructor(private readonly page: Page) {}
 
@@ -113,11 +122,24 @@ class PageFactory {
 export const pageFactory = (page: Page): PageFactory => new PageFactory(page)
 ```
 
+`waitForPageToLoad` is a plain util, not magic. `goto()` already waits for the `load` event, so the helper's job is to wait for whatever your app shows when it's actually _usable_:
+
+```typescript
+// utils/waitForPageToLoad.ts
+import type { Page } from "@playwright/test"
+
+export async function waitForPageToLoad(page: Page): Promise<void> {
+  await page.waitForLoadState("domcontentloaded")
+  // Swap in your app's own "ready" signal: a main landmark, a heading, a spinner going away.
+  await page.getByRole("main").waitFor({ state: "visible" })
+}
+```
+
 In a spec, navigation is always `await pageFactory(page).somePage()` — never a raw `page.goto()`.
 
 ## Page objects: composition, not inheritance
 
-There is no `BasePage`. Page objects hold a `page` reference, expose locators and actions, and pull shared behaviour from plain util functions and small component objects (like a top nav bar) rather than from a class hierarchy. Inheritance trees get tangled fast; composition stays flat.
+There is no `BasePage`. Page objects hold a `page` reference, expose locators and actions, and pull shared behavior from plain util functions and small component objects (like a top nav bar) rather than from a class hierarchy. Inheritance trees get tangled fast; composition stays flat.
 
 ```typescript
 export class ProductsPage {
@@ -224,7 +246,7 @@ Smoke specs are read-only "did the page load?" checks. The trap is letting the t
 - "should complete checkout" — implies an action and an output
   :::
 
-When the same flow must hold for several user variants (regions, roles), don't copy-paste specs — loop over a parametrised list of cases and tag each with its variant, so one spec body covers them all.
+When the same flow must hold for several user variants (regions, roles), don't copy-paste specs — loop over a parameterized list of cases and tag each with its variant, so one spec body covers them all.
 
 ## Configuration, honestly
 
@@ -266,5 +288,11 @@ Trace-on for local runs is the quiet hero here — when something fails on your 
 ## Wrapping up
 
 Vanilla Playwright with a disciplined POM gives you fast, readable, maintainable E2E tests without a BDD layer. The architecture is almost entirely about boundaries: navigation in the factory, interactions in page objects, assertions in specs, accessible locators throughout. Hold those lines and the suite stays pleasant to work in as it grows.
+
+**Part 2:** once the suite grows past a handful of specs, [Playwright Page Factory + Composition](/blog/playwright-page-factory-composition) builds on this setup — shared UI as composed components, and a `pageFactory` fixture so specs never wire the factory by hand.
+
+For a runnable starting point, see [crashnaut/playwright-pom-boilerplate](https://github.com/crashnaut/playwright-pom-boilerplate) on GitHub — it's a simpler, earlier version of this layout.
+
+<!-- TODO(mike): the boilerplate repo still ships tests/page-objects/base/basePage.ts and has no skipGoto/GotoOptions — update it to match this post (or reword the line above). -->
 
 If you want the whole environment — Node, pnpm, browsers — set up in one go, I covered that in [Nix Flakes for SDET Setup](/blog/nix-flakes-for-sdet-setup).

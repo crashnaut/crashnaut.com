@@ -46,7 +46,8 @@ test("test shadow DOM", async ({ page }) => {
 
 ⚠️ **Test environment only** - fundamentally changes app behavior  
 ⚠️ **Call before navigation** - must inject script before page loads  
-✅ **Works with iFrames** - perfect for embedded components
+✅ **Works with iFrames** - `addInitScript` also runs in child frames; pair it with `page.frameLocator()`
+⚠️ **Not for declarative shadow DOM** - `<template shadowrootmode="closed">` never calls `attachShadow()`
 
 ## The Problem
 

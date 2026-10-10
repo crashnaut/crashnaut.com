@@ -1,4 +1,4 @@
-import { browser } from "$app/environment"
+import { browser } from "$app/env"
 import { writable } from "svelte/store"
 
 let initialValue = ""
@@ -27,6 +27,9 @@ if (browser) {
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", (event) => {
-      theme.set(event.matches ? "dark" : "light")
+      // follow the OS only until the reader picks a theme themselves
+      if (!localStorage.getItem("theme-chosen")) {
+        theme.set(event.matches ? "dark" : "light")
+      }
     })
 }

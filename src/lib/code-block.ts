@@ -1,15 +1,35 @@
+import type {
+  RendererExtension,
+  Token,
+  TokenizerExtension,
+  Tokens,
+} from "marked"
+
+interface CodeGroupBlock {
+  formatted: string
+  title: string
+  id: number
+}
+
+interface CodeGroupToken extends Tokens.Generic {
+  type: "codeGroup"
+  text: string
+  tokens: Token[]
+  codeblocks: CodeGroupBlock[]
+}
+
 let codeBlockId = 0
-export const codeGroup = {
+export const codeGroup: TokenizerExtension & RendererExtension = {
   name: "codeGroup",
   level: "block",
   start(src) {
     return src.match(/^:::code-group$/)?.index
   },
-  tokenizer(src, _tokens) {
+  tokenizer(src): CodeGroupToken | undefined {
     const lines = src.split(/\n/)
     if (/^:::code-group$/.test(lines[0])) {
       const section = { x: -1, y: -1 }
-      const sections = []
+      const sections: { x: number; y: number }[] = []
       for (let i = 0, k = lines.length; i < k; i++) {
         if (/^:::code-group$/.test(lines[i])) {
           section.x = i
@@ -23,20 +43,21 @@ export const codeGroup = {
         }
       }
 
-      if (sections.length) {
+      const renderer = this.lexer.options.renderer
+      if (sections.length && renderer) {
         const section = sections[0]
         const text = lines.slice(section.x + 1, section.y).join("\n")
         const raw = lines.slice(section.x, section.y + 1).join("\n")
 
-        const codeblocks = text.trim().match(/```.*?```$/gms)
-        const token = {
+        const codeblocks = text.trim().match(/```.*?```$/gms) ?? []
+        const token: CodeGroupToken = {
           type: "codeGroup",
           raw,
           text: text.trim(),
-          tokens: [] as unknown[],
+          tokens: [],
           codeblocks: codeblocks.map((c) => {
             const codeLines = c.split("\n")
-            const first = codeLines.shift().replace(/```/, "")
+            const first = (codeLines.shift() ?? "").replace(/```/, "")
             const lang = first.substr(0, first.indexOf("["))
             const title = first.substring(
               first.indexOf("[title=") + 7,
@@ -45,7 +66,12 @@ export const codeGroup = {
             const _last = codeLines.pop()
             const text = codeLines.join("\n")
             return {
-              formatted: this.lexer.options.renderer.code(text, lang),
+              formatted: renderer.code({
+                type: "code",
+                raw: c,
+                text,
+                lang,
+              }),
               title,
               id: codeBlockId++,
             }
@@ -56,7 +82,8 @@ export const codeGroup = {
       }
     }
   },
-  renderer(token) {
+  renderer(generic) {
+    const token = generic as CodeGroupToken
     return `
         <div class="code-group">
             <div class="code-group-tabs"> ${token.codeblocks

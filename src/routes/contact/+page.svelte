@@ -1,108 +1,192 @@
 <script lang="ts">
-  import Seo from "$lib/Seo.svelte"
-  import { site } from "$lib/seo"
+  import Seo from "#lib/Seo.svelte"
+  import Mark from "#lib/brand/Mark.svelte"
+  import { site } from "#lib/seo.ts"
+
+  const steps = [
+    {
+      n: "01",
+      title: "Intro call",
+      body: "30 minutes, free. You describe the product, the stack and what keeps breaking. I tell you honestly whether I'm the right fit.",
+    },
+    {
+      n: "02",
+      title: "Audit",
+      body: "I review your current tests, CI pipeline and release process, then come back with a prioritized list of what to fix first and why.",
+    },
+    {
+      n: "03",
+      title: "Build & hand over",
+      body: "I build the automation and the pipeline gates alongside your team, document them, and leave something your engineers can own.",
+    },
+  ]
+
+  const logistics = [
+    ["Engagement", "Direct contract, no agency in the middle"],
+    ["Location", "Remote from Brazil (UTC−3)"],
+    ["Overlap", "A full US working day, East Coast to Pacific"],
+    ["Invoicing", `Through ${site.legalEntity.name}, registered in Ireland`],
+  ]
 </script>
 
 <Seo
-  title="Contact Me - Mike Sell"
-  description="Get in touch with Mike Sell for SDET, test automation, and QA consulting opportunities."
+  title="Work with me · Senior SDET contractor | Crashnaut"
+  description="Hire Mike Sell, a senior SDET contractor, for Playwright test automation, CI/CD pipelines and FinTech systems testing. Remote, with US hours overlap."
   canonical={`${site.url}/contact`}
 />
 
-<section>
-  <h1>Contact Me</h1>
-
-  <p>
-    I'm always interested in connecting with fellow professionals in the SDET
-    and test automation space. Whether you have questions about my work, want to
-    discuss potential opportunities, or just want to chat about testing
-    strategies, I'd love to hear from you.
-  </p>
-
-  <div class="contact-methods">
-    <div class="contact-method">
-      <h2>Schedule a Call</h2>
-      <p>
-        Ready to discuss your project? Book a free consultation call to discuss
-        your testing needs and how I can help.
-      </p>
-      <a
-        href="https://calendly.com/mikesell404"
-        class="cta-secondary mark-hover"
-        rel="external"
+<div class="container narrow page">
+  <header class="head">
+    <p class="telemetry">
+      <span class="status-dot" aria-hidden="true"></span> Taking new contracts
+    </p>
+    <h1>Work with me</h1>
+    <p class="lede">
+      I help FinTech teams ship faster without shipping bugs: test automation
+      architecture, CI/CD integration, and testing for payments, compliance and
+      data integrity.
+    </p>
+    <div class="actions">
+      <a class="btn btn-primary" href={site.calendly} rel="external"
+        >Book a 30-min call</a
       >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-miterlimit="10"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M15.6947 13.7H15.7037M15.6947 16.7H15.7037M11.9955 13.7H12.0045M11.9955 16.7H12.0045M8.29431 13.7H8.30329M8.29431 16.7H8.30329"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-        Book a Call
-      </a>
+      <a class="btn btn-ghost" href={site.linkedin} rel="external"
+        >Message me on LinkedIn</a
+      >
     </div>
-  </div>
+  </header>
 
-  <p>
-    Available for <strong>direct contracting</strong>. I work remotely from
-    Brazil, while maintaining US market standards and timezone compatibility.
-  </p>
-</section>
+  <section aria-labelledby="how-title">
+    <h2 id="how-title">How an engagement runs</h2>
+    <ol class="steps">
+      {#each steps as step}
+        <li>
+          <span class="telemetry">Step {step.n}</span>
+          <h3>{step.title}</h3>
+          <p>{step.body}</p>
+        </li>
+      {/each}
+    </ol>
+  </section>
+
+  <section aria-labelledby="log-title">
+    <h2 id="log-title">Logistics</h2>
+    <dl class="spec">
+      {#each logistics as [k, v]}
+        <div>
+          <dt class="telemetry">{k}</dt>
+          <dd>{v}</dd>
+        </div>
+      {/each}
+    </dl>
+  </section>
+
+  <section class="sign-off">
+    <Mark size={36} />
+    <p>
+      Not ready for a call? Read the <a class="link" href="/blog">crash log</a>
+      to see how I think about testing, or find the code on
+      <a class="link" href={site.github} rel="external">GitHub</a>.
+    </p>
+  </section>
+</div>
 
 <style>
-  section {
-    margin-top: 2em;
+  .page {
+    padding-top: clamp(2.5rem, 6vw, 4.5rem);
   }
 
-  .contact-methods {
+  .page > * + * {
+    margin-top: 3.5rem;
+  }
+
+  .head > * + * {
+    margin-top: 1rem;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 1.5rem + 3vw, 3.4rem);
+    letter-spacing: -0.03em;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .lede {
+    color: var(--ink-2);
+    font-size: 1.15rem;
+    max-width: 55ch;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    padding-top: 0.5rem;
+  }
+
+  .steps {
+    list-style: none;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--spacing-large);
-    margin: var(--spacing-large) 0;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    counter-reset: step;
   }
 
-  .contact-method {
-    padding: var(--spacing);
-    border: 1px solid var(--text-color-subtle);
-    border-radius: 8px;
-    transition: all 0.2s ease;
+  .steps li {
+    padding: 1.25rem;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--signal);
+    border-radius: var(--radius);
+    background: var(--surface);
   }
 
-  .contact-method:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-color: var(--accent-color);
+  .steps li > * + * {
+    margin-top: 0.5rem;
   }
 
-  .contact-method h2 {
-    margin-top: 0;
-    margin-bottom: var(--spacing-half);
+  .steps h3 {
+    font-size: 1.1rem;
   }
 
-  .contact-method p {
-    margin-bottom: var(--spacing);
-    color: var(--text-color-light);
+  .steps p {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+    line-height: 1.6;
   }
 
-  @media (max-width: 768px) {
-    .contact-methods {
+  .spec {
+    border-top: 2px solid var(--ink);
+  }
+
+  .spec > div {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+
+  .sign-off {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.25rem;
+    border: 1px dashed var(--ink-3);
+    border-radius: var(--radius);
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 760px) {
+    .steps {
       grid-template-columns: 1fr;
+    }
+    .spec > div {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
     }
   }
 </style>

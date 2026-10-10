@@ -1,242 +1,217 @@
 <script lang="ts">
-  import Seo from "$lib/Seo.svelte"
-  import { humanDate } from "$lib/formatters"
-  import { page } from "$app/stores"
-  import { goto } from "$app/navigation"
   import { onMount } from "svelte"
-  import { site } from "$lib/seo"
+  import { goto } from "$app/navigation"
+  import Seo from "#lib/Seo.svelte"
+  import PostRow from "#lib/PostRow.svelte"
+  import { humanDate } from "#lib/formatters.ts"
+  import { site } from "#lib/seo.ts"
 
   const { data } = $props()
-  const { posts, tags } = data
+  const { posts, tags } = $derived(data)
 
-  let filter = $state({
-    query: null,
-    from: null,
-    to: null,
-  })
-
-  const description = `${posts.length} notes about QA, SDET, test automation, and quality engineering`
+  let query = $state("")
+  let activeTag = $state<string | null>(null)
 
   onMount(() => {
-    filter = {
-      query: $page.url.searchParams.get("q"),
-      from: $page.url.searchParams.get("from"),
-      to: $page.url.searchParams.get("to"),
-    }
+    const params = new URLSearchParams(location.search)
+    query = params.get("q") ?? ""
+    activeTag = params.get("tag")
   })
 
-  $effect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (filter.query) {
-      params.set("q", filter.query)
-    } else {
-      params.delete("q")
-    }
-
-    goto(params.size ? `?${params.toString()}` : "?", {
-      noScroll: true,
-      replaceState: true,
-      keepFocus: true,
-    })
-  })
-
-  const queryParts = $derived(() => (filter.query || "").split(" "))
-
-  const filteredPosts = $derived(() => {
-    let filteredPosts = posts
-
-    if (filter.query) {
-      const parts = queryParts()
-      filteredPosts = posts.filter((p) => {
-        return parts.every(
-          (q) =>
-            p.tags.some((t) => match(t, q)) ||
-            like(p.title, q) ||
-            like(p.description, q),
-        )
-      })
-    }
-
-    if (filter.from) {
-      filteredPosts = filteredPosts.filter(
-        (p) => new Date(p.date) >= new Date(filter.from),
-      )
-    }
-
-    if (filter.to) {
-      filteredPosts = filteredPosts.filter(
-        (p) => new Date(p.date) <= new Date(filter.to),
-      )
-    }
-
-    return filteredPosts
-  })
-
-  function tagClicked(tag) {
-    if (filter.query === tag) {
-      filter.query = ""
-    } else if (queryParts().includes(tag)) {
-      filter.query = queryParts()
-        .filter((q) => q !== tag)
+  // Plain substring matching: user input never reaches a RegExp.
+  const terms = $derived(query.toLowerCase().split(/\s+/).filter(Boolean))
+  const filtered = $derived(
+    posts.filter((p) => {
+      if (activeTag && !p.tags.includes(activeTag)) return false
+      const haystack = [p.title, p.description, ...p.tags]
         .join(" ")
-    } else if (
-      queryParts().join(" ").toLowerCase().includes(tag.toLowerCase())
-    ) {
-      filter.query = `${filter.query.replace(new RegExp(tag, "ig"), "").trim()}`
-    } else {
-      filter.query = filter.query ? `${filter.query.trim()} ${tag}` : tag
-    }
+        .toLowerCase()
+      return terms.every((t) => haystack.includes(t))
+    }),
+  )
+
+  function syncUrl() {
+    const params = new URLSearchParams()
+    if (query) params.set("q", query)
+    if (activeTag) params.set("tag", activeTag)
+    goto(params.size ? `?${params}` : location.pathname, {
+      shallow: true,
+      replace: true,
+    })
   }
 
-  function like(text, value) {
-    return text.match(new RegExp(value, "i"))
-  }
-
-  function match(text, value) {
-    return text.match(new RegExp(`^${value}$`, "i"))
+  function toggleTag(tag: string) {
+    activeTag = activeTag === tag ? null : tag
+    syncUrl()
   }
 </script>
 
 <Seo
-  title="Blog - Mike Sell"
-  {description}
+  title="The crash log · Test automation & QA engineering blog | Crashnaut"
+  description={`${posts.length} field notes on Playwright, CI/CD and testing software that moves money, by senior SDET Mike Sell.`}
   canonical={`${site.url}/blog`}
-  keywords="SDET, QA, test automation, Playwright, CI/CD, Mike Sell, Crashnaut"
+  keywords="SDET blog, Playwright, test automation, CI/CD, QA engineering, FinTech testing"
 />
 
-<h1>Blog</h1>
+<div class="container narrow page">
+  <header class="head">
+    <p class="telemetry">Blog · {posts.length} runs logged</p>
+    <h1>The crash log</h1>
+    <p class="lede">
+      Field notes from breaking software on purpose: Playwright patterns, CI
+      pipelines, and the testing strategy behind them.
+    </p>
+  </header>
 
-<div class="mt-normal">
-  <input
-    type="search"
-    bind:value={filter.query}
-    placeholder="Search"
-    autocomplete="off"
-    aria-label="Search"
-  />
-  <div class="mt-0 search-info">
-    <div>
-      <small
-        >Found {filteredPosts().length} posts out of {posts.length} posts</small
+  <div class="filters">
+    <label class="search">
+      <span class="visually-hidden">Search posts</span>
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"
+        ><circle
+          cx="10.5"
+          cy="10.5"
+          r="6.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        /><path
+          d="m15.5 15.5 5 5"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        /></svg
       >
+      <input
+        type="search"
+        placeholder="Search posts"
+        autocomplete="off"
+        bind:value={query}
+        oninput={syncUrl}
+      />
+    </label>
+
+    <div class="tag-filter" role="group" aria-label="Filter by tag">
+      {#each tags as tag}
+        <button
+          type="button"
+          class="tag"
+          aria-pressed={activeTag === tag}
+          onclick={() => toggleTag(tag)}>{tag}</button
+        >
+      {/each}
     </div>
-    {#if filter.from}
-      <div class="mt-0"><small>From {filter.from}</small></div>
-    {/if}
-    {#if filter.to}
-      <div class="mt-0"><small>To {filter.to}</small></div>
-    {/if}
-    <small></small>
+
+    <p class="telemetry count" aria-live="polite">
+      {filtered.length} of {posts.length} posts
+    </p>
   </div>
-  {#each tags as tag}
-    <button
-      class={tag}
-      class:active={filter.query === tag ||
-        queryParts().join(" ").includes(tag) ||
-        queryParts().some((q) => match(q, tag))}
-      onclick={() => tagClicked(tag)}
-    >
-      {tag}
-    </button>
-  {/each}
+
+  {#if filtered.length}
+    <ul class="post-list">
+      {#each filtered as post (post.slug)}
+        <PostRow {...post} date={humanDate(post.date)} />
+      {/each}
+    </ul>
+  {:else}
+    <p class="empty">
+      No posts match that. <button
+        type="button"
+        class="link"
+        onclick={() => {
+          query = ""
+          activeTag = null
+          syncUrl()
+        }}>Clear filters</button
+      >
+    </p>
+  {/if}
 </div>
 
-<ul>
-  {#each filteredPosts() as post}
-    <li style:--accent-color={`var(--${post.color})`}>
-      <article>
-        <a href={`/blog/${post.slug}`} data-sveltekit-preload-data="hover">
-          <h2 style:--post-title="post-title-{post.slug}" class="mark-hover">
-            {post.title}
-          </h2>
-          <time datetime={post.date}>{humanDate(post.date)}</time>
-          <div>{post.description}</div>
-        </a>
-        <div>
-          <a
-            href={`/blog/${post.slug}`}
-            data-sveltekit-preload-data="hover"
-            class="bold mark-hover"
-          >
-            Read more</a
-          >
-          {#if post.tldr}
-            | <a
-              href={`/blog/${post.slug}?tldr=true`}
-              data-sveltekit-preload-data="hover"
-              class="bold mark-hover">Read TLDR</a
-            >
-          {/if}
-        </div>
-      </article>
-    </li>
-  {:else}Sorry, no posts matched your criteria...
-  {/each}
-</ul>
-
 <style>
-  button {
-    color: var(--text-color-light);
-    border: 1px solid transparent;
-    transition: color 0.2s ease;
+  .page {
+    padding-top: clamp(2.5rem, 6vw, 4.5rem);
   }
 
-  button:hover,
-  button.active {
-    color: var(--text-color);
-    border-color: hsla(var(--accent-color), 0.8);
+  .head > * + * {
+    margin-top: 0.75rem;
   }
 
-  button.active {
-    background-color: hsla(var(--accent-color), 0.1);
-    border-color: hsla(var(--accent-color), 0.8);
+  h1 {
+    font-size: clamp(2.2rem, 1.5rem + 3vw, 3.4rem);
+    letter-spacing: -0.03em;
   }
 
-  li {
-    list-style: none;
-    padding: 1em;
-    border: 1px solid;
-    border-left-width: 8px;
-    border-radius: 3px;
-    border-color: hsla(var(--accent-color), 0.2);
+  .lede {
+    color: var(--ink-2);
+    font-size: 1.1rem;
+    max-width: 55ch;
   }
 
-  li:hover {
-    transition-property:
-      background-color, border-color, border-width, transform;
-    transition-duration: 0.2s;
-    transition-timing-function: ease-out;
-    transform: scale(1.05);
-    background-color: hsla(var(--accent-color), 0.1);
-    border-color: hsla(var(--accent-color), 0.8);
-    border-left-width: 16px;
+  .filters {
+    margin-block: 2rem 1rem;
   }
 
-  li + li {
-    margin-top: var(--spacing);
+  .filters > * + * {
+    margin-top: 0.9rem;
   }
 
-  li div {
-    margin-top: var(--spacing-small);
-    color: var(--text-color-light);
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 0.9rem;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink-3);
   }
 
-  time {
-    color: var(--text-color-light);
+  .search:focus-within {
+    box-shadow: 4px 4px 0 var(--signal);
   }
 
-  .search-info {
-    color: var(--text-color-light);
+  .search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+
+  .tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .tag-filter .tag {
+    cursor: pointer;
+  }
+
+  .tag-filter .tag:hover {
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+
+  .tag-filter .tag[aria-pressed="true"] {
+    background: var(--signal);
+    border-color: #141414;
+    color: #141414;
+  }
+
+  .count {
     text-align: right;
   }
 
-  article {
-    font-weight: 300;
+  .post-list {
+    list-style: none;
+    border-top: 2px solid var(--ink);
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    h2 {
-      view-transition-name: var(--post-title);
-    }
+  .empty {
+    padding-block: 2rem;
+    color: var(--ink-2);
   }
 </style>

@@ -1,13 +1,11 @@
 ---
 title: "Playwright BDD: Combining Cucumber with Page Objects"
 slug: playwright-bdd
-description: "A production-ready Playwright BDD boilerplate that solves the maintainability issues of functional test utilities by combining Cucumber/Gherkin with the Page Object Model."
+description: "Combine Cucumber/Gherkin with the Page Object Model in Playwright so BDD suites stay maintainable instead of decaying into scattered utility functions."
 author: Mike Sell
 date: 2025-10-17T00:00:00.000Z
-tags: BDD, playwright
+tags: BDD, Playwright, Page Object Model, Cucumber
 ---
-
-# Playwright BDD: Combining Cucumber with Page Objects
 
 ## The Problem with Functional BDD Implementations
 
@@ -29,7 +27,7 @@ The answer is simple: combine the readability of BDD/Gherkin with the maintainab
 
 Write scenarios in business language:
 
-```yaml
+```gherkin
 Feature: User Login
 
   @login @smoke
@@ -56,6 +54,10 @@ export class LoginPage extends BasePage {
   }
 }
 ```
+
+:::note
+This example extends a `BasePage` for shared helpers like `fillInput`. My newer setup drops the base class entirely in favor of composition — small component objects and plain util functions — because inheritance trees get tangled as a suite grows. The BDD layer works the same either way; see [Vanilla Playwright with Page Object Model](/blog/vanilla-playwright-pom-setup) for the no-`BasePage` version.
+:::
 
 ### Step Definitions (The Glue)
 
@@ -196,7 +198,9 @@ I've created a complete boilerplate with:
 - GitHub Actions workflows
 - Comprehensive documentation
 
-**Get it here:** [GitHub - playwright-bdd-boilerplate](https://github.com/crashnaut/playwright-pom-boilerplate)
+**Get it here:** [GitHub - crashnaut/playwright-pom-boilerplate](https://github.com/crashnaut/playwright-pom-boilerplate)
+
+<!-- TODO(mike): as of 2026-10 the public repo has no playwright-bdd dependency, no features/ folder and no `bddgen` script (package.json only has playwright test scripts + docker). Either push the BDD version to the repo or reword "I've created a complete boilerplate with: Playwright BDD..." and the `pnpm bddgen` step below (same in tldr.md). -->
 
 ```bash
 git clone https://github.com/crashnaut/playwright-pom-boilerplate
@@ -232,7 +236,7 @@ That's it. Five minutes from clone to running tests.
 
 - Pure technical testing
 - Don't need Gherkin scenarios
-- Faster test execution
+- Want one less layer (no `bddgen` step, no step-definition indirection)
 - Only QA/developers write tests
 
 ## Lessons Learned
@@ -255,7 +259,7 @@ The "works on my machine" problem is real. Docker ensures consistency.
 
 ## Resources
 
-- [Full boilerplate with examples](#)
+- [Full boilerplate with examples](https://github.com/crashnaut/playwright-pom-boilerplate)
 - [Playwright BDD docs](https://vitalets.github.io/playwright-bdd/)
 - [Cucumber best practices](https://cucumber.io/docs/bdd/)
 
@@ -263,4 +267,4 @@ The "works on my machine" problem is real. Docker ensures consistency.
 
 BDD doesn't have to mean unmaintainable test code. By combining Gherkin with proper Page Objects, you get the best of both worlds: readable tests that stakeholders understand, and maintainable code that scales with your application.
 
-_More posts coming on Playwright patterns, Docker testing strategies, and CI/CD optimization. [Follow me](#) for updates._
+If only engineers write your tests, the same architecture works without the Gherkin layer — I covered that in [Vanilla Playwright with Page Object Model](/blog/vanilla-playwright-pom-setup).
