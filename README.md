@@ -39,8 +39,12 @@ Markdown extras: `:::tip|note|warning|danger|success`, `:::compare` with
 
 ```bash
 npm run lint:posts          # fit check: description, tags, slug, share card, TODO(, internal links
+npm run test:unit           # vitest: src/**/*.test.ts (post signals, sigil, map layout)
 npm run build && npm test   # Playwright against the production build, incl. axe checks
 ```
+
+If you change the sigil maths in `src/lib/post-signals.ts`, run
+`npm run og -- --force` and commit the regenerated cards in `static/og/`.
 
 ## Deploy
 

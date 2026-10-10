@@ -134,6 +134,38 @@ for a log scale. Numbers must be real and sourced, or clearly labelled as an exa
 
 Callouts: `:::tip`, `:::note`, `:::warning`, `:::danger`, `:::success`, each closed with `:::`.
 
+**Computed visuals (no authoring needed)**
+
+These are drawn from each post at build time by `src/lib/post-signals.ts`. They're
+deterministic: the same post always gives the same output. They add no client-side
+logic. You don't write them, but your structure feeds them, so headings and blocks
+should be real ones.
+
+- `CrashReport.svelte`: the flight-recorder strip in the post header, e.g. "Run 006 · 6
+  zones · 9 samples (ts 6, py 2) · 3 diagrams · 1 compare". Zones are H2s, samples are
+  fenced code blocks by language, diagrams are `figure.diagram` plus bar charts, compares
+  are `:::compare` blocks.
+- `brand/Sigil.svelte`: a per-post variant of the crash-test mark, seeded by an FNV-1a
+  hash of the slug. Rings = H2 count (1–5). The wedge pattern depends on the seed and
+  tags. One red impact dot per H2, at an angle set by that section's share of the words.
+  It's shown in post rows (30px) and the post header (48px). `scripts/og.mjs` imports the
+  same module for share cards.
+- `PostRibbon.svelte`: the 6px strip in each post row, with one segment per top-level
+  block (consecutive prose merges). Widths follow the estimated rendered height. Colours
+  are prose = muted ink, code = `--info`, diagram = `--signal`, callout = `--warn`,
+  compare = `--pass`.
+- `ImpactMap.svelte`: "Map of the crash log" on `/blog`. Posts are dots sized by reading
+  time and grouped by first tag around a ring. Lines are internal links. Every label is
+  radial and owns one slot, so labels can't overlap; titles are cut at 28 characters.
+  Below 600px it becomes a grouped list.
+- `ReadingGauge.svelte`: the coverage dial from
+  [the coverage post](../blog/coverage-is-a-health-signal/index.md), shrunk to sit by the
+  byline. The needle shows reading minutes on a 0–20 scale.
+
+Components follow the same colour rule as diagrams: CSS variables from
+`src/routes/layout.css` only. The share cards in `scripts/og.mjs` are the one place
+hex values are allowed.
+
 ## 4. Facts and code
 
 - Fetch the official docs for every API, flag, config key and version you mention, and
