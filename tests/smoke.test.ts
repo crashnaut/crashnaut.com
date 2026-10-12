@@ -99,7 +99,7 @@ test("compare blocks render as HTML, not raw delimiters", async ({
   expect(html).not.toContain(":::compare")
 })
 
-test("diagrams follow the house rules (docs/STYLE.md §3)", async ({
+test("diagrams follow the house rules (docs/STYLE.md §4)", async ({
   request,
 }) => {
   const posts = (await sitemapPaths(request)).filter((p) =>

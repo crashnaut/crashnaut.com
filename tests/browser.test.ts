@@ -1,10 +1,11 @@
 import { test, expect } from "@playwright/test"
 import AxeBuilder from "@axe-core/playwright"
 
-import { readdirSync } from "fs"
+import { existsSync, readdirSync } from "fs"
 
+// Only real posts: empty folders left behind by branch switches aren't built.
 const posts = readdirSync("blog", { withFileTypes: true })
-  .filter((d) => d.isDirectory())
+  .filter((d) => d.isDirectory() && existsSync(`blog/${d.name}/index.md`))
   .map((d) => `/blog/${d.name}`)
 const pages = ["/", "/blog", "/contact", ...posts]
 

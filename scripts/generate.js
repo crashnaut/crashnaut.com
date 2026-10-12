@@ -75,9 +75,16 @@ opinion piece. Cut copy to fit. -->
 <!-- TODO(write): One sentence tying this to shipping software that moves money:
 payments, ledgers, compliance or release speed. -->
 
-<!-- TODO(write): 2–3 internal links to related posts, e.g.
+Related: <!-- TODO(write): 2–3 internal links to related posts, e.g.
 [Run Playwright Tests from a Separate Repository in CI](/blog/cross-repo-playwright-ci).
-The site adds the hire-me CTA and related posts automatically. -->
+Links go here only, never mid-paragraph. The site adds the hire-me CTA and related
+posts automatically. -->
+
+## Sources
+
+<!-- TODO(write): Cite claims in the prose as plain [1], [2], numbered by first
+use, with no names or URLs in the prose (docs/STYLE.md §5). List them here in the
+same order: 1. Organization or author, "Title", Site, date. <URL> -->
 `
 
 const tldrTemplate = () => `## TL;DR

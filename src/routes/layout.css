@@ -482,6 +482,34 @@ time {
   color: var(--ink-3);
 }
 
+/* Numbered citations: [2] in the prose, linked to ## Sources (src/lib/citation.ts) */
+.cite {
+  font-family: var(--mono-font);
+  font-size: 0.7em;
+  line-height: 0;
+  vertical-align: super;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.prose .cite a,
+.prose a.cite-back {
+  background: none;
+  color: var(--signal-text);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.prose .cite a:hover,
+.prose a.cite-back:hover {
+  text-decoration: underline;
+}
+
+.prose li[id^="source-"]:target {
+  background: hsla(var(--signal-hsl), 0.14);
+  outline: 4px solid hsla(var(--signal-hsl), 0.14);
+}
+
 .prose hr {
   border: 0;
   height: 6px;

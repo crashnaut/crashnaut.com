@@ -3,8 +3,10 @@
 Guide for AI agents working on crashnaut.com: Mike Sell's site and blog about test
 automation, CI/CD and FinTech testing. SvelteKit, prerendered to static HTML, served by
 Firebase Hosting. The full editorial method lives in
-[`docs/EDITORIAL-PLAYBOOK.md`](docs/EDITORIAL-PLAYBOOK.md); this file is the short version
-every session starts from.
+[`docs/EDITORIAL-PLAYBOOK.md`](docs/EDITORIAL-PLAYBOOK.md) and the voice in
+[`docs/STYLE.md`](docs/STYLE.md), which is drawn from Mike's pre-AI writing. Read both
+before writing or editing a post. This file is the short version every session starts
+from.
 
 ## Working rules
 
@@ -44,13 +46,16 @@ published post. See playbook §2 for the full rules.
 
 - **Title:** a claim or a searchable how-to, never a topic.
 - **Description:** one sentence, 160 characters max.
-- **Opening:** 2–4 sentences: the bug or cost, who hits it, what you'll leave with.
+- **Opening:** 2–4 sentences: the bug or cost, who hits it, what you'll leave with. The
+  first sentence makes the reader curious.
 - **Body:** H2 sections that work as a table of contents, one idea each.
 - **Proof:** runnable code, a real number, a diagram, or a `:::compare` block.
 - **Takeaway:** one sentence in a `:::tip` block, at most once per post.
 - **Why it matters for your team:** one sentence tying it to software that moves money.
 - **TL;DR:** `tldr.md` with just the code and the steps.
-- **Links:** 2–3 internal links to related posts.
+- **Links:** 2–3 internal links to related posts, in a closing "Related" line. No links
+  or author names in the body: cite with [n] and list sources under `## Sources`
+  (`docs/STYLE.md` §5).
 - **Tags:** 2–4, reused from existing tags where possible.
 
 Length: 900–1,800 words for a tutorial, 700–1,200 for an opinion piece. Cut copy to fit;
@@ -95,7 +100,7 @@ never shrink type. US spelling; product names as their vendors write them.
 | `scripts/og.mjs`            | `npm run og`: share cards and favicons (design system)            |
 | `static/og/`                | Generated share cards: commit them, don't edit them               |
 | `tests/`                    | Playwright: request-level smoke checks, browser tests, axe        |
-| `docs/`                     | Audit and editorial playbook                                      |
+| `docs/`                     | Audit, editorial playbook and house style (`STYLE.md`)            |
 | `.github/workflows/ci.yml`  | Check, lint, build, test; Firebase preview per PR, live on `main` |
 | `firebase.json`             | Hosting config, redirects and headers                             |
 
