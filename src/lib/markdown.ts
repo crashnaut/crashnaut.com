@@ -23,6 +23,7 @@ import { codeGroup } from "./code-block"
 import { customBlock } from "./custom-block"
 import { compareBlock } from "./compare-block"
 import { barChart } from "./bar-chart"
+import { anchorSources, citation, resetCitations } from "./citation"
 import type { TOC } from "./models"
 
 fs.writeFileSync("src/routes/dark.theme.css", createStyle("dark", pallete))
@@ -32,7 +33,7 @@ fs.writeFileSync(
 )
 
 marked.use({
-  extensions: [codeGroup, customBlock, compareBlock, barChart],
+  extensions: [codeGroup, customBlock, compareBlock, barChart, citation],
 })
 const renderer = new marked.Renderer()
 
@@ -100,6 +101,7 @@ export function parseFileToHtmlAndMeta(file: string): {
 } {
   const markdown = fs.readFileSync(file, "utf-8")
   const { content, metadata: rawMeta } = extractFrontmatter(markdown)
+  resetCitations()
   const metadata = rawMeta as ParsedMarkdownMetadata
   metadata.outgoingSlugs = []
   metadata.toc = []
@@ -327,12 +329,14 @@ export function parseFileToHtmlAndMeta(file: string): {
 		</h${level}>`
   }
 
-  const html = (
-    marked(
-      content.replace(/^\t+/gm, (match) => match.split("\t").join("  ")),
-      { renderer },
-    ) as string
-  ).replace(/^\s*<h1>[\s\S]*?<\/h1>/, "")
+  const html = anchorSources(
+    (
+      marked(
+        content.replace(/^\t+/gm, (match) => match.split("\t").join("  ")),
+        { renderer },
+      ) as string
+    ).replace(/^\s*<h1>[\s\S]*?<\/h1>/, ""),
+  )
   return { html, markdown: content, metadata, assetsSrc }
 }
 

@@ -120,7 +120,60 @@ function lintPost({ folder, attributes, body, bodyBegin }) {
     }
   }
 
+  lintCitations(body, errors, warnings)
+
   return { errors, warnings }
+}
+
+// Posts that cite with [n] follow docs/STYLE.md §5: every number has an entry in
+// an ordered `## Sources` list, numbers follow first use, and links stay out of
+// the body (only the closing "Related:" line and Sources may link). Older posts
+// that still use inline links have no [n] and are skipped until refreshed.
+const CITE = /\[(\d{1,3}(?:\s*,\s*\d{1,3})*)\](?![([:])/g
+
+function lintCitations(body, errors, warnings) {
+  const [prose, sources] = body.split(/^## Sources\s*$/m)
+  const cited = []
+  for (const [, group] of stripCode(prose).matchAll(CITE)) {
+    for (const n of group.split(",")) cited.push(Number(n.trim()))
+  }
+  if (cited.length === 0) return
+
+  if (sources === undefined) {
+    errors.push("cites [n] but has no ## Sources section")
+    return
+  }
+  const count = (sources.split(/^## /m)[0].match(/^\s*\d+\.\s/gm) ?? []).length
+  if (count === 0) {
+    errors.push("## Sources needs an ordered list (1. 2. 3.) to match the [n]")
+  }
+  for (const n of new Set(cited)) {
+    if (n < 1 || n > count) {
+      errors.push(
+        `cites [${n}] but Sources has ${count} entr${count === 1 ? "y" : "ies"}`,
+      )
+    }
+  }
+  for (let n = 1; n <= count; n++) {
+    if (!cited.includes(n)) warnings.push(`source ${n} is never cited`)
+  }
+  const firstUse = [...new Set(cited)]
+  if (firstUse.some((n, i) => i > 0 && n < firstUse[i - 1])) {
+    warnings.push(
+      `sources aren't numbered in order of first use (first cited: ${firstUse.join(", ")})`,
+    )
+  }
+
+  const bodyLinks = stripCode(prose)
+    .split("\n")
+    .filter((line) => !/^\s*Related:/.test(line))
+    .join("\n")
+    .match(/\]\(\s*<?(?:https?:|\/|\.\.\/)[^)]*\)|<a\s[^>]*href=/g)
+  if (bodyLinks?.length) {
+    errors.push(
+      `${bodyLinks.length} link${bodyLinks.length > 1 ? "s" : ""} in the body: cite with [n], or move internal links to the "Related:" line`,
+    )
+  }
 }
 
 const color = process.stdout.isTTY

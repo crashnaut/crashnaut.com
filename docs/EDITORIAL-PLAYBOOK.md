@@ -35,24 +35,27 @@ exactly what the blog was missing.
 
 Consistency is what makes a publication feel like one. Every post has these:
 
-| Slot                             | Rule                                                                                                         |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Title**                        | A claim or a searchable how-to, never a topic. "How to Test Idempotency in Payment APIs", not "Idempotency". |
-| **Description**                  | ≤160 characters, one sentence, shown in search results and share cards.                                      |
-| **Opening**                      | 2–4 sentences: the bug or cost, who hits it, what you'll leave with. No throat-clearing.                     |
-| **Body**                         | H2 sections that work as a table of contents. One idea per section.                                          |
-| **Proof**                        | At least one of: runnable code, a real number, a diagram, or a `:::compare` do/don't block.                  |
-| **The takeaway**                 | One sentence, at most once per post, in a `:::tip` block.                                                    |
-| **Why it matters for your team** | One sentence tying it to shipping software that moves money: payments, ledgers, compliance, release speed.   |
-| **TL;DR**                        | `tldr.md` with just the code and the steps, for readers who want the answer.                                 |
-| **Links**                        | 2–3 internal links to related posts. The site adds the hire-me CTA and related posts automatically.          |
-| **Tags**                         | 2–4, reused from existing tags where possible.                                                               |
+| Slot                             | Rule                                                                                                                                            |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Title**                        | A claim or a searchable how-to, never a topic. "How to Test Idempotency in Payment APIs", not "Idempotency".                                    |
+| **Description**                  | ≤160 characters, one sentence, shown in search results and share cards.                                                                         |
+| **Opening**                      | 2–4 sentences: the bug or cost, who hits it, what you'll leave with. The first sentence makes the reader curious. No throat-clearing.           |
+| **Body**                         | H2 sections that work as a table of contents. One idea per section.                                                                             |
+| **Proof**                        | At least one of: runnable code, a real number, a diagram, or a `:::compare` do/don't block.                                                     |
+| **The takeaway**                 | One sentence, at most once per post, in a `:::tip` block.                                                                                       |
+| **Why it matters for your team** | One sentence tying it to shipping software that moves money: payments, ledgers, compliance, release speed.                                      |
+| **TL;DR**                        | `tldr.md` with just the code and the steps, for readers who want the answer.                                                                    |
+| **Links**                        | 2–3 internal links in a closing "Related" line. No links or names in the body: cite with [n] and list sources under `## Sources` (STYLE.md §5). |
+| **Tags**                         | 2–4, reused from existing tags where possible.                                                                                                  |
 
 **Length budget:** 900–1,800 words for a tutorial, 700–1,200 for an opinion piece. If it's
 longer, cut it: the newsletter fails its build on overflow and fixes it by cutting copy,
 never by shrinking type. Same rule here.
 
 ## 3. Voice
+
+The full voice guide, drawn from Mike's pre-AI writing, is [`STYLE.md`](STYLE.md). In
+short: define the term, lay out the options, measure, report what failed, give a verdict.
 
 - Headlines are claims, not topics.
 - Write for a senior engineer or engineering manager at a FinTech company with a test-suite
@@ -133,7 +136,7 @@ tldr.md). Today is {TODAY}. Verify every factual claim, version number, API name
 flag, config key, quote and statistic against a page you fetch with WebFetch/WebSearch.
 Trust only fetched pages. Also check that every code snippet uses APIs that exist in the
 current docs, with the right signatures, and that commands would actually run. Flag
-allegations stated as fact, numbers without a source, links that don't support their
+allegations stated as fact, numbers without a source, [n] citations that don't support their
 sentence, outdated versions (e.g. EOL Node, deprecated actions), and claims the author
 can't know.
 

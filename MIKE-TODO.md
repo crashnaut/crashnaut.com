@@ -5,9 +5,9 @@ Delete items as you finish them.
 
 Related docs:
 
-- [`docs/AUDIT-2026-10.md`](docs/AUDIT-2026-10.md): the full audit, covering code,
-  UI/UX, per-post verdicts, ranked drafts and what to write next, with each item marked
-  done or still to do.
+- [`docs/AUDIT-2026-10.md`](docs/AUDIT-2026-10.md): what's still open from the audit:
+  accounts, post fixes, drafts to write and what to write next. Finished items are in
+  git history.
 - [`docs/EDITORIAL-PLAYBOOK.md`](docs/EDITORIAL-PLAYBOOK.md): how to produce posts
   (pipeline, fixed slots, voice, and the research / fact-check / design-review prompts).
 - Private brown-bag study notes, with the original prompts verbatim, are kept outside
@@ -118,7 +118,7 @@ each one and correct anything that doesn't sound like you.
 13. Contract Testing Payment Integrations with Pact
 
 Your primary language is TypeScript. Python/pytest, GraphQL and Neo4j are trends worth
-covering (see `docs/STYLE.md` §4). BDD is no longer recommended as a default.
+covering (see `docs/STYLE.md` §5). BDD is no longer recommended as a default.
 
 To publish: `npm run g "Title"` → write it in `drafts/` → move the folder to
 `blog/` → `npm run og` → `npm run lint:posts` → commit the post and the PNG.
