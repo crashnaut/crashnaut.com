@@ -84,7 +84,7 @@ test("posts show their real publish date, not the formatting commit", async ({
   const html = await (
     await request.get("/blog/vanilla-playwright-pom-setup")
   ).text()
-  expect(html).toContain("Nov 2, 2025")
+  expect(html).toContain("Jan 16, 2026")
   expect(html).not.toMatch(/>\s*Modified/)
 })
 

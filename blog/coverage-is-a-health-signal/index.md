@@ -3,7 +3,7 @@ title: "Coverage Is a Health Signal, Not a Per-PR Gate"
 slug: coverage-is-a-health-signal
 description: "Making every PR raise the coverage number rewards padded tests. Gate the patch, read the project trend, and coverage starts telling you the truth."
 author: Mike Sell
-date: 2026-10-10T12:00:00.000Z
+date: 2026-06-21T00:00:00.000Z
 tags: Testing Strategy, CI, GitHub Actions, Code Coverage
 ---
 

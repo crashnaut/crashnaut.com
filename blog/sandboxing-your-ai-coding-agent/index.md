@@ -3,7 +3,8 @@ title: "How to Sandbox Your AI Coding Agent with a Dev Container"
 slug: sandboxing-your-ai-coding-agent
 description: "Run your AI coding agent without permission prompts but inside a dev container, with deny rules, read-only mounts, an egress allowlist and no prod credentials."
 author: Mike Sell
-date: 2026-10-10T15:00:00.000Z
+date: 2026-08-27T00:00:00.000Z
+updated: 2026-10-10T00:00:00.000Z
 tags: AI, Developer Environment, Testing
 ---
 

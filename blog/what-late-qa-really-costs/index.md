@@ -3,7 +3,7 @@ title: "What Late QA Really Costs (It's Not the 100x Curve)"
 slug: what-late-qa-really-costs
 description: "The 1-10-100 bug curve is folklore. Late QA still costs you, in rework, escaped defects and regulator fines. Here's the evidence, charted."
 author: Mike Sell
-date: 2026-10-10T16:00:00.000Z
+date: 2026-10-10T00:00:00.000Z
 tags: QA, Testing Strategy, FinTech
 ---
 
