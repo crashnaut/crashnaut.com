@@ -3,7 +3,8 @@ title: "How to Test Feature Flags Without Testing 2ⁿ Combinations"
 slug: the-feature-flag-nightmare
 description: "Every feature flag doubles the test surface: n flags means 2ⁿ configurations. A QA view of why flags are hell to test, and how pairwise testing helps."
 author: Mike Sell
-date: 2026-03-14T00:00:00.000Z
+date: 2026-02-07T00:00:00.000Z
+updated: 2026-10-09T00:00:00.000Z
 tags: Testing Strategy, Feature Flags, QA, Pairwise Testing
 ---
 

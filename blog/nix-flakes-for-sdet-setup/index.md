@@ -4,6 +4,7 @@ slug: nix-flakes-for-sdet-setup
 description: "Set up a reproducible SDET workstation on macOS, Linux or WSL2 in about five minutes with Nix Flakes, then reuse it in CI with nix develop."
 author: Mike Sell
 date: 2025-10-13T00:00:00.000Z
+updated: 2026-10-09T00:00:00.000Z
 tags: Nix, Developer Environment, CI
 ---
 

@@ -3,7 +3,8 @@ title: "How to Cut QA Busywork with Rules Files, Agent Skills and MCP Servers"
 slug: mcp-servers-rules-and-skills-for-qa
 description: "A rules file for house style, skills for routine workflows, an MCP server for Jira: copy-paste setup for Claude Code and Cursor, with writes on a leash."
 author: Mike Sell
-date: 2026-10-10T14:00:00.000Z
+date: 2026-08-06T00:00:00.000Z
+updated: 2026-10-10T00:00:00.000Z
 tags: AI, QA, Playwright
 ---
 
