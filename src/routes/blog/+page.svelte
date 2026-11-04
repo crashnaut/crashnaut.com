@@ -64,10 +64,6 @@
     </p>
   </header>
 
-  <div class="map-wrap">
-    <ImpactMap map={data.map} />
-  </div>
-
   <div class="filters">
     <label class="search">
       <span class="visually-hidden">Search posts</span>
@@ -130,6 +126,10 @@
       >
     </p>
   {/if}
+
+  <div class="map-wrap">
+    <ImpactMap map={data.map} />
+  </div>
 </div>
 
 <style>
@@ -153,7 +153,7 @@
   }
 
   .map-wrap {
-    margin-top: 2.5rem;
+    margin-top: 3.5rem;
   }
 
   .filters {

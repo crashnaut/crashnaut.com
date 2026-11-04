@@ -104,12 +104,10 @@ test.describe("mobile", () => {
     })
   }
 
-  test("the impact map collapses to a list", async ({ page }) => {
+  test("the impact map is hidden on phones", async ({ page }) => {
     await page.goto("/blog")
-    await expect(page.locator(".impact figure.map")).toBeHidden()
-    const list = page.locator(".impact .map-list")
-    await expect(list).toBeVisible()
-    expect(await list.getByRole("link").count()).toBe(posts.length)
+    await expect(page.locator(".post-list > li").first()).toBeVisible()
+    await expect(page.locator(".impact")).toBeHidden()
   })
 })
 
