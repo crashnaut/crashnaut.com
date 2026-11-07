@@ -124,18 +124,3 @@ function toISO(date: string | Date) {
     ? new Date(date).toISOString()
     : date.toISOString()
 }
-
-export function orderTags(tags: string[]) {
-  return Object.entries<number>(
-    tags.reduce(
-      (acc, tag) => {
-        acc[tag] = (acc[tag] || 0) + 1
-        return acc
-      },
-      {} as Record<string, number>,
-    ),
-  )
-    .sort(([v1, c1], [v2, c2]) => c2 - c1 || v1.localeCompare(v2))
-    .slice(0, 15)
-    .map(([v]) => v)
-}

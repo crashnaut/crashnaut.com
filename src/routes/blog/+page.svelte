@@ -8,7 +8,7 @@
   import { site } from "#lib/seo.ts"
 
   const { data } = $props()
-  const { posts, tags } = $derived(data)
+  const { posts } = $derived(data)
 
   let query = $state("")
   let activeTag = $state<string | null>(null)
@@ -41,8 +41,8 @@
     })
   }
 
-  function toggleTag(tag: string) {
-    activeTag = activeTag === tag ? null : tag
+  function clearTag() {
+    activeTag = null
     syncUrl()
   }
 </script>
@@ -91,19 +91,12 @@
       />
     </label>
 
-    <div class="tag-filter" role="group" aria-label="Filter by tag">
-      {#each tags as tag}
-        <button
-          type="button"
-          class="tag"
-          aria-pressed={activeTag === tag}
-          onclick={() => toggleTag(tag)}>{tag}</button
-        >
-      {/each}
-    </div>
-
     <p class="telemetry count" aria-live="polite">
       {filtered.length} of {posts.length} posts
+      {#if activeTag}
+        tagged {activeTag} ·
+        <button type="button" class="link" onclick={clearTag}>Show all</button>
+      {/if}
     </p>
   </div>
 
@@ -187,27 +180,6 @@
     background: transparent;
     font-size: 1rem;
     color: var(--ink);
-  }
-
-  .tag-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-  }
-
-  .tag-filter .tag {
-    cursor: pointer;
-  }
-
-  .tag-filter .tag:hover {
-    border-color: var(--ink-3);
-    color: var(--ink);
-  }
-
-  .tag-filter .tag[aria-pressed="true"] {
-    background: var(--signal);
-    border-color: #141414;
-    color: #141414;
   }
 
   .count {

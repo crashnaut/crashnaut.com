@@ -53,14 +53,24 @@ test("search tolerates regex characters and can be cleared", async ({
   expect(errors).toEqual([])
 })
 
-test("tag filter narrows the list and is shareable", async ({ page }) => {
-  await page.goto("/blog")
-  const total = await page.locator(".post-list > li").count()
-  await page.getByRole("button", { name: "Playwright", exact: true }).click()
-  await expect(page).toHaveURL(/tag=Playwright/)
-  const filtered = await page.locator(".post-list > li").count()
-  expect(filtered).toBeLessThanOrEqual(total)
+test("a post's tag link narrows the list until Show all", async ({ page }) => {
+  await page.goto("/blog/vanilla-playwright-pom-setup")
+  await page
+    .getByRole("list", { name: "Tags" })
+    .getByRole("link", { name: "Test Architecture", exact: true })
+    .click()
+  await expect(page).toHaveURL(/tag=Test(%20|\+)Architecture/)
+
+  const rows = page.locator(".post-list > li")
+  const count = page.locator(".count")
+  await expect(count).toContainText("tagged Test Architecture")
+  const filtered = await rows.count()
   expect(filtered).toBeGreaterThan(0)
+
+  await count.getByRole("button", { name: "Show all" }).click()
+  await expect(page).not.toHaveURL(/tag=/)
+  await expect(count).not.toContainText("tagged")
+  expect(await rows.count()).toBeGreaterThan(filtered)
 })
 
 test("TL;DR toggle swaps the post body", async ({ page }) => {
