@@ -1,5 +1,5 @@
 import { impactMap } from "#lib/post-signals.ts"
-import { orderTags, readPosts } from "./_posts"
+import { readPosts } from "./_posts"
 
 export async function load() {
   const posts = await readPosts()
@@ -17,7 +17,6 @@ export async function load() {
       ribbon: p.metadata.signals.ribbon,
       ribbonLabel: p.metadata.signals.ribbonLabel,
     })),
-    tags: orderTags(posts.flatMap((m) => m.metadata.tags)),
     map: impactMap(
       posts.map((p) => ({
         slug: p.metadata.slug,
