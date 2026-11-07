@@ -255,6 +255,10 @@ time {
   color: var(--ink-3);
 }
 
+.telemetry time {
+  font-size: inherit;
+}
+
 .telemetry b,
 .telemetry strong {
   color: var(--ink);
