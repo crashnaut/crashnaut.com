@@ -282,10 +282,11 @@ should be real ones.
   block (consecutive prose merges). Widths follow the estimated rendered height. Colours
   are prose = muted ink, code = `--info`, diagram = `--signal`, callout = `--warn`,
   compare = `--pass`.
-- `ImpactMap.svelte`: "Map of the crash log" on `/blog`. Posts are dots sized by reading
-  time and grouped by first tag around a ring. Lines are internal links. Every label is
-  radial and owns one slot, so labels can't overlap; titles are cut at 28 characters.
-  Below 600px it becomes a grouped list.
+- `ImpactMap.svelte`: "Map of the crash log" at the bottom of `/blog`, below the post
+  list. Posts are dots sized by reading time and grouped by first tag around a ring.
+  Lines are internal links. Every label is radial and owns one slot, so labels can't
+  overlap; titles are cut at 28 characters. Hidden below 600px, where labels would be
+  too small to read.
 - `ReadingGauge.svelte`: the coverage dial from
   [the coverage post](../blog/coverage-is-a-health-signal/index.md), shrunk to sit by the
   byline. The needle shows reading minutes on a 0–20 scale.

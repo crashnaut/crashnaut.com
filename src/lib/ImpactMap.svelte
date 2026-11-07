@@ -3,21 +3,6 @@
   import type { ImpactMap } from "#lib/post-signals.ts"
 
   let { map }: { map: ImpactMap } = $props()
-
-  const linkCount = $derived(
-    new Map(
-      map.nodes.map((n) => [
-        n.slug,
-        map.edges.filter((e) => e.from === n.slug || e.to === n.slug).length,
-      ]),
-    ),
-  )
-  const groups = $derived(
-    map.groups.map((g) => ({
-      tag: g.tag,
-      nodes: map.nodes.filter((n) => n.group === g.tag),
-    })),
-  )
 </script>
 
 <section class="impact" aria-labelledby="impact-title">
@@ -68,27 +53,6 @@
       to read.
     </figcaption>
   </figure>
-
-  <ul class="map-list">
-    {#each groups as group (group.tag)}
-      <li>
-        <p class="telemetry">{group.tag}</p>
-        <ul>
-          {#each group.nodes as node (node.slug)}
-            <li>
-              <a href={`/blog/${node.slug}`}>{node.title}</a>
-              {#if linkCount.get(node.slug)}
-                <span class="telemetry links"
-                  >{linkCount.get(node.slug)}
-                  {linkCount.get(node.slug) === 1 ? "link" : "links"}</span
-                >
-              {/if}
-            </li>
-          {/each}
-        </ul>
-      </li>
-    {/each}
-  </ul>
 </section>
 
 <style>
@@ -169,43 +133,10 @@
     margin-top: 0.5rem;
   }
 
-  .map-list {
-    display: none;
-    list-style: none;
-    border-top: 2px solid var(--ink);
-  }
-
-  .map-list > li {
-    padding-block: 0.75rem;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .map-list ul {
-    list-style: none;
-    margin-top: 0.35rem;
-  }
-
-  .map-list ul li {
-    padding-block: 0.2rem;
-    line-height: 1.4;
-  }
-
-  .map-list a {
-    font-weight: 600;
-  }
-
-  .map-list .links {
-    margin-left: 0.4rem;
-    white-space: nowrap;
-  }
-
-  /* the 620px map is unreadable on phones, so it becomes a list */
+  /* labels shrink to ~5px on phones, and the post list above covers the same ground */
   @media (max-width: 600px) {
-    .map {
+    .impact {
       display: none;
-    }
-    .map-list {
-      display: block;
     }
   }
 </style>
