@@ -111,6 +111,34 @@ test.describe("mobile", () => {
   })
 })
 
+test.describe("smallest phone", () => {
+  test.use({ viewport: { width: 320, height: 568 } })
+
+  test("the header stays on one line inside the page padding", async ({
+    page,
+  }) => {
+    await page.goto("/blog")
+    const header = await page.locator(".site-header .bar").evaluate((bar) => {
+      const link = bar
+        .querySelector('a[href="/contact"]')
+        ?.getBoundingClientRect()
+      const toggle = bar.querySelector(".theme-switch")?.getBoundingClientRect()
+      const contentRight =
+        bar.getBoundingClientRect().right -
+        parseFloat(getComputedStyle(bar).paddingRight)
+      return {
+        linkHeight: link?.height ?? 0,
+        toggleWidth: toggle?.width ?? 0,
+        overshoot: (toggle?.right ?? Infinity) - contentRight,
+      }
+    })
+
+    expect(header.linkHeight).toBeLessThan(40)
+    expect(header.toggleWidth).toBeGreaterThanOrEqual(24)
+    expect(header.overshoot).toBeLessThanOrEqual(1)
+  })
+})
+
 test("impact map labels stay on the canvas and never overlap", async ({
   page,
 }) => {

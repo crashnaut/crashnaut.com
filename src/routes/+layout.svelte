@@ -235,6 +235,7 @@
 
   nav a {
     color: var(--ink-2);
+    white-space: nowrap;
     padding-block: 0.25rem;
     border-bottom: 2px solid transparent;
     transition:
@@ -249,6 +250,7 @@
   }
 
   .theme-switch {
+    flex-shrink: 0;
     display: grid;
     place-items: center;
     width: 2.1rem;
@@ -323,6 +325,24 @@
     }
     nav {
       font-size: 0.88rem;
+    }
+  }
+
+  /* iPhone SE width: keeps the header on one line */
+  @media (max-width: 360px) {
+    .bar {
+      gap: 0.5rem;
+    }
+    .wordmark {
+      font-size: 0.9rem;
+    }
+    .bar nav {
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+    .theme-switch {
+      width: 2rem;
+      height: 2rem;
     }
   }
 </style>
