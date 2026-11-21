@@ -97,7 +97,7 @@ test("unknown pages render the 404 page", async ({ page }) => {
   const res = await page.goto("/this-does-not-exist")
   expect(res?.status()).toBe(404)
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "didn't survive",
+    "didn’t survive",
   )
 })
 
@@ -207,55 +207,25 @@ test("impact map labels stay on the canvas and never overlap", async ({
   expect(problems).toEqual([])
 })
 
-test("post headers report what the post contains", async ({ page }) => {
+test("post headers lead with the title and a plain byline", async ({
+  page,
+}) => {
   for (const path of posts) {
     await page.goto(path)
-    const counts = await page.evaluate(() => {
-      const prose = document.querySelector(".prose")
-      if (!prose) throw new Error("no .prose")
-      const h2 = prose.querySelectorAll("h2").length
-      return {
-        h2,
-        diagrams: prose.querySelectorAll("figure.diagram, figure.bar-chart")
-          .length,
-        compares: prose.querySelectorAll(".compare-block").length,
-        samples: prose.querySelectorAll("pre").length,
-        report: document.querySelector(".crash-report")?.textContent ?? "",
-        rings:
-          document.querySelectorAll(".recorder .sigil circle[fill='none']")
-            .length - 1,
-        dots: document.querySelectorAll(".recorder .sigil circle[r='1.7']")
-          .length,
-        minutes: /(\d+) min read/.exec(
-          document.querySelector(".byline")?.textContent ?? "",
-        )?.[1],
-        gauge: document
-          .querySelector(".byline svg.gauge")
-          ?.getAttribute("aria-label"),
-      }
-    })
-    const n = (count: number, word: string) =>
-      new RegExp(`\\b${count} ${word}${count === 1 ? "" : "s"}\\b`)
-    expect(counts.report, path).toMatch(n(counts.h2, "zone"))
-    expect(counts.report, path).toMatch(n(counts.samples, "sample"))
-    expect(counts.report, path).toMatch(n(counts.diagrams, "diagram"))
-    expect(counts.report, path).toMatch(n(counts.compares, "compare"))
-    expect(counts.rings, path).toBe(Math.min(5, Math.max(1, counts.h2)))
-    expect(counts.dots, path).toBe(counts.h2)
-    expect(counts.gauge, path).toBe(`${counts.minutes} minute read`)
+    const head = page.locator(".post-head")
+    await expect(head.locator("h1"), path).toHaveCount(1)
+    await expect(head.locator(".byline"), path).toContainText(/\d+ min read/)
+    // the generated stats strip and gauge no longer sit in the header
+    await expect(page.locator(".crash-report, svg.gauge"), path).toHaveCount(0)
   }
 })
 
-test("every post row carries a sigil and an outline ribbon", async ({
-  page,
-}) => {
+test("every post row carries a sigil", async ({ page }) => {
   for (const path of ["/", "/blog"]) {
     await page.goto(path)
     const rows = page.locator(".post-list > li")
     const total = await rows.count()
     expect(total, path).toBeGreaterThan(0)
     await expect(rows.locator(".sigil svg")).toHaveCount(total)
-    const ribbons = rows.getByRole("img", { name: /^Post outline: / })
-    await expect(ribbons).toHaveCount(total)
   }
 })

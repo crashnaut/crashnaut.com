@@ -7,9 +7,6 @@
   import Comments from "#lib/Comments.svelte"
   import Share from "#lib/Share.svelte"
   import WorkWithMe from "#lib/WorkWithMe.svelte"
-  import CrashReport from "#lib/CrashReport.svelte"
-  import ReadingGauge from "#lib/ReadingGauge.svelte"
-  import Sigil from "#lib/brand/Sigil.svelte"
   import { blog } from "#lib/current-blog.svelte.ts"
   import codeBlockLifeCycle from "#lib/code-block-lifecycle.svelte.ts"
   import copyLifeCycle from "#lib/copy-lifecycle.svelte.ts"
@@ -96,95 +93,133 @@
 />
 
 <article>
-  <div class="container post-grid" class:has-toc={meta.toc.length > 2}>
-    <header class="post-head">
-      <p class="telemetry crumbs">
-        <a href="/blog">← Crash log</a>
-        <span aria-hidden="true">/</span>
-        <b>Run {String(data.run).padStart(3, "0")}</b>
-        <span class="status-dot" aria-hidden="true"></span>
-      </p>
+  <div class="wall title-wall">
+    <div class="container post-grid" class:has-toc={meta.toc.length > 2}>
+      <header class="post-head">
+        <p class="meta crumbs"><a href="/blog">The crash log</a></p>
 
-      <h1>{meta.title}</h1>
-      {#if meta.description}
-        <p class="deck">{meta.description}</p>
-      {/if}
+        <h1>{meta.title}</h1>
+        {#if meta.description}
+          <p class="deck">{meta.description}</p>
+        {/if}
 
-      <div class="byline">
-        <img
-          class="avatar"
-          src="/images/mike.webp"
-          alt=""
-          width="44"
-          height="44"
-        />
-        <div>
-          <p class="author">Mike Sell</p>
-          <p class="telemetry">
-            <time datetime={meta.publishedAt}>{humanDate(meta.date)}</time>
-            {#if updatedDate}
-              · updated <time datetime={meta.modifiedAt}
-                >{humanDate(updatedDate)}</time
-              >
+        <div class="byline">
+          <img
+            class="avatar"
+            src="/images/mike.webp"
+            alt=""
+            width="44"
+            height="44"
+          />
+          <div>
+            <p class="author">Mike Sell</p>
+            <p class="meta">
+              <time datetime={meta.publishedAt}>{humanDate(meta.date)}</time>
+              {#if updatedDate}
+                <span
+                  >(updated <time datetime={meta.modifiedAt}
+                    >{humanDate(updatedDate)}</time
+                  >)</span
+                >
+              {/if}
+              <span class="read">{meta.readingMinutes} min read</span>
+            </p>
+          </div>
+        </div>
+
+        {#if meta.tags.length || post.tldr}
+          <div class="head-foot">
+            {#if meta.tags.length}
+              <ul class="tags" aria-label="Tags">
+                {#each meta.tags as tag}
+                  <li>
+                    <a class="tag" href={`/blog?tag=${encodeURIComponent(tag)}`}
+                      >{tag}</a
+                    >
+                  </li>
+                {/each}
+              </ul>
             {/if}
-            · {meta.readingMinutes} min read
-          </p>
-        </div>
-        <ReadingGauge
-          minutes={meta.readingMinutes}
-          needle={meta.signals.gauge}
-        />
-      </div>
 
-      <div class="recorder">
-        <Sigil svg={meta.signals.sigil} size={48} />
-        <CrashReport run={data.run} signals={meta.signals} />
-      </div>
-
-      {#if meta.tags.length}
-        <ul class="tags" aria-label="Tags">
-          {#each meta.tags as tag}
-            <li>
-              <a class="tag" href={`/blog?tag=${encodeURIComponent(tag)}`}
-                >{tag}</a
-              >
-            </li>
-          {/each}
-        </ul>
-      {/if}
-
-      {#if post.tldr}
-        <div class="mode" role="group" aria-label="Reading mode">
-          <button
-            type="button"
-            aria-pressed={!tldr()}
-            onclick={() => setMode("detailed")}>Full post</button
-          >
-          <button
-            type="button"
-            aria-pressed={tldr()}
-            onclick={() => setMode("tldr")}>TL;DR · just the code</button
-          >
-        </div>
-      {/if}
-    </header>
+            {#if post.tldr}
+              <div class="mode" role="group" aria-label="Reading mode">
+                <button
+                  type="button"
+                  aria-pressed={!tldr()}
+                  onclick={() => setMode("detailed")}>Full post</button
+                >
+                <button
+                  type="button"
+                  aria-pressed={tldr()}
+                  onclick={() => setMode("tldr")}>TL;DR: just the code</button
+                >
+              </div>
+            {/if}
+          </div>
+        {/if}
+      </header>
+    </div>
   </div>
 
   <div
     class="container post-grid post-body"
     class:has-toc={meta.toc.length > 2}
   >
-    <div class="prose" bind:this={prose}>
-      {#if tldr()}
-        {@html post.tldr}
-      {:else}
-        {@html post.html}
+    <div class="main-col">
+      {#if meta.toc.length > 2}
+        <details class="toc-inline" hidden={tldr()}>
+          <summary>On this page</summary>
+          <ol>
+            {#each meta.toc as { slug, description, level }}
+              <li class:sub={level > 2}>
+                <a href={`#${slug}`}>{description}</a>
+              </li>
+            {/each}
+          </ol>
+        </details>
       {/if}
+
+      <div class="prose" bind:this={prose}>
+        {#if tldr()}
+          {@html post.tldr}
+        {:else}
+          {@html post.html}
+        {/if}
+      </div>
+
+      <footer class="post-foot">
+        <WorkWithMe />
+
+        {#if data.related.length}
+          <section aria-labelledby="related-title" class="related">
+            <h2 id="related-title">Keep reading</h2>
+            <ul>
+              {#each data.related as r}
+                <li>
+                  <a href={`/blog/${r.slug}`}>
+                    <span class="title">{r.title}</span>
+                    <span class="meta">{humanDate(r.date)}</span>
+                  </a>
+                </li>
+              {/each}
+            </ul>
+          </section>
+        {/if}
+
+        <div class="share-row">
+          <Share url={meta.canonical} />
+          <a class="meta edit" href={meta.edit} rel="external"
+            >Suggest an edit on GitHub</a
+          >
+        </div>
+
+        <Comments />
+      </footer>
     </div>
 
     {#if meta.toc.length > 2}
       <aside class="toc" aria-label="On this page" hidden={tldr()}>
-        <p class="telemetry">On this page</p>
+        <p class="meta">On this page</p>
         <ol>
           {#each meta.toc as { slug, description, level }}
             <li class:sub={level > 2} class:active={activeHeading === slug}>
@@ -195,70 +230,48 @@
       </aside>
     {/if}
   </div>
-
-  <footer class="container narrow post-foot">
-    <WorkWithMe />
-
-    {#if data.related.length}
-      <section aria-labelledby="related-title" class="related">
-        <p class="telemetry" id="related-title">Keep reading</p>
-        <ul>
-          {#each data.related as r}
-            <li>
-              <a href={`/blog/${r.slug}`}>
-                <span class="title">{r.title}</span>
-                <span class="telemetry">{humanDate(r.date)}</span>
-              </a>
-            </li>
-          {/each}
-        </ul>
-      </section>
-    {/if}
-
-    <div class="share-row">
-      <Share url={meta.canonical} />
-      <a class="telemetry edit" href={meta.edit} rel="external"
-        >Suggest an edit on GitHub</a
-      >
-    </div>
-
-    <Comments />
-  </footer>
 </article>
 
 <style>
-  .post-head {
+  /* Header and body share one left edge: the prose column (--measure, in rem). */
+  .post-head,
+  .main-col {
     max-width: var(--measure);
-    margin-inline: auto;
     width: 100%;
-    padding-top: clamp(2.5rem, 6vw, 4.5rem);
-    padding-bottom: 2rem;
+  }
+
+  .post-head {
+    padding-block: clamp(2rem, 5vw, 3.25rem) clamp(1.75rem, 4vw, 2.5rem);
   }
 
   .post-head > * + * {
     margin-top: 1rem;
   }
 
-  .crumbs {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
+  .title-wall {
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
+
+  .crumbs a {
+    text-decoration: underline;
+    text-decoration-color: var(--grid-major);
+    text-underline-offset: 0.2em;
   }
 
   .crumbs a:hover {
     color: var(--ink);
+    text-decoration-color: currentColor;
   }
 
   h1 {
-    font-size: clamp(2rem, 1.3rem + 3vw, 3.25rem);
-    line-height: 1.05;
-    letter-spacing: -0.03em;
+    font-size: var(--step-4);
+    line-height: 1;
   }
 
   .deck {
-    font-size: clamp(1.08rem, 1rem + 0.4vw, 1.25rem);
+    font-size: var(--step-1);
     color: var(--ink-2);
-    line-height: 1.55;
+    line-height: 1.5;
     max-width: 60ch;
   }
 
@@ -266,47 +279,39 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding-top: 0.5rem;
+  }
+
+  .byline .read {
+    display: block;
   }
 
   .avatar {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    border: 2px solid var(--signal);
+    border: 2px solid var(--ink);
     object-fit: cover;
   }
 
-  .byline > :global(.gauge) {
-    margin-left: 0.25rem;
-  }
-
-  .recorder {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    padding: 0.6rem 0.75rem;
-    border: 1px solid var(--line);
-    border-left: 4px solid var(--signal);
-    border-radius: var(--radius);
-    background: var(--surface);
-  }
-
   .author {
+    font-family: var(--ui-font);
     font-weight: 600;
     line-height: 1.3;
+  }
+
+  .head-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
   }
 
   .tags {
     list-style: none;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  .tags .tag:hover {
-    border-color: var(--ink-3);
-    color: var(--ink);
+    gap: 0.25rem 1rem;
   }
 
   .mode {
@@ -317,11 +322,13 @@
   }
 
   .mode button {
-    padding: 0.45rem 0.9rem;
-    font-family: var(--head-font);
+    min-height: 44px;
+    padding: 0.45rem 1rem;
+    font-family: var(--ui-font);
     font-weight: 600;
-    font-size: 0.88rem;
+    font-size: 0.95rem;
     color: var(--ink-2);
+    background: var(--surface);
   }
 
   .mode button + button {
@@ -329,19 +336,21 @@
   }
 
   .mode button[aria-pressed="true"] {
-    background: var(--signal);
-    color: #141414;
-  }
-
-  .post-body {
-    padding-top: 0.5rem;
+    background: var(--ink);
+    color: var(--bg);
   }
 
   /* header and body share one grid so the title lines up with the text */
   .post-grid.has-toc {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 15rem;
+    grid-template-columns: minmax(0, var(--measure)) 15rem;
+    justify-content: space-between;
     gap: 3rem;
+  }
+
+  .post-grid:not(.has-toc) > .post-head,
+  .post-grid:not(.has-toc) > .main-col {
+    margin-inline: auto;
   }
 
   .toc {
@@ -350,17 +359,20 @@
     align-self: start;
     max-height: calc(100dvh - var(--header-height) - 3rem);
     overflow: auto;
-    padding-top: 1rem;
-    font-size: 0.88rem;
+    padding-top: 0.25rem;
+    font-family: var(--ui-font);
+    font-size: 0.92rem;
   }
 
-  .toc ol {
+  .toc ol,
+  .toc-inline ol {
     list-style: none;
     margin-top: 0.75rem;
     border-left: 2px solid var(--line);
   }
 
-  .toc li a {
+  .toc li a,
+  .toc-inline li a {
     display: block;
     padding: 0.3rem 0 0.3rem 0.85rem;
     margin-left: -2px;
@@ -368,23 +380,46 @@
     color: var(--ink-3);
     line-height: 1.35;
     transition:
-      color 0.15s,
-      border-color 0.15s;
+      color 0.15s ease-out,
+      border-color 0.15s ease-out;
   }
 
-  .toc li.sub a {
+  .toc li.sub a,
+  .toc-inline li.sub a {
     padding-left: 1.6rem;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
   }
 
-  .toc li a:hover {
+  .toc li a:hover,
+  .toc-inline li a:hover {
     color: var(--ink);
   }
 
   .toc li.active a {
     color: var(--ink);
     font-weight: 600;
-    border-left-color: var(--signal);
+    border-left-color: var(--ink);
+  }
+
+  /* below 1100px the sticky contents become a collapsed list above the text */
+  .toc-inline {
+    display: none;
+    margin-bottom: 2rem;
+    padding-block: 0.75rem;
+    border-block: 1px solid var(--line);
+    font-family: var(--ui-font);
+  }
+
+  .toc-inline summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .toc-inline[hidden] {
+    display: none !important;
   }
 
   .post-foot {
@@ -395,10 +430,14 @@
     margin-top: 2.5rem;
   }
 
+  .related h2 {
+    font-size: var(--step-2);
+  }
+
   .related ul {
     list-style: none;
     margin-top: 0.75rem;
-    border-top: 2px solid var(--ink);
+    border-top: 3px solid var(--ink);
   }
 
   .related a {
@@ -413,16 +452,17 @@
   .related .title {
     font-family: var(--head-font);
     font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1.15;
   }
 
   .related a:hover .title {
     text-decoration: underline;
-    text-decoration-color: var(--signal);
-    text-decoration-thickness: 3px;
-    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.15em;
   }
 
-  .related .telemetry {
+  .related .meta {
     white-space: nowrap;
   }
 
@@ -442,8 +482,15 @@
     .post-grid.has-toc {
       display: block;
     }
+    .post-head,
+    .main-col {
+      margin-inline: auto;
+    }
     .toc {
       display: none;
+    }
+    .toc-inline {
+      display: block;
     }
   }
 </style>

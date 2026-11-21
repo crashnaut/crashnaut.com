@@ -7,9 +7,9 @@
 
 <section class="impact" aria-labelledby="impact-title">
   <h2 id="impact-title">Map of the crash log</h2>
-  <p class="telemetry">
-    {map.nodes.length} posts · {map.edges.length} internal links · grouped by first
-    tag · dot size = reading time
+  <p class="meta">
+    {map.nodes.length} posts and {map.edges.length} internal links, grouped by first
+    tag. Dot size shows reading time.
   </p>
 
   <figure class="map">
@@ -61,7 +61,7 @@
   }
 
   h2 {
-    font-size: clamp(1.4rem, 1.1rem + 1vw, 1.8rem);
+    font-size: var(--step-3);
   }
 
   .map {
@@ -89,35 +89,33 @@
 
   .arc {
     fill: none;
-    stroke: var(--signal);
-    stroke-width: 4;
+    stroke: var(--ink);
+    stroke-width: 3;
     stroke-linecap: round;
   }
 
   .group-label {
-    fill: var(--signal-text);
-    font-family: var(--mono-font);
-    font-size: 10.5px;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    fill: var(--ink-2);
+    font-family: var(--ui-font);
+    font-size: 12px;
+    font-weight: 600;
   }
 
   .node {
-    fill: var(--signal);
-    stroke: var(--logo-ink);
+    fill: var(--surface);
+    stroke: var(--ink);
     stroke-width: 1.5;
   }
 
   .node-label {
     fill: var(--ink);
-    font-family: var(--text-font);
-    font-size: 11px;
+    font-family: var(--ui-font);
+    font-size: 11.5px;
   }
 
   a:hover .node,
   a:focus-visible .node {
-    fill: var(--fail);
+    fill: var(--ink);
   }
 
   a:hover .node-label,

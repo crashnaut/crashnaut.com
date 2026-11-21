@@ -7,6 +7,9 @@
   import { theme } from "#lib/theme.store.ts"
   import Mark from "#lib/brand/Mark.svelte"
   import "./layout.css"
+  // Preload the two faces visible above the fold on every page.
+  import displayFont from "@fontsource/barlow-condensed/files/barlow-condensed-latin-700-normal.woff2?url"
+  import textFont from "@fontsource-variable/source-serif-4/files/source-serif-4-latin-opsz-normal.woff2?url"
 
   let { children } = $props()
 
@@ -81,6 +84,10 @@
         {
           duration: 400,
           easing: "ease-out",
+          // Hold the end state: going to dark, the old (light) snapshot shrinks
+          // to nothing, and without this it snaps back to full size for one
+          // frame before the transition is torn down.
+          fill: "forwards",
           pseudoElement:
             newTheme === "dark"
               ? "::view-transition-old(root)"
@@ -95,13 +102,30 @@
   })
 </script>
 
+<svelte:head>
+  <link
+    rel="preload"
+    as="font"
+    type="font/woff2"
+    href={displayFont}
+    crossorigin="anonymous"
+  />
+  <link
+    rel="preload"
+    as="font"
+    type="font/woff2"
+    href={textFont}
+    crossorigin="anonymous"
+  />
+</svelte:head>
+
 <a class="skip-to-content" href="#main-content">Skip to main content</a>
 
 <header class="site-header">
   <div class="container bar">
     <a class="brand" href="/" aria-label="Crashnaut home">
       <Mark size={26} />
-      <span class="wordmark">crashnaut</span>
+      <span class="wordmark" translate="no">Crashnaut</span>
     </a>
 
     <nav aria-label="Main">
@@ -143,7 +167,6 @@
       </button>
     </nav>
   </div>
-  <div class="hazard" aria-hidden="true"></div>
 </header>
 
 <main id="main-content">
@@ -155,7 +178,7 @@
     <div class="footer-brand">
       <a class="brand" href="/">
         <Mark size={22} />
-        <span class="wordmark">crashnaut</span>
+        <span class="wordmark" translate="no">Crashnaut</span>
       </a>
       <p>
         Test automation and CI/CD for FinTech teams. Written by Mike Sell,
@@ -171,19 +194,21 @@
       <a href={site.linkedin} rel="external">LinkedIn</a>
     </nav>
 
-    <div class="telemetry build">
-      <span class="status-dot" aria-hidden="true"></span>
-      build
+    <p class="meta build">
+      Built
+      <time datetime={variables.timestamp.toISOString()}
+        >{variables.timestamp.toISOString().slice(0, 10)}</time
+      >
+      from
       {#if variables.hash}
         <a
           href="https://github.com/crashnaut/crashnaut.com/commit/{variables.hash}"
           rel="external">{variables.hash.substring(0, 7)}</a
         >
       {:else}
-        local
+        a local build
       {/if}
-      · {variables.timestamp.toISOString().slice(0, 10)}
-    </div>
+    </p>
   </div>
   <p class="container legal">
     © {year}
@@ -197,12 +222,12 @@
     position: fixed;
     inset: 0 0 auto 0;
     z-index: 20;
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
-    backdrop-filter: blur(10px) saturate(140%);
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
   }
 
   .bar {
-    height: calc(var(--header-height) - 6px);
+    height: calc(var(--header-height) - 1px);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -217,10 +242,9 @@
 
   .wordmark {
     font-family: var(--head-font);
-    font-weight: 850;
-    font-size: 1.2rem;
-    letter-spacing: -0.03em;
-    font-variation-settings: "wdth" 125;
+    font-weight: 700;
+    font-size: 1.45rem;
+    letter-spacing: 0.01em;
     line-height: 1;
   }
 
@@ -228,16 +252,16 @@
     display: flex;
     align-items: center;
     gap: clamp(0.75rem, 3vw, 1.75rem);
-    font-family: var(--head-font);
+    font-family: var(--ui-font);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   nav a {
     color: var(--ink-2);
     white-space: nowrap;
-    padding-block: 0.25rem;
-    border-bottom: 2px solid transparent;
+    padding-block: 0.4rem;
+    border-bottom: 3px solid transparent;
     transition:
       color 0.15s,
       border-color 0.15s;
@@ -246,16 +270,16 @@
   nav a:hover,
   nav a[aria-current="page"] {
     color: var(--ink);
-    border-bottom-color: var(--signal);
+    border-bottom-color: var(--ink);
   }
 
   .theme-switch {
     flex-shrink: 0;
     display: grid;
     place-items: center;
-    width: 2.1rem;
-    height: 2.1rem;
-    border-radius: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--radius);
     color: var(--ink-2);
     border: 1px solid var(--line);
   }
@@ -267,8 +291,9 @@
 
   .site-footer {
     margin-top: 5rem;
-    border-top: 1px solid var(--line);
-    background: var(--surface);
+    border-top: 3px solid var(--ink);
+    background: var(--surface-2);
+    font-family: var(--ui-font);
     padding-block: 2.5rem 1.5rem;
     font-size: 0.92rem;
   }
@@ -294,9 +319,6 @@
   }
 
   .build {
-    display: flex;
-    align-items: center;
-    gap: 0.45em;
     white-space: nowrap;
   }
 
@@ -321,7 +343,7 @@
 
   @media (max-width: 420px) {
     .wordmark {
-      font-size: 1.05rem;
+      font-size: 1.25rem;
     }
     nav {
       font-size: 0.88rem;
@@ -334,15 +356,15 @@
       gap: 0.5rem;
     }
     .wordmark {
-      font-size: 0.9rem;
+      font-size: 1.1rem;
     }
     .bar nav {
       gap: 0.5rem;
       font-size: 0.8rem;
     }
     .theme-switch {
-      width: 2rem;
-      height: 2rem;
+      width: 2.5rem;
+      height: 2.5rem;
     }
   }
 </style>

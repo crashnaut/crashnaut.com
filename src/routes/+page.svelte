@@ -9,22 +9,41 @@
 
   const suites = [
     {
-      id: "01",
       name: "Test automation architecture",
-      stack: "Playwright · TypeScript · pytest · GraphQL",
+      stack: "Playwright, TypeScript, pytest, GraphQL",
       body: "Suites your team can read and extend: fixtures instead of setup scripts, data factories instead of hardcoded IDs, and no sleeps.",
     },
     {
-      id: "02",
       name: "CI/CD pipeline integration",
-      stack: "GitHub Actions · Docker · AWS",
+      stack: "GitHub Actions, Docker, AWS",
       body: "Tests that run on every pull request, in parallel, against real environments, so a red build means a real bug.",
     },
     {
-      id: "03",
       name: "Financial systems testing",
-      stack: "Payments · Compliance · Data integrity",
-      body: "The bugs that cost money: duplicate charges, rounding drift, cut-off times, and ledgers that don't reconcile.",
+      stack: "Payments, compliance, data integrity",
+      body: "The bugs that cost money: duplicate charges, rounding drift, cut-off times, and ledgers that don’t reconcile.",
+    },
+  ]
+
+  // Every figure is quoted from the linked post, which cites its own source.
+  const proof = [
+    {
+      figure: "£48.65M",
+      text: "in fines for TSB in 2022, after a configuration difference between two data centres went undetected in testing.",
+      slug: "what-late-qa-really-costs",
+      title: "What late QA really costs",
+    },
+    {
+      figure: "1,024 → 6",
+      text: "test runs for ten on/off feature flags: every configuration, or every pair of flag values covered with pairwise testing.",
+      slug: "the-feature-flag-nightmare",
+      title: "How to test feature flags without testing 2ⁿ combinations",
+    },
+    {
+      figure: "5",
+      text: "parts every integration test shares, worked through a create-payment test that checks the ledger.",
+      slug: "anatomy-of-an-integration-test",
+      title: "Every integration test has the same five parts",
     },
   ]
 </script>
@@ -37,273 +56,321 @@
   schema={[personJsonLd(), websiteJsonLd()]}
 />
 
-<section class="hero container">
-  <div class="hero-copy">
-    <p class="telemetry">
-      <span class="status-dot" aria-hidden="true"></span>
-      Senior SDET contractor · Remote from Brazil · US hours
-    </p>
-    <h1>I crash-test FinTech software <em>before</em> your customers do.</h1>
+<section class="wall hero-wall" aria-labelledby="hero-title">
+  <svg class="target" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+    <circle cx="16" cy="16" r="15.4" fill="var(--signal)" />
+    <path
+      d="M16 16 L16 .6 A15.4 15.4 0 0 0 .6 16 Z M16 16 L16 31.4 A15.4 15.4 0 0 0 31.4 16 Z"
+      fill="var(--target-ink)"
+    />
+    <circle
+      cx="16"
+      cy="16"
+      r="15.4"
+      fill="none"
+      stroke="var(--target-ring)"
+      stroke-width=".6"
+    />
+  </svg>
+  <div class="container hero">
+    <h1 id="hero-title">
+      I <span class="nowrap">crash-test</span> FinTech software before your customers
+      do.
+    </h1>
     <p class="lede">
-      I'm Mike Sell. I build test automation and CI/CD pipelines that catch
-      payment, ledger and compliance bugs before they reach production.
+      I’m Mike Sell, a senior SDET contractor working remotely from Brazil on US
+      hours. I build test automation and CI/CD pipelines that catch payment,
+      ledger and compliance bugs before they reach production.
     </p>
     <div class="actions">
       <a class="btn btn-primary" href={site.calendly} rel="external"
         >Book a 30-min call</a
       >
-      <a class="btn btn-ghost" href="/blog">Read the crash log</a>
+      <a class="btn btn-ghost" href="/blog">Read the blog</a>
     </div>
   </div>
-
-  <figure class="report" aria-label="What I do, written as a test report">
-    <div class="report-head">
-      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span>npx playwright test --project=crashnaut</span>
-    </div>
-    <pre><code
-        ><span class="dim">Running 3 suites using 3 workers</span>
-
-<span class="ok">✓</span> test-automation-architecture.spec.ts
-<span class="ok">✓</span> ci-cd-pipeline-integration.spec.ts
-<span class="ok">✓</span> financial-systems.spec.ts
-
-<span class="ok">  3 passed</span> <span class="dim">· 0 flaky · 0 retries</span
-        ></code
-      ></pre>
-  </figure>
 </section>
 
-<section class="container suites" aria-labelledby="suites-title">
-  <header class="section-head">
-    <p class="telemetry">What I test</p>
-    <h2 id="suites-title">Three suites, one goal: boring releases.</h2>
-  </header>
-  <ol class="suite-grid">
-    {#each suites as suite}
-      <li class="suite">
-        <p class="telemetry">Suite {suite.id}</p>
-        <h3>{suite.name}</h3>
-        <p class="stack">{suite.stack}</p>
-        <p>{suite.body}</p>
+<section class="container proof" aria-labelledby="proof-title">
+  <div class="intro">
+    <h2 id="proof-title">From the crash log</h2>
+    <p>
+      What bugs in money software cost, and how to catch them. Each figure is
+      sourced in its post.
+    </p>
+  </div>
+  <ul class="proof-list">
+    {#each proof as item}
+      <li>
+        <p class="figure">{item.figure}</p>
+        <p class="text">{item.text}</p>
+        <a class="link source" href={`/blog/${item.slug}`}>{item.title}</a>
       </li>
-    {/each}
-  </ol>
-</section>
-
-<section class="container recent" aria-labelledby="recent-title">
-  <header class="section-head row">
-    <div>
-      <p class="telemetry">From the crash log · {data.total} posts</p>
-      <h2 id="recent-title">Latest writing</h2>
-    </div>
-    <a class="link more" href="/blog">All posts →</a>
-  </header>
-  <ul class="post-list">
-    {#each data.recent as post}
-      <PostRow {...post} date={humanDate(post.date)} />
     {/each}
   </ul>
 </section>
 
-<section class="container narrow cta">
-  <WorkWithMe context="page" />
+<section class="container suites" aria-labelledby="suites-title">
+  <div class="intro">
+    <h2 id="suites-title">What I test</h2>
+    <p>Three kinds of work, one goal: a red build means a real bug.</p>
+  </div>
+  <dl class="suite-list">
+    {#each suites as suite}
+      <div class="suite">
+        <dt>{suite.name}</dt>
+        <dd>
+          <p>{suite.body}</p>
+          <p class="stack">{suite.stack}</p>
+        </dd>
+      </div>
+    {/each}
+  </dl>
+</section>
+
+<section class="container recent" aria-labelledby="recent-title">
+  <header class="section-head">
+    <h2 id="recent-title">Latest writing</h2>
+    <a class="link more" href="/blog">All {data.total} posts</a>
+  </header>
+  <ul class="post-list">
+    {#each data.recent as post}
+      <PostRow {...post} date={humanDate(post.date)} level={3} />
+    {/each}
+  </ul>
+</section>
+
+<section class="wall cta-wall">
+  <div class="container cta">
+    <WorkWithMe context="page" />
+  </div>
 </section>
 
 <style>
-  .hero {
-    display: grid;
-    grid-template-columns: 1.15fr 1fr;
-    gap: clamp(2rem, 5vw, 4rem);
-    align-items: center;
-    padding-block: clamp(3rem, 8vw, 6rem) 3rem;
+  .hero-wall {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
   }
 
-  .hero-copy > * + * {
-    margin-top: 1.25rem;
+  /* The quadrant target, cropped off the right edge at the point of impact */
+  .target {
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    right: max(-9vw, -8rem);
+    width: min(44vw, 34rem);
+    height: auto;
+    aspect-ratio: 1;
+    transform: translateY(-50%);
+  }
+
+  .hero {
+    padding-block: clamp(3rem, 7vw, 5.5rem) clamp(3rem, 6vw, 4.5rem);
+  }
+
+  .hero > * + * {
+    margin-top: clamp(1.25rem, 2.5vw, 1.75rem);
   }
 
   h1 {
-    font-size: clamp(2.3rem, 1.4rem + 3.6vw, 4rem);
-    line-height: 1.02;
-    letter-spacing: -0.03em;
-    font-variation-settings: "wdth" 118;
+    max-width: 52rem;
+    font-size: clamp(3rem, 1.5rem + 5.2vw, 6rem);
+    line-height: 0.92;
+    letter-spacing: -0.005em;
   }
 
-  h1 em {
-    font-style: normal;
-    background: var(--signal);
-    color: #141414;
-    padding: 0 0.12em;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
+  .nowrap {
+    white-space: nowrap;
   }
 
   .lede {
-    font-size: 1.15rem;
+    max-width: 44ch;
+    font-size: var(--step-1);
+    line-height: 1.55;
     color: var(--ink-2);
-    max-width: 46ch;
   }
 
   .actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.9rem;
-    padding-top: 0.5rem;
-  }
-
-  .report {
-    border: 2px solid var(--ink);
-    border-radius: var(--radius);
-    background: #121315;
-    color: #e6e6e1;
-    box-shadow: 8px 8px 0 var(--signal);
-    overflow: hidden;
-  }
-
-  .report-head {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 0.55rem 0.9rem;
-    background: #1c1d21;
-    border-bottom: 1px solid #2b2c31;
-    font-family: var(--mono-font);
-    font-size: 0.72rem;
-    color: #9a9da3;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-
-  .dots {
-    display: inline-flex;
-    gap: 5px;
-  }
-
-  .dots i {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: #3a3b40;
-  }
-
-  .dots i:first-child {
-    background: var(--signal);
-  }
-
-  .report pre {
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: inherit;
-    padding: 1.1rem 1.2rem 1.3rem;
-    font-size: 0.85rem;
-    line-height: 1.75;
-  }
-
-  .report code {
-    background: none;
-    border: 0;
-    padding: 0;
-    font-size: inherit;
-    white-space: pre-wrap;
-  }
-
-  .ok {
-    color: #6fd08c;
-  }
-
-  .dim {
-    color: #8a8d93;
-  }
-
-  .section-head {
-    margin-bottom: 1.5rem;
-  }
-
-  .section-head > * + * {
-    margin-top: 0.4rem;
-  }
-
-  .section-head.row {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
     gap: 1rem;
   }
 
-  .section-head h2 {
-    font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.25rem);
-  }
-
-  .suites,
-  .recent {
-    padding-block: 3rem;
-  }
-
-  .suite-grid {
-    list-style: none;
+  /* Shared 12-column section: heading + one-line intro in 4, content in 8 */
+  .proof,
+  .suites {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.5rem;
+    padding-block: clamp(3rem, 7vw, 5rem) 0;
+  }
+
+  .intro {
+    grid-column: 1 / span 4;
+  }
+
+  .intro > * + * {
+    margin-top: 0.75rem;
+  }
+
+  .intro p {
+    max-width: 30ch;
+    color: var(--ink-2);
+  }
+
+  h2 {
+    font-size: var(--step-3);
+    line-height: 1.05;
+  }
+
+  .proof-list,
+  .suite-list {
+    grid-column: 5 / -1;
+    list-style: none;
+    border-top: 3px solid var(--ink);
+  }
+
+  .proof-list li {
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    gap: 0.35rem 1.5rem;
+    padding: 1.25rem 0 1.35rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .figure {
+    grid-row: span 2;
+    font-family: var(--head-font);
+    font-weight: 700;
+    font-size: var(--step-3);
+    line-height: 1;
+    font-variant-numeric: tabular-nums lining-nums;
+    white-space: nowrap;
+  }
+
+  .proof-list .text {
+    max-width: 52ch;
+    line-height: 1.55;
+  }
+
+  .source {
+    justify-self: start;
+    font-family: var(--ui-font);
+    font-weight: 500;
+    font-size: var(--step--1);
+    color: var(--ink-2);
   }
 
   .suite {
-    padding: 1.4rem;
-    border: 1px solid var(--line);
-    border-top: 4px solid var(--signal);
-    border-radius: var(--radius);
-    background: var(--surface);
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    gap: 0.35rem 1.5rem;
+    padding: 1.25rem 0 1.35rem;
+    border-bottom: 1px solid var(--line);
   }
 
-  .suite > * + * {
-    margin-top: 0.55rem;
+  .suite dt {
+    font-family: var(--ui-font);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    line-height: 1.3;
   }
 
-  .suite h3 {
-    font-size: 1.2rem;
-  }
-
-  .suite p:not(.telemetry) {
+  .suite dd {
     color: var(--ink-2);
-    font-size: 0.97rem;
     line-height: 1.6;
   }
 
+  .suite dd > * + * {
+    margin-top: 0.4rem;
+  }
+
   .suite .stack {
-    font-family: var(--mono-font);
-    font-size: 0.78rem !important;
-    color: var(--ink-3) !important;
+    font-family: var(--ui-font);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+
+  .recent {
+    padding-block: clamp(3rem, 7vw, 5rem) 0;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
   }
 
   .post-list {
     list-style: none;
-    border-top: 2px solid var(--ink);
+    border-top: 3px solid var(--ink);
   }
 
   .more {
-    font-family: var(--head-font);
+    font-family: var(--ui-font);
     font-weight: 600;
     white-space: nowrap;
   }
 
+  /* The page ends back at the wall it started on */
+  .cta-wall {
+    margin-top: clamp(3rem, 7vw, 5rem);
+    border-top: 3px solid var(--ink);
+    border-bottom: 0;
+  }
+
   .cta {
-    padding-top: 2rem;
+    padding-block: clamp(2.5rem, 6vw, 4rem);
   }
 
-  @media (max-width: 520px) {
-    .report pre {
-      font-size: 0.72rem;
-      padding: 0.9rem;
+  @media (max-width: 960px) {
+    .intro,
+    .proof-list,
+    .suite-list {
+      grid-column: 1 / -1;
+    }
+    .intro p {
+      max-width: 60ch;
     }
   }
 
-  @media (max-width: 900px) {
-    .hero {
+  @media (max-width: 560px) {
+    .proof-list li,
+    .suite {
       grid-template-columns: 1fr;
     }
-    .suite-grid {
-      grid-template-columns: 1fr;
+    .figure {
+      grid-row: auto;
+    }
+  }
+
+  /* Up to tablet width the headline needs the full measure, so the target moves
+     off the text: half of it, its centre on the right edge beside the buttons. */
+  @media (max-width: 1100px) {
+    .target {
+      top: auto;
+      bottom: clamp(2.5rem, 6vw, 3.5rem);
+      right: 0;
+      width: clamp(9.5rem, 20vw, 14rem);
+      transform: translateX(50%);
+    }
+  }
+
+  /* Phones: a smaller half-target centred on the last row of buttons, which
+     keep clear of it. Checked for overlap at every width from 320 to 720px. */
+  @media (max-width: 560px) {
+    .target {
+      width: 6.5rem;
+      bottom: calc(clamp(3rem, 6vw, 4.5rem) + 24px - 3.25rem);
+    }
+    .actions {
+      padding-right: 3.75rem;
+    }
+    .hero > .actions {
+      margin-top: 1.75rem;
     }
   }
 </style>

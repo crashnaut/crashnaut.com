@@ -149,7 +149,7 @@ export function parseFileToHtmlAndMeta(file: string): {
 
     if (src.endsWith(".mp4")) {
       return `
-				<video loading="lazy" autoplay>
+				<video autoplay muted loop playsinline controls>
 					<source src="${src}" type="video/mp4">
 				</video>`
     }
@@ -287,7 +287,7 @@ export function parseFileToHtmlAndMeta(file: string): {
       theme: pallete,
     })
     const codeblock = generateHTMLFromTokens(tokens.tokens)
-    return `<pre id="${id}">${heading}${codeblock}</pre>`
+    return `<pre id="${id}" translate="no">${heading}${codeblock}</pre>`
   }
 
   // Task-list items render as plain marks: disabled, unlabelled checkboxes fail axe.

@@ -67,5 +67,10 @@
     "@axe-core/playwright": {
       "playwright-core": "1.64.0"
     }
+  },
+  "dependencies": {
+    "@fontsource-variable/source-serif-4": "^5.3.1",
+    "@fontsource/barlow": "^5.3.0",
+    "@fontsource/barlow-condensed": "^5.3.0"
   }
 }

@@ -1,21 +1,18 @@
 <script lang="ts">
   import Sigil from "#lib/brand/Sigil.svelte"
-  import PostRibbon from "#lib/PostRibbon.svelte"
   import type { RibbonSegment } from "#lib/post-signals.ts"
 
+  // run, tags and ribbon are still passed by callers; the full post page shows them.
   let {
-    run,
     slug,
     title,
     description,
     date,
-    tags = [],
     readingMinutes,
     sigil,
-    ribbon,
-    ribbonLabel,
+    level = 2,
   }: {
-    run: number
+    run?: number
     slug: string
     title: string
     description: string
@@ -23,52 +20,42 @@
     tags?: string[]
     readingMinutes: number
     sigil: string
-    ribbon: RibbonSegment[]
-    ribbonLabel: string
+    ribbon?: RibbonSegment[]
+    ribbonLabel?: string
+    /** 2 on the blog index (under the h1), 3 under a section h2 */
+    level?: 2 | 3
   } = $props()
 </script>
 
 <li class="row">
   <Sigil svg={sigil} size={30} />
-  <div class="body">
-    <a href={`/blog/${slug}`} class="hit">
-      <p class="telemetry meta">
-        <span class="status-dot" aria-hidden="true"></span>
-        <b>Run {String(run).padStart(3, "0")}</b>
-        <span>{date}</span>
-        <span>{readingMinutes} min read</span>
-      </p>
-      <h3>{title}</h3>
-      <p class="desc">{description}</p>
-    </a>
-    <PostRibbon segments={ribbon} label={ribbonLabel} />
-    {#if tags.length}
-      <ul class="tags" aria-label="Tags">
-        {#each tags.slice(0, 4) as tag}
-          <li class="tag">{tag}</li>
-        {/each}
-      </ul>
-    {/if}
-  </div>
+  <a href={`/blog/${slug}`} class="hit">
+    <svelte:element this={`h${level}`} class="title">{title}</svelte:element>
+    <p class="desc">{description}</p>
+    <p class="meta">
+      <span>{date}</span>
+      <span>{readingMinutes} min read</span>
+    </p>
+  </a>
 </li>
 
 <style>
   .row {
-    position: relative;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: 0 0.9rem;
+    gap: 0 1rem;
     align-items: start;
-    padding: 1.25rem 0 1.35rem;
+    padding: 1.4rem 0;
     border-bottom: 1px solid var(--line);
   }
 
+  /* one-colour sigil in lists: yellow is reserved for the mark and the primary action */
   .row > :global(.sigil) {
-    margin-top: 0.1rem;
-  }
-
-  .body > :global(* + *) {
-    margin-top: 0.75rem;
+    margin-top: 0.2rem;
+    --signal: var(--surface-2);
+    --logo-ink: var(--ink-3);
+    --fail: var(--ink);
+    --bg: var(--surface-2);
   }
 
   .hit {
@@ -82,32 +69,23 @@
   .meta {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem 0.9rem;
+    gap: 0.25rem 1.25rem;
   }
 
-  h3 {
-    font-size: clamp(1.15rem, 1rem + 0.6vw, 1.4rem);
-    transition: color 0.15s;
+  .title {
+    font-size: var(--step-2);
+    line-height: 1.12;
   }
 
-  .hit:hover h3 {
+  .hit:hover .title {
     text-decoration: underline;
-    text-decoration-color: var(--signal);
-    text-decoration-thickness: 3px;
-    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.15em;
   }
 
   .desc {
     color: var(--ink-2);
-    max-width: 75ch;
+    max-width: 68ch;
     line-height: 1.6;
-  }
-
-  .tags {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
   }
 </style>

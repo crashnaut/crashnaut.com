@@ -42,7 +42,7 @@
 </script>
 
 <section class="comments" aria-label="Comments">
-  <p class="telemetry">Comments · via GitHub Discussions</p>
+  <p class="meta">Comments, via GitHub Discussions</p>
   <div bind:this={container}></div>
 </section>
 

@@ -28,7 +28,13 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ["playwright-report", ".svelte-kit", "build", "node_modules"],
+    ignores: [
+      "playwright-report",
+      ".svelte-kit",
+      "build",
+      "node_modules",
+      ".claude",
+    ],
   },
   {
     languageOptions: {

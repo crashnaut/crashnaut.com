@@ -11,7 +11,7 @@
   )
 </script>
 
-<p class="telemetry crash-report">
+<p class="meta crash-report">
   <span class="items">
     <b class="item">Run {String(run).padStart(3, "0")}</b>
     <span class="item">{plural(signals.zones, "zone")}</span>

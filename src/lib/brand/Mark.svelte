@@ -12,18 +12,18 @@
   aria-hidden={title ? undefined : "true"}
   aria-label={title || undefined}
 >
-  <circle cx="16" cy="16" r="15" fill="var(--signal, #f8c400)" />
-  <path d="M16 16 L16 1 A15 15 0 0 0 1 16 Z" fill="var(--logo-ink, #141414)" />
+  <circle cx="16" cy="16" r="15" fill="var(--signal, #ffc400)" />
+  <path d="M16 16 L16 1 A15 15 0 0 0 1 16 Z" fill="var(--logo-ink, #0f1e33)" />
   <path
     d="M16 16 L16 31 A15 15 0 0 0 31 16 Z"
-    fill="var(--logo-ink, #141414)"
+    fill="var(--logo-ink, #0f1e33)"
   />
   <circle
     cx="16"
     cy="16"
     r="15"
     fill="none"
-    stroke="var(--logo-ink, #141414)"
+    stroke="var(--target-ring, var(--logo-ink, #0f1e33))"
     stroke-width="1.5"
   />
 </svg>

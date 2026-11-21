@@ -7,7 +7,7 @@
     {
       n: "01",
       title: "Intro call",
-      body: "30 minutes, free. You describe the product, the stack and what keeps breaking. I tell you honestly whether I'm the right fit.",
+      body: "30 minutes, free. You describe the product, the stack and what keeps breaking. I tell you honestly whether I’m the right fit.",
     },
     {
       n: "02",
@@ -35,33 +35,34 @@
   canonical={`${site.url}/contact`}
 />
 
-<div class="container narrow page">
-  <header class="head">
-    <p class="telemetry">
-      <span class="status-dot" aria-hidden="true"></span> Taking new contracts
-    </p>
-    <h1>Work with me</h1>
-    <p class="lede">
-      I help FinTech teams ship faster without shipping bugs: test automation
-      architecture, CI/CD integration, and testing for payments, compliance and
-      data integrity.
-    </p>
-    <div class="actions">
-      <a class="btn btn-primary" href={site.calendly} rel="external"
-        >Book a 30-min call</a
-      >
-      <a class="btn btn-ghost" href={site.linkedin} rel="external"
-        >Message me on LinkedIn</a
-      >
+<header class="wall">
+  <div class="container">
+    <div class="head">
+      <h1>Work with me</h1>
+      <p class="lede">
+        I’m taking new contracts. I help FinTech teams ship faster without
+        shipping bugs: test automation architecture, CI/CD integration, and
+        testing for payments, compliance and data integrity.
+      </p>
+      <div class="actions">
+        <a class="btn btn-primary" href={site.calendly} rel="external"
+          >Book a 30-min call</a
+        >
+        <a class="btn btn-ghost" href={site.linkedin} rel="external"
+          >Message me on LinkedIn</a
+        >
+      </div>
     </div>
-  </header>
+  </div>
+</header>
 
+<div class="container page">
   <section aria-labelledby="how-title">
     <h2 id="how-title">How an engagement runs</h2>
     <ol class="steps">
       {#each steps as step}
         <li>
-          <span class="telemetry">Step {step.n}</span>
+          <span class="meta">Step {Number(step.n)}</span>
           <h3>{step.title}</h3>
           <p>{step.body}</p>
         </li>
@@ -74,7 +75,7 @@
     <dl class="spec">
       {#each logistics as [k, v]}
         <div>
-          <dt class="telemetry">{k}</dt>
+          <dt class="meta">{k}</dt>
           <dd>{v}</dd>
         </div>
       {/each}
@@ -92,8 +93,17 @@
 </div>
 
 <style>
+  .head {
+    max-width: 46rem;
+    padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(2rem, 4vw, 3rem);
+  }
+
   .page {
-    padding-top: clamp(2.5rem, 6vw, 4.5rem);
+    padding-top: clamp(2.5rem, 6vw, 3.5rem);
+  }
+
+  .page > * {
+    max-width: 52rem;
   }
 
   .page > * + * {
@@ -131,16 +141,14 @@
     list-style: none;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    gap: 1.5rem;
     counter-reset: step;
   }
 
+  /* ruled columns, not cards: the same 3px rule that heads every list on the site */
   .steps li {
-    padding: 1.25rem;
-    border: 1px solid var(--line);
-    border-top: 4px solid var(--signal);
-    border-radius: var(--radius);
-    background: var(--surface);
+    padding-top: 1rem;
+    border-top: 3px solid var(--ink);
   }
 
   .steps li > * + * {
@@ -158,7 +166,7 @@
   }
 
   .spec {
-    border-top: 2px solid var(--ink);
+    border-top: 3px solid var(--ink);
   }
 
   .spec > div {

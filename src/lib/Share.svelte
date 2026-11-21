@@ -11,7 +11,7 @@
 </script>
 
 <div class="share" aria-label="Share this post">
-  <span class="telemetry">Share</span>
+  <span class="meta">Share</span>
   <a
     class="tag"
     target="_blank"

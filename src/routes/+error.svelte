@@ -13,29 +13,27 @@
   robots="noindex"
 />
 
-<div class="container narrow page">
-  <p class="telemetry">
-    <span class="dot" aria-hidden="true"></span>
-    Test failed · status {page.status}
-  </p>
-  <h1>{notFound ? "This page didn't survive impact." : "Something broke."}</h1>
-  <pre><code
-      >expect(page).toHaveURL(<span class="s">"{page.url.pathname}"</span>)
-<span class="f"
-        >✕ {notFound
-          ? "Received: 404 Not Found"
-          : `Received: ${page.status} ${page.error?.message ?? ""}`}</span
-      ></code
-    ></pre>
-  <p>
-    Try the <a class="link" href="/">home page</a> or browse the
-    <a class="link" href="/blog">crash log</a>.
-  </p>
+<div class="wall">
+  <div class="container page">
+    <p class="meta">Error {page.status}</p>
+    <h1>
+      {notFound ? "This page didn’t survive impact." : "Something broke."}
+    </h1>
+    <p>
+      {notFound
+        ? `Nothing lives at ${page.url.pathname}. It may have moved, or the link has a typo.`
+        : (page.error?.message ?? "The page could not be loaded.")}
+    </p>
+    <p>
+      Try the <a class="link" href="/">home page</a> or browse the
+      <a class="link" href="/blog">blog</a>.
+    </p>
+  </div>
 </div>
 
 <style>
   .page {
-    padding-top: clamp(3rem, 8vw, 6rem);
+    padding-block: clamp(3rem, 8vw, 6rem);
   }
 
   .page > * + * {
@@ -43,31 +41,12 @@
   }
 
   h1 {
-    font-size: clamp(2rem, 1.4rem + 3vw, 3rem);
+    font-size: var(--step-4);
+    line-height: 1;
   }
 
-  .dot {
-    display: inline-block;
-    width: 0.55em;
-    height: 0.55em;
-    border-radius: 50%;
-    background: var(--fail);
-    margin-right: 0.3em;
-  }
-
-  pre {
-    padding: 1rem 1.2rem;
-  }
-
-  pre code {
-    white-space: pre-wrap;
-  }
-
-  .s {
-    color: var(--pass);
-  }
-
-  .f {
-    color: var(--fail);
+  p {
+    max-width: 52ch;
+    overflow-wrap: anywhere;
   }
 </style>

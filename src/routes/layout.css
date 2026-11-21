@@ -1,34 +1,41 @@
 /* ─────────────────────────────────────────────────────────────
-   Crashnaut: "crash test lab" design system
-   Signal yellow + ink, hazard stripes, test-report telemetry.
+   Crashnaut: "the test wall" design system
+   design-system/crashnaut/MASTER.md is the source of truth.
+   Paper + instrument navy; target yellow only for the mark and
+   the primary action; the measurement grid lives on the wall.
    ───────────────────────────────────────────────────────────── */
 @import "./light.theme.css";
 @import "./dark.theme.css";
 
-@import "@fontsource-variable/archivo/wdth.css";
-@import "@fontsource/ibm-plex-sans/400.css";
-@import "@fontsource/ibm-plex-sans/400-italic.css";
-@import "@fontsource/ibm-plex-sans/500.css";
-@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/barlow-condensed/600.css";
+@import "@fontsource/barlow-condensed/700.css";
+@import "@fontsource/barlow/500.css";
+@import "@fontsource/barlow/600.css";
+@import "@fontsource-variable/source-serif-4/opsz.css";
+@import "@fontsource-variable/source-serif-4/opsz-italic.css";
 @import "@fontsource/ibm-plex-mono/400.css";
 @import "@fontsource/ibm-plex-mono/500.css";
 
 :root {
-  --head-font:
-    "Archivo Variable", "Archivo", "Helvetica Neue", Arial, sans-serif;
-  --text-font: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --head-font: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --ui-font: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  --text-font:
+    "Source Serif 4 Variable", "Source Serif 4", Georgia, "Times New Roman",
+    serif;
   --mono-font: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  --signal: #f8c400;
-  --signal-hsl: 47, 100%, 49%;
-  --pass: #1a7f46;
-  --pass-hsl: 146, 66%, 30%;
-  --fail: #cc3239;
-  --fail-hsl: 357, 61%, 50%;
-  --warn: #a95a00;
-  --warn-hsl: 32, 100%, 33%;
-  --info: #2563eb;
-  --info-hsl: 221, 83%, 53%;
+  /* Target yellow: the quadrant mark and the primary action, nothing else */
+  --signal: #ffc400;
+  --signal-hsl: 46, 100%, 50%;
+  --target-ink: #0f1e33;
+  --pass: #17784a;
+  --pass-hsl: 152, 68%, 28%;
+  --fail: #c8102e;
+  --fail-hsl: 350, 85%, 42%;
+  --warn: #9a5800;
+  --warn-hsl: 34, 100%, 30%;
+  --info: #2457c5;
+  --info-hsl: 221, 69%, 46%;
 
   --font-size: 1.0625rem;
   --line-height: 1.7;
@@ -37,46 +44,75 @@
   --spacing-small: 0.5rem;
   --spacing-large: 3rem;
   --header-height: 4rem;
-  --radius: 4px;
+  --radius: 2px;
   --page: 72rem;
-  --measure: 70ch;
+  /* rem, not ch: header and prose sit at different font sizes but share this edge */
+  --measure: 40rem;
+
+  --step--1: 0.875rem;
+  --step-1: 1.25rem;
+  --step-2: clamp(1.4rem, 1.25rem + 0.6vw, 1.6rem);
+  --step-3: clamp(1.75rem, 1.45rem + 1.2vw, 2.25rem);
+  --step-4: clamp(2.4rem, 1.8rem + 2.6vw, 3.6rem);
+  --step-5: clamp(3rem, 1.6rem + 6vw, 7rem);
 
   --accent-color: var(--signal-hsl);
-  --hazard: repeating-linear-gradient(
-    -45deg,
-    var(--signal) 0 10px,
-    #141414 10px 20px
-  );
 }
 
 html.light {
   color-scheme: light;
-  --base-color: 0, 0%, 8%;
-  --bg: #f4f4f1;
+  --base-color: 215, 55%, 13%;
+  --bg: #ffffff;
+  --wall: #eceef0;
+  --grid: #d0d5da;
+  --grid-major: #b3bbc4;
   --surface: #ffffff;
-  --surface-2: #ebebe6;
-  --ink: #141414;
-  --ink-2: #45453f;
-  --ink-3: #62625c;
-  --line: #d8d8d1;
-  --signal-text: #7a5a00;
-  --mark: hsla(47, 100%, 49%, 0.45);
-  --logo-ink: #141414;
+  --surface-2: #eef0f3;
+  --ink: #0f1e33;
+  --ink-2: #3a4859;
+  --ink-3: #566273;
+  --line: #d5dae0;
+  --signal-text: #7a5200;
+  --mark: hsla(46, 100%, 50%, 0.45);
+  --logo-ink: #0f1e33;
+  --target-ring: #0f1e33;
 }
 
 html.dark {
   color-scheme: dark;
-  --base-color: 0, 0%, 96%;
-  --bg: #0f1012;
-  --surface: #16171a;
-  --surface-2: #1d1e22;
-  --ink: #ecece8;
-  --ink-2: #b9b9b2;
-  --ink-3: #8a8a83;
-  --line: #2b2c31;
-  --signal-text: #f8c400;
-  --mark: hsla(47, 100%, 49%, 0.3);
-  --logo-ink: #ecece8;
+  --base-color: 210, 25%, 94%;
+  --bg: #0f1e33;
+  --wall: #0f1e33;
+  --grid: #1b2e4b;
+  --grid-major: #263d60;
+  --surface: #14263f;
+  --surface-2: #1a2f4d;
+  --ink: #eef1f4;
+  --ink-2: #b4bfcc;
+  --ink-3: #8f9cad;
+  --line: #2a3e5c;
+  --signal-text: #ffc400;
+  --mark: hsla(46, 100%, 50%, 0.3);
+  --logo-ink: #0f1e33;
+  /* a light ring keeps the navy quadrants visible on the navy wall */
+  --target-ring: #eef1f4;
+}
+
+/* The test wall: a 20mm/100mm measurement grid. Hero and title strips only. */
+.wall {
+  background-color: var(--wall);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:
+    100px 100px,
+    100px 100px,
+    20px 20px,
+    20px 20px;
+  background-position: -1px -1px;
+  border-bottom: 3px solid var(--ink);
 }
 
 /* Legacy names used by markdown output and diagrams */
@@ -140,7 +176,7 @@ main {
 
 ::selection {
   background: var(--signal);
-  color: #141414;
+  color: var(--target-ink);
 }
 
 ::view-transition-old(root),
@@ -168,11 +204,10 @@ h4,
 h5,
 h6 {
   font-family: var(--head-font);
-  font-weight: 800;
-  line-height: 1.12;
-  letter-spacing: -0.015em;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: 0;
   text-wrap: balance;
-  font-variation-settings: "wdth" 112;
 }
 
 a {
@@ -203,12 +238,42 @@ button {
 input {
   font: inherit;
   color: inherit;
+  caret-color: var(--ink);
+}
+
+::placeholder {
+  color: var(--ink-3);
+  opacity: 1;
+}
+
+a,
+button,
+input,
+summary {
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-tap-highlight-color: hsla(var(--base-color), 0.12);
+  accent-color: var(--ink);
+  scrollbar-color: var(--ink-3) var(--surface-2);
+}
+
+p,
+li,
+dd,
+figcaption {
+  text-wrap: pretty;
 }
 
 :focus-visible {
-  outline: 2px solid var(--signal);
+  outline: 3px solid var(--info);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+html.dark :focus-visible {
+  outline-color: var(--signal);
 }
 
 [hidden] {
@@ -245,95 +310,78 @@ time {
   white-space: nowrap;
 }
 
-/* Mono telemetry label: "RUN 007 · PLAYWRIGHT · 6 MIN" */
-.telemetry {
-  font-family: var(--mono-font);
-  font-size: 0.75rem;
+/* Quiet meta line: date, reading time. Sentence case, UI face. */
+.meta {
+  font-family: var(--ui-font);
+  font-size: var(--step--1);
   font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.005em;
   color: var(--ink-3);
 }
 
-.telemetry time {
+.meta time {
   font-size: inherit;
 }
 
-.telemetry b,
-.telemetry strong {
-  color: var(--ink);
-  font-weight: 500;
-}
-
-.hazard {
-  height: 6px;
-  background: var(--hazard);
-}
-
-.status-dot {
-  display: inline-block;
-  width: 0.55em;
-  height: 0.55em;
-  border-radius: 50%;
-  background: var(--pass);
-  box-shadow: 0 0 0 3px hsla(var(--pass-hsl), 0.18);
-  vertical-align: 0.08em;
+.meta b,
+.meta strong {
+  color: var(--ink-2);
+  font-weight: 600;
 }
 
 .tag {
   display: inline-flex;
   align-items: center;
-  gap: 0.35em;
-  font-family: var(--mono-font);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 0.2em 0.55em;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  font-family: var(--ui-font);
+  font-size: var(--step--1);
+  font-weight: 500;
   color: var(--ink-2);
-  background: var(--surface);
   white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 0.2em;
 }
 
-/* Buttons */
+a.tag:hover {
+  color: var(--ink);
+  text-decoration-color: currentColor;
+}
+
+/* Buttons: square, solid, at least 48px tall */
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.55em;
-  padding: 0.8em 1.25em;
+  min-height: 48px;
+  padding: 0.6em 1.35em;
   border-radius: var(--radius);
-  font-family: var(--head-font);
-  font-weight: 700;
-  font-size: 0.95rem;
-  letter-spacing: 0.01em;
+  font-family: var(--ui-font);
+  font-weight: 600;
+  font-size: 1.0625rem;
   line-height: 1.2;
   border: 2px solid var(--ink);
   transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    background-color 0.15s ease;
+    background-color 0.15s ease-out,
+    color 0.15s ease-out;
 }
 
 .btn-primary {
   background: var(--signal);
-  color: #141414;
-  border-color: #141414;
-  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--target-ink);
+  border-color: var(--target-ink);
 }
 
 .btn-primary:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--ink);
+  background: #ffd23d;
 }
 
 .btn-primary:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 var(--ink);
+  background: #f0b800;
 }
 
 .btn-ghost {
-  background: transparent;
+  background: var(--surface);
   color: var(--ink);
 }
 
@@ -342,22 +390,23 @@ time {
   color: var(--bg);
 }
 
-/* Link styles: highlighter underline in signal yellow */
+/* Links: a plain underline that thickens on hover */
 .link,
 .prose a:not(.anchor),
 .prose-link a {
-  background-image: linear-gradient(var(--mark), var(--mark));
-  background-size: 100% 0.32em;
-  background-position: 0 92%;
-  background-repeat: no-repeat;
-  transition: background-size 0.18s ease;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color 0.15s ease-out;
   word-break: break-word;
 }
 
 .link:hover,
 .prose a:not(.anchor):hover,
 .prose-link a:hover {
-  background-size: 100% 88%;
+  text-decoration-thickness: 2px;
+  text-decoration-color: currentColor;
 }
 
 /* ── Prose (rendered markdown) ────────────────────────────────── */
@@ -367,9 +416,10 @@ time {
     [full-start] minmax(0, 1fr)
     [content-start] minmax(0, var(--measure))
     [content-end] minmax(0, 1fr) [full-end];
-  font-size: 1.0625rem;
-  line-height: 1.75;
+  font-size: 1.125rem;
+  line-height: 1.7;
   color: var(--ink);
+  font-optical-sizing: auto;
 }
 
 .prose > * {
@@ -477,18 +527,20 @@ time {
 }
 
 .prose ul > li::marker {
-  color: var(--signal-text);
+  color: var(--ink-3);
 }
 
 .prose ol > li::marker {
-  font-family: var(--mono-font);
-  font-size: 0.85em;
+  font-family: var(--ui-font);
+  font-weight: 600;
+  font-size: 0.95em;
   color: var(--ink-3);
 }
 
 /* Numbered citations: [2] in the prose, linked to ## Sources (src/lib/citation.ts) */
 .cite {
-  font-family: var(--mono-font);
+  font-family: var(--ui-font);
+  font-weight: 600;
   font-size: 0.7em;
   line-height: 0;
   vertical-align: super;
@@ -499,7 +551,7 @@ time {
 .prose .cite a,
 .prose a.cite-back {
   background: none;
-  color: var(--signal-text);
+  color: var(--info);
   font-weight: 500;
   text-decoration: none;
 }
@@ -516,14 +568,14 @@ time {
 
 .prose hr {
   border: 0;
-  height: 6px;
-  background: var(--hazard);
-  opacity: 0.85;
+  height: 3px;
+  width: 4rem;
+  background: var(--ink);
   margin-block: 2.5em;
 }
 
 .prose blockquote {
-  border-left: 4px solid var(--signal);
+  border-left: 3px solid var(--ink);
   padding: 0.2em 0 0.2em 1.1em;
   color: var(--ink-2);
   font-style: italic;
@@ -569,12 +621,10 @@ td {
 }
 
 th {
-  font-family: var(--mono-font);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--ink-3);
+  font-family: var(--ui-font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
   border-bottom: 2px solid var(--ink);
 }
 
@@ -693,10 +743,9 @@ pre > .code-heading > .file-name {
 
 pre > .code-heading > .copy-code {
   margin-left: auto;
-  font-family: var(--mono-font);
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-family: var(--ui-font);
+  font-size: 0.8rem;
+  font-weight: 500;
   padding: 0.15em 0.6em;
   border: 1px solid var(--line);
   border-radius: 3px;
@@ -728,8 +777,9 @@ pre > .code-heading > .copy-code.success {
 }
 
 .code-group-tab {
-  font-family: var(--mono-font);
-  font-size: 0.78rem;
+  font-family: var(--ui-font);
+  font-size: 0.85rem;
+  font-weight: 500;
   padding: 0.35em 0.9em;
   border: 1px solid var(--line);
   border-bottom: 0;
@@ -741,7 +791,7 @@ pre > .code-heading > .copy-code.success {
 .code-group-tab.active {
   background: var(--tab-activeBackground, var(--surface));
   color: var(--ink);
-  box-shadow: inset 0 2px 0 var(--signal);
+  box-shadow: inset 0 2px 0 var(--ink);
 }
 
 .code-group-code {
@@ -756,8 +806,7 @@ pre > .code-heading > .copy-code.success {
 .custom-block,
 .compare-col {
   --tone: var(--info-hsl);
-  border: 1px solid hsla(var(--tone), 0.45);
-  border-left-width: 4px;
+  border: 1px solid hsla(var(--tone), 0.55);
   border-radius: var(--radius);
   background: hsla(var(--tone), 0.07);
   padding: 0.85em 1.1em 1em;
@@ -774,18 +823,17 @@ pre > .code-heading > .copy-code.success {
   display: flex;
   align-items: center;
   gap: 0.6em;
-  font-family: var(--head-font);
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-family: var(--ui-font);
+  font-weight: 600;
+  font-size: 1rem;
   line-height: 1.3;
 }
 
 .custom-block-title::before,
 .compare-title::before {
-  font-family: var(--mono-font);
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  font-family: var(--ui-font);
+  font-size: 0.8rem;
+  font-weight: 600;
   padding: 0.15em 0.5em;
   border-radius: 3px;
   background: hsla(var(--tone), 1);
@@ -798,7 +846,7 @@ pre > .code-heading > .copy-code.success {
   --tone: var(--info-hsl);
 }
 .custom-block.info .custom-block-title::before {
-  content: "NOTE";
+  content: "Note";
 }
 .custom-block.info-ai .custom-block-title::before {
   content: "AI";
@@ -807,26 +855,26 @@ pre > .code-heading > .copy-code.success {
   --tone: var(--signal-hsl);
 }
 .custom-block.tip .custom-block-title::before {
-  content: "TIP";
-  color: #141414;
+  content: "Tip";
+  color: var(--target-ink);
 }
 .custom-block.success {
   --tone: var(--pass-hsl);
 }
 .custom-block.success .custom-block-title::before {
-  content: "PASS";
+  content: "Pass";
 }
 .custom-block.warning {
   --tone: var(--warn-hsl);
 }
 .custom-block.warning .custom-block-title::before {
-  content: "WARN";
+  content: "Warning";
 }
 .custom-block.danger {
   --tone: var(--fail-hsl);
 }
 .custom-block.danger .custom-block-title::before {
-  content: "FAIL";
+  content: "Fail";
 }
 
 .compare-block {
@@ -838,13 +886,13 @@ pre > .code-heading > .copy-code.success {
   --tone: var(--pass-hsl);
 }
 .compare-col.do .compare-title::before {
-  content: "PASS";
+  content: "Pass";
 }
 .compare-col.dont {
   --tone: var(--fail-hsl);
 }
 .compare-col.dont .compare-title::before {
-  content: "FAIL";
+  content: "Fail";
 }
 
 .compare-col ul {
@@ -894,15 +942,16 @@ pre > .code-heading > .copy-code.success {
 }
 
 .bar-fill {
+  font-variant-numeric: tabular-nums;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   min-width: 2.6em;
   padding: 0.25em 0.55em;
   border-radius: 2px;
-  font-family: var(--mono-font);
-  font-size: 0.78rem;
-  font-weight: 500;
+  font-family: var(--ui-font);
+  font-size: 0.85rem;
+  font-weight: 600;
   color: #fff;
   background: var(--info);
 }
@@ -920,11 +969,11 @@ pre > .code-heading > .copy-code.success {
   background: var(--fail);
 }
 .bar-fill.neutral {
-  background: #6f6f68;
+  background: #5b6778;
 }
 .bar-fill.accent {
   background: var(--signal);
-  color: #141414;
+  color: var(--target-ink);
 }
 
 .bar-value {
@@ -1017,6 +1066,8 @@ pre > .code-heading > .copy-code.success {
   font-family: var(--text-font);
   font-size: 13px;
 }
+/* 11px in viewBox units on purpose: the post diagrams are laid out around it,
+   and 12px makes labels collide in four of them. */
 .diagram .d-text-sm {
   fill: var(--ink-2);
   font-family: var(--text-font);
@@ -1047,11 +1098,17 @@ pre > .code-heading > .copy-code.success {
   z-index: 10000;
   padding: 0.5rem 1rem;
   background: var(--signal);
-  color: #141414;
+  color: var(--target-ink);
   font-weight: 600;
+  font-family: var(--ui-font);
   border-radius: var(--radius);
 }
 
 .skip-to-content:focus {
   left: 0.5rem;
+}
+
+/* A page that ends on the wall runs straight into the footer */
+main:has(> .wall:last-child) + .site-footer {
+  margin-top: 0;
 }
