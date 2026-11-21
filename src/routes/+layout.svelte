@@ -64,37 +64,31 @@
       return
     }
 
-    const x = event.clientX
-    const y = event.clientY
-    const endRadius = Math.hypot(
+    // Circular reveal: the new theme grows from the toggle over a still snapshot
+    // of the old one, in both directions, at a constant speed. The circle lives
+    // in CSS (layout.css, theme-reveal) so even the first frame is clipped; here
+    // we only set its centre and final radius. Keyboard presses have no pointer
+    // position, so they start from the centre of the button.
+    const button = event.currentTarget as HTMLElement
+    const box = button.getBoundingClientRect()
+    const x = event.detail ? event.clientX : box.left + box.width / 2
+    const y = event.detail ? event.clientY : box.top + box.height / 2
+    const radius = Math.hypot(
       Math.max(x, innerWidth - x),
       Math.max(y, innerHeight - y),
     )
+    const root = document.documentElement
+    root.style.setProperty("--reveal-x", `${x}px`)
+    root.style.setProperty("--reveal-y", `${y}px`)
+    root.style.setProperty("--reveal-r", `${Math.ceil(radius)}px`)
+    // scopes the animation to theme switches (page navigations have none)
+    root.dataset.themeSwitch = ""
     const transition = document.startViewTransition(async () => {
       theme.set(newTheme)
+      root.className = newTheme
       await tick()
     })
-    transition.ready.then(() => {
-      const clipPath = [
-        `circle(0px at ${x}px ${y}px)`,
-        `circle(${endRadius}px at ${x}px ${y}px)`,
-      ]
-      document.documentElement.animate(
-        { clipPath: newTheme === "dark" ? [...clipPath].reverse() : clipPath },
-        {
-          duration: 400,
-          easing: "ease-out",
-          // Hold the end state: going to dark, the old (light) snapshot shrinks
-          // to nothing, and without this it snaps back to full size for one
-          // frame before the transition is torn down.
-          fill: "forwards",
-          pseudoElement:
-            newTheme === "dark"
-              ? "::view-transition-old(root)"
-              : "::view-transition-new(root)",
-        },
-      )
-    })
+    transition.finished.finally(() => delete root.dataset.themeSwitch)
   }
 
   $effect(() => {

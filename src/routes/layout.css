@@ -179,22 +179,27 @@ main {
   color: var(--target-ink);
 }
 
+/* Page navigations: no animation. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
-::view-transition-old(root) {
-  z-index: 1;
+
+/* Theme switch: the new theme grows from the toggle in a circle over a still
+   snapshot of the old one. Linear, so the edge moves at one constant speed;
+   the centre and radius come from toggleTheme() in +layout.svelte. */
+html[data-theme-switch]::view-transition-new(root) {
+  animation: theme-reveal 500ms linear both;
 }
-::view-transition-new(root) {
-  z-index: 9999;
-}
-.dark::view-transition-old(root) {
-  z-index: 9999;
-}
-.dark::view-transition-new(root) {
-  z-index: 1;
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+  }
+  to {
+    clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+  }
 }
 
 h1,
