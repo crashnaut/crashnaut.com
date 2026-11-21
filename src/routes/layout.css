@@ -561,6 +561,12 @@ a.tag:hover {
   text-decoration: none;
 }
 
+/* --info is a mid blue tuned for light surfaces; on the dark wall it fails AA. */
+html.dark .prose .cite a,
+html.dark .prose a.cite-back {
+  color: #8eb4ff;
+}
+
 .prose .cite a:hover,
 .prose a.cite-back:hover {
   text-decoration: underline;
