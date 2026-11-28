@@ -114,6 +114,19 @@ test.describe("mobile", () => {
     })
   }
 
+  test("diagram labels stay readable on phones", async ({ page }) => {
+    await page.goto("/blog/the-feature-flag-nightmare")
+    const sizes = await page.$$eval(".diagram svg", (svgs) =>
+      svgs.map((svg) => {
+        const vb = (svg as SVGSVGElement).viewBox.baseVal.width
+        // Rendered size of an 11px (d-text-sm) label.
+        return (svg.getBoundingClientRect().width / vb) * 11
+      }),
+    )
+    expect(sizes.length).toBeGreaterThan(0)
+    for (const px of sizes) expect(px).toBeGreaterThanOrEqual(8.5)
+  })
+
   test("the impact map is hidden on phones", async ({ page }) => {
     await page.goto("/blog")
     await expect(page.locator(".post-list > li").first()).toBeVisible()

@@ -1006,6 +1006,17 @@ pre > .code-heading > .copy-code.success {
   height: auto;
   margin-inline: auto;
 }
+/* On phones a 700-wide viewBox shrinks to ~310px and 11px labels render at
+   5–6px. Keep diagrams at least 560px wide (labels ≈ 9px) and let the figure
+   scroll sideways instead; the caption stays at the column width. */
+@media (max-width: 600px) {
+  .diagram {
+    padding: 0.75rem;
+  }
+  .diagram svg {
+    min-width: 560px;
+  }
+}
 .diagram .d-box {
   fill: var(--surface-2);
   stroke: var(--ink-3);

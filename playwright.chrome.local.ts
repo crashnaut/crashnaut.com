@@ -1,0 +1,3 @@
+// Local-only: run the suite in installed Chrome when Playwright's own browsers aren't downloaded.
+import base from "./playwright.config"
+export default { ...base, use: { ...base.use, channel: "chrome" } }
