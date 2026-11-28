@@ -348,23 +348,25 @@
   }
 
   /* Up to tablet width the headline needs the full measure, so the target moves
-     off the text: half of it, its centre on the right edge beside the buttons. */
+     off the text: about 60% of it, its centre near the right edge beside the buttons. */
   @media (max-width: 1100px) {
     .target {
       top: auto;
       bottom: clamp(2.5rem, 6vw, 3.5rem);
       right: 0;
-      width: clamp(9.5rem, 20vw, 14rem);
-      transform: translateX(50%);
+      width: clamp(10rem, 22vw, 15rem);
+      transform: translateX(40%);
     }
   }
 
-  /* Phones: a smaller half-target centred on the last row of buttons, which
-     keep clear of it. Checked for overlap at every width from 320 to 720px. */
+  /* Phones: a smaller target, about 60% showing, centred on the last row of
+     buttons, which keep clear of it. */
   @media (max-width: 560px) {
     .target {
-      width: 6.5rem;
-      bottom: calc(clamp(3rem, 6vw, 4.5rem) + 24px - 3.25rem);
+      width: 8.5rem;
+      bottom: calc(clamp(3rem, 6vw, 4.5rem) + 24px - 4.25rem);
+      right: 0;
+      transform: translateX(40%);
     }
     .actions {
       padding-right: 3.75rem;
